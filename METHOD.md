@@ -194,6 +194,32 @@ Keepers, after the equivalent median offset from listing), it filed any of:
 | Late periodic filing | **NT 10-K / NT 10-Q** |
 | Delisting | **Form 25 / 25-NSE** |
 
+#### Two mandatory exclusions from the outcome variable
+
+Added by amendment on 28 August 2026, **before data collection**, after both confounds
+were confirmed empirically on three test issuers. See `CHANGELOG.md`. Neither exclusion
+is applied silently: both are counted, labelled, and published.
+
+**E1 — The April 2021 SPAC warrant restatement wave is excluded from the primary.**
+On 12 April 2021 the SEC Division of Corporation Finance released a *Staff Statement on
+Accounting and Reporting Considerations for Warrants Issued by Special Purpose
+Acquisition Companies*, which compelled essentially the entire SPAC universe to restate
+its warrant accounting. An 8-K Item 4.02 filed in its wake is evidence about **one SEC
+statement**, not about the issuer. Any Item 4.02 filed on or after 2021-04-12 whose text
+cites that Staff Statement or attributes the non-reliance to warrant or Class A share
+classification is labelled `SECTOR_WIDE_WARRANT_RESTATEMENT` and excluded from the
+primary outcome. The count is published, and §7.4 reports the primary **with these
+restatements included** as a sensitivity. Without this exclusion the de-SPAC arm is
+almost entirely "adverse" by construction and the study measures nothing.
+
+**E2 — Mechanical predecessor delisting at de-SPAC close is not an adverse event.**
+When a SPAC completes a business combination, the predecessor shell's securities are
+delisted as a routine mechanical step. Empirically this Form 25/25-NSE is filed *days
+before* the completion 8-K (Nikola: Form 25-NSE 2020-06-03 against completion
+2020-06-08; Lordstown: 2020-10-23 against 2020-10-29). A Form 25 or 25-NSE filed within
+**±30 days** of an 8-K carrying Item 2.01 is labelled `MECHANICAL_DESPAC_DELISTING` and
+excluded. Genuine later delistings are unaffected and remain in the outcome.
+
 **Test.** Difference in proportions, Keepers vs Movers, with a **10,000-resample
 bootstrap 95% CI**; Fisher's exact test for the 2×2. Mann-Whitney U on the per-issuer
 count of adverse events as a secondary form. **n in each arm is published beside every

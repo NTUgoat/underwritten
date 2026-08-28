@@ -21,3 +21,7 @@ _wf.json
 # OS
 Thumbs.db
 .DS_Store
+
+# Scratch artifacts left by research subagents — never part of the study
+ct.json
+tm.json

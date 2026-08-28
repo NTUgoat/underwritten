@@ -1,0 +1,35 @@
+[project]
+name = "underwritten"
+version = "0.1.0"
+description = "Grading listing-document promises against the subsequent SEC-filed record"
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.32",
+    "duckdb>=1.1",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "jinja2>=3.1",
+    "pandas>=2.2",
+    "numpy>=2.0",
+    "scipy>=1.14",
+    "lxml>=5.3",
+    "beautifulsoup4>=4.12",
+    "truststore>=0.10",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3", "ruff>=0.8"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["app", "pipeline"]
