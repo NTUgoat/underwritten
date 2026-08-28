@@ -71,14 +71,14 @@
       <p class="adj-head__note">One ruling here is written to all {{ group.n }} occurrence row{{ '' if group.n == 1 else 's' }} of this metric for this issuer.</p>
     </div>
 
-    {% if group.variants|length > 1 %}
-    <p class="adj-warn">This metric is defined <strong>{{ group.variants|length }} different ways</strong> across the filed record. Read them both before ruling — a changed definition is what METHOD.md §5 <code>REDEFINED</code> is about, and it is only visible here.</p>
+    {% if n_variants > 1 %}
+    <p class="adj-warn">This metric is defined <strong>{{ n_variants }} different ways</strong> across the filed record. A changed definition is what METHOD.md §5 <code>REDEFINED</code> is about, and it is only visible here.{% if hidden_variants %} Showing the {{ evidence|length }} most frequent; <strong>{{ hidden_variants }} further variant{{ '' if hidden_variants == 1 else 's' }} not shown</strong>. A group with this many variants is usually a section heading, where the captured text is the table that followed it rather than a definition.{% endif %}</p>
     {% endif %}
 
     {% for e in evidence %}
     <article class="adj-variant">
       <header class="adj-variant__head">
-        <span class="adj-variant__n">variant {{ loop.index }} of {{ evidence|length }}</span>
+        <span class="adj-variant__n">variant {{ loop.index }} of {{ n_variants }}</span>
         <span class="adj-variant__count">{{ e.variant.n }} occurrence{{ '' if e.variant.n == 1 else 's' }}</span>
         <span class="adj-variant__span">{{ e.variant.first_date or '—' }} → {{ e.variant.last_date or '—' }}</span>
       </header>
@@ -100,7 +100,7 @@
             <tr><th scope="col">form</th><th scope="col">filed</th><th scope="col">accession</th><th scope="col">document</th><th scope="col">locator</th><th scope="col" class="n">offset</th></tr>
           </thead>
           <tbody>
-            {% for o in e.variant.occurrences %}
+            {% for o in e.shown_occurrences %}
             <tr>
               <td>{{ o.form or '—' }}</td>
               <td class="n">{{ o.filing_date or '—' }}</td>
@@ -113,6 +113,7 @@
           </tbody>
         </table>
       </div>
+      {% if e.hidden_occurrences %}<p class="adj-context__none">{{ e.hidden_occurrences }} further occurrence{{ '' if e.hidden_occurrences == 1 else 's' }} of this variant not listed.</p>{% endif %}
     </article>
     {% else %}
     <p class="adj-context__none">This group has no defining sentence recorded, which should not happen. Do not rule on it — open the filing and check the candidate file.</p>

@@ -103,6 +103,17 @@ LEDGER_NAME = "metrics.csv"
 LOG_NAME = "adjudication_log.jsonl"
 CANDIDATES_NAME = "metrics_candidates.csv"
 
+# Rendering caps. Not cosmetic: a section-heading group such as "non-GAAP
+# financial measures" can carry 1,014 occurrences across 516 distinct
+# "variants", because for a heading the extractor captures whatever table
+# followed it and that differs in every filing. Rendering them all produced a
+# 1.9 MB page and called surrounding_context() 516 times per view. The ruling
+# is the same either way, so the extra evidence buys nothing and costs the
+# reviewer real time on a page they will spend one keystroke on. Whatever is
+# elided is COUNTED on the page, never silently dropped.
+MAX_VARIANTS_SHOWN = 6
+MAX_OCCURRENCES_SHOWN = 12
+
 
 def adjudication_dir() -> Path:
     """The one directory this tool may write into.
@@ -1246,9 +1257,15 @@ def _group_context(
                 "variant": variant,
                 "context": surrounding_context(variant.occurrences[0]),
                 "lead": variant.occurrences[0],
+                "shown_occurrences": variant.occurrences[:MAX_OCCURRENCES_SHOWN],
+                "hidden_occurrences": max(
+                    0, len(variant.occurrences) - MAX_OCCURRENCES_SHOWN
+                ),
             }
-            for variant in group.variants
+            for variant in group.variants[:MAX_VARIANTS_SHOWN]
         ],
+        "n_variants": len(group.variants),
+        "hidden_variants": max(0, len(group.variants) - MAX_VARIANTS_SHOWN),
         "prev_url": f"/adjudicate/{previous.gid}{suffix}" if previous else "",
         "next_url": f"/adjudicate/{following.gid}{suffix}" if following else "",
         "done_url": f"/adjudicate/done{suffix}",

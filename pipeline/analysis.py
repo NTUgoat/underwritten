@@ -62,6 +62,7 @@ Anything unparseable is counted and reported, never dropped in silence.
 from __future__ import annotations
 
 import csv
+import logging
 import math
 import random
 import re
@@ -76,6 +77,8 @@ from scipy import stats as _scipy
 
 from . import config
 from .outcomes import EXCL_MECHANICAL_DELISTING, EXCL_WARRANT, AdverseEvent
+
+logger = logging.getLogger(__name__)
 
 LEDGER_PATH = config.ADJUDICATION / "metrics.csv"
 PROJECTIONS_PATH = config.ADJUDICATION / "projections.csv"
@@ -138,12 +141,25 @@ VERBATIM_SUBTREES = frozenset(
 )
 VERBATIM_KEYS = frozenset({"benign_labels", "benign_detail", "quote", "rationale"})
 
+#: METHOD.md §7.2 and §12 both require the power statement to be published
+#: beside the result rather than left to the reader. The generic form is used
+#: where the arms do not exist yet; `_power_note` carries the realised sizes.
 POWER_NOTE = (
-    "At n = 50 this study is underpowered for anything but a large effect. "
-    "The reported quantity is an association with an interval, and the interval "
-    "is wide. No claim of direction between metric behaviour and later filing "
-    "events is made or implied."
+    "At the size METHOD.md §12 states this study is underpowered for anything "
+    "but a large effect. The reported quantity is an association with an "
+    "interval, and the interval is wide. No claim of direction between metric "
+    "behaviour and later filing events is made or implied."
 )
+
+
+def _power_note(n_keepers: int, n_movers: int) -> str:
+    """The power statement, carrying the realised size of both arms."""
+    return (
+        f"Underpowered for anything but a large effect: {n_keepers} Keeper(s) "
+        f"against {n_movers} Mover(s). The reported quantity is an association "
+        "with an interval, and the interval is wide. No claim of direction "
+        "between metric behaviour and later filing events is made or implied."
+    )
 
 LEDGER_ABSENT_REASON = (
     "The adjudication ledger data/adjudication/metrics.csv has not been written "
@@ -968,7 +984,7 @@ def primary_test(
         "n_excluded_untimed": len(skipped),
         "excluded_untimed": skipped,
         "per_issuer": per_issuer,
-        "power_note": POWER_NOTE,
+        "power_note": _power_note(len(keeper_indicators), len(mover_indicators)),
     }
     return PrimaryTest(available=True, reason="", payload=MappingProxyType(payload))
 
@@ -1850,6 +1866,11 @@ def run(inputs: AnalysisInputs) -> Analysis:
             "reason": inputs.outcome_reason,
             "n_issuers_with_a_filing_index": len(inputs.events),
             "errors": list(inputs.outcome_errors),
+            "errors_note": (
+                "Every retrieval failure is recorded with the stage it belongs "
+                "to. An issuer whose filing index could not be read is not "
+                "scored as having no adverse event; it is absent from both arms."
+            ),
         },
         "ledger": ledger.as_dict(),
         "limitations": [

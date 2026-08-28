@@ -1,6 +1,6 @@
 {
   "as_at": "2026-08-28",
-  "generated": "2026-08-28T13:26:11+00:00",
+  "generated": "2026-08-28T13:28:35+00:00",
   "available": false,
   "reason": "The adjudication ledger data/adjudication/metrics.csv has not been written yet. METHOD.md \u00a74 requires every candidate to be ruled on by hand and \u00a75 makes the terminal state a human ruling, so no state is inferred here and no figure is published in its place.",
   "cohort": {
@@ -29,7 +29,7 @@
   "primary_test": {
     "available": false,
     "reason": "The adjudication ledger data/adjudication/metrics.csv has not been written yet. METHOD.md \u00a74 requires every candidate to be ruled on by hand and \u00a75 makes the terminal state a human ruling, so no state is inferred here and no figure is published in its place.",
-    "power_note": "At n = 50 this study is underpowered for anything but a large effect. The reported quantity is an association with an interval, and the interval is wide. No claim of direction between metric behaviour and later filing events is made or implied.",
+    "power_note": "At the size METHOD.md \u00a712 states this study is underpowered for anything but a large effect. The reported quantity is an association with an interval, and the interval is wide. No claim of direction between metric behaviour and later filing events is made or implied.",
     "n_keepers": null,
     "n_movers": null
   },

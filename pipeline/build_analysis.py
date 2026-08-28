@@ -29,6 +29,7 @@ import json
 import sys
 import warnings
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 from bs4 import XMLParsedAsHTMLWarning
@@ -61,7 +62,7 @@ SCOREBOARD_PATH = config.DERIVED / "scoreboard.json"
 METRICS_PATH = config.DERIVED / "metrics.json"
 
 
-def _write_json(path, payload: Any) -> None:
+def _write_json(path: Path, payload: Any) -> None:
     """Write one published file atomically. A half-written finding is not one."""
     staging = path.with_name(path.name + ".partial")
     staging.write_text(json.dumps(payload, indent=2, sort_keys=False), encoding="utf-8")
@@ -86,6 +87,7 @@ def _collect_events(
         except Exception as exc:  # noqa: BLE001 - one issuer must not stop the run
             errors.append(
                 {
+                    "stage": "§7.2 filing index",
                     "cik": str(member.cik),
                     "name": member.name,
                     "error": f"{type(exc).__name__}: {exc}",
@@ -118,7 +120,13 @@ def _collect_realised_revenue(
         try:
             realised[cik] = realised_annual_revenue(client.company_facts(cik))
         except Exception as exc:  # noqa: BLE001
-            errors.append({"cik": str(cik), "error": f"{type(exc).__name__}: {exc}"})
+            errors.append(
+                {
+                    "stage": "§7.5 realised revenue",
+                    "cik": str(cik),
+                    "error": f"{type(exc).__name__}: {exc}",
+                }
+            )
     return realised, errors
 
 
@@ -163,7 +171,11 @@ def main(argv: list[str] | None = None) -> int:
     events: dict[int, tuple[AdverseEvent, ...]] = {}
     outcome_errors: list[dict[str, str]] = []
     realised: dict[int, dict[str, float]] = {}
-    projections = read_projections()
+    try:
+        projections = read_projections()
+    except AnalysisError as exc:
+        print(str(exc))
+        return 1
 
     if not ledger.available:
         outcome_available = False

@@ -1282,3 +1282,14 @@ def test_the_descriptive_specifications_run_without_the_outcome_variable(split_l
     assert finding["sensitivity"]["runs"]["as_preregistered"]["available"] is False
     assert finding["sensitivity"]["deltas_pp"]["warrant_restatements_restored"] is None
     assert finding["exclusions_applied"] == {}
+
+
+def test_the_power_statement_carries_the_realised_arm_sizes(primary_fixture):
+    """METHOD.md §7.2 and §12: the power statement is published beside the result."""
+    behaviours, listing = primary_fixture
+    note = primary_test(
+        behaviours, listing_dates=listing, events={}, outcome_available=True
+    ).as_dict()["power_note"]
+    assert "1 Keeper(s)" in note and "3 Mover(s)" in note
+    assert "underpowered" in note.lower()
+    assert not analysis.FORBIDDEN_PATTERN.search(note)
