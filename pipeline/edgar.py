@@ -32,6 +32,10 @@ from . import config
 
 _TMP_COUNTER = itertools.count()
 
+# Retries for os.replace on Windows, where a destination held open by another
+# reader raises PermissionError transiently.
+_REPLACE_ATTEMPTS = 5
+
 
 class EdgarError(RuntimeError):
     """Raised when EDGAR cannot satisfy a request after retries."""
@@ -110,7 +114,30 @@ def _atomic_write(path: Path, payload: bytes) -> None:
     tmp = path.with_name(f"{path.name}.{os.getpid()}.{next(_TMP_COUNTER)}.tmp")
     try:
         tmp.write_bytes(payload)
-        os.replace(tmp, path)
+
+        # os.replace is atomic, but on Windows it raises PermissionError
+        # (WinError 5) when the destination is briefly held open by another
+        # reader - a concurrent build, an indexer, or antivirus. That is
+        # transient, and treating it as fatal is worse than useless here: the
+        # caller records the document as unreadable, so a filing that was
+        # successfully downloaded becomes a hole in the corpus, and a hole in
+        # the corpus is what METHOD.md §6 would read as an absent phrase.
+        last: OSError | None = None
+        for attempt in range(_REPLACE_ATTEMPTS):
+            try:
+                os.replace(tmp, path)
+                return
+            except PermissionError as exc:
+                last = exc
+                time.sleep(0.2 * (attempt + 1))
+
+        # Still blocked. If the destination now exists and is the same size,
+        # another writer completed the identical fetch while we waited - the
+        # bytes are already on disk, so this is a success, not a loss.
+        if path.exists() and path.stat().st_size == len(payload):
+            tmp.unlink(missing_ok=True)
+            return
+        raise last if last else OSError(f"could not place {path}")
     except BaseException:
         tmp.unlink(missing_ok=True)
         raise
