@@ -141,13 +141,32 @@ def empty_ledger(tmp_path):
     return read_ledger(tmp_path / "metrics.csv", cohort_ciks=[1, 2, 3])
 
 
+def scored(ciks, events=None):
+    """Every named issuer's filing index was read successfully.
+
+    A CIK present with an empty tuple means "read, and it held no adverse
+    event". A CIK absent from the mapping means "the index could not be read",
+    which is a different fact and must never be scored as the first one. Test
+    fixtures have to make that distinction or they cannot catch a regression in
+    it, so every issuer being scored is named here explicitly.
+    """
+    base: dict[int, tuple] = {int(cik): () for cik in ciks}
+    base.update({int(cik): tuple(evs) for cik, evs in (events or {}).items()})
+    return base
+
+
 def make_inputs(*, cohort, ledger, events=None, outcome_available=False, **kwargs):
+    members = tuple(cohort)
     return AnalysisInputs(
         as_at=config.AS_AT_DATE,
         generated="2026-08-28T00:00:00+00:00",
-        cohort=tuple(cohort),
+        cohort=members,
         ledger=ledger,
-        events=events or {},
+        events=(
+            scored([member.cik for member in members], events)
+            if outcome_available
+            else (events or {})
+        ),
         outcome_available=outcome_available,
         outcome_reason="" if outcome_available else analysis.OUTCOME_SKIPPED_REASON,
         **kwargs,
@@ -573,29 +592,29 @@ def primary_fixture(split_ledger):
 
 def test_an_event_before_the_move_date_does_not_count(primary_fixture):
     behaviours, listing = primary_fixture
-    events = {2: (event("NT 10-K", date(2021, 1, 1)),)}  # before the 2022-03-01 move
+    events = scored((1, 2, 3, 4), {2: (event("NT 10-K", date(2021, 1, 1)),)})  # before the move
     result = primary_test(
         behaviours, listing_dates=listing, events=events, outcome_available=True
     ).as_dict()
-    scored = {row["cik"]: row for row in result["per_issuer"]}
-    assert scored[2]["n_adverse_events"] == 0
+    by_cik = {row["cik"]: row for row in result["per_issuer"]}
+    assert by_cik[2]["n_adverse_events"] == 0
 
 
 def test_an_event_after_the_move_date_counts(primary_fixture):
     behaviours, listing = primary_fixture
-    events = {2: (event("NT 10-K", date(2023, 1, 1)),)}
+    events = scored((1, 2, 3, 4), {2: (event("NT 10-K", date(2023, 1, 1)),)})
     result = primary_test(
         behaviours, listing_dates=listing, events=events, outcome_available=True
     ).as_dict()
-    scored = {row["cik"]: row for row in result["per_issuer"]}
-    assert scored[2]["n_adverse_events"] == 1
+    by_cik = {row["cik"]: row for row in result["per_issuer"]}
+    assert by_cik[2]["n_adverse_events"] == 1
     assert result["movers"]["adverse"] == 1
 
 
 def test_keepers_are_scored_from_the_median_offset_from_listing(primary_fixture):
     behaviours, listing = primary_fixture
     result = primary_test(
-        behaviours, listing_dates=listing, events={}, outcome_available=True
+        behaviours, listing_dates=listing, events=scored((1, 2, 3, 4)), outcome_available=True
     ).as_dict()
     offsets = sorted(
         (d - date(2020, 1, 1)).days for d in (date(2021, 6, 1), date(2022, 3, 1), date(2023, 1, 5))
@@ -610,7 +629,7 @@ def test_keepers_are_scored_from_the_median_offset_from_listing(primary_fixture)
 def test_both_arms_carry_their_n_beside_every_figure(primary_fixture):
     behaviours, listing = primary_fixture
     result = primary_test(
-        behaviours, listing_dates=listing, events={}, outcome_available=True
+        behaviours, listing_dates=listing, events=scored((1, 2, 3, 4)), outcome_available=True
     ).as_dict()
     assert result["keepers"]["n"] == 1 and result["movers"]["n"] == 3
     assert result["bootstrap"]["n_baseline"] == 1
@@ -623,17 +642,20 @@ def test_both_arms_carry_their_n_beside_every_figure(primary_fixture):
 
 def test_the_warrant_restatement_is_excluded_from_the_primary(primary_fixture):
     behaviours, listing = primary_fixture
-    events = {
-        2: (
-            event(
-                "8-K",
-                date(2023, 5, 4),
-                items=("4.02",),
-                reason="Non-reliance",
-                excluded=EXCL_WARRANT,
-            ),
-        )
-    }
+    events = scored(
+        (1, 2, 3, 4),
+        {
+            2: (
+                event(
+                    "8-K",
+                    date(2023, 5, 4),
+                    items=("4.02",),
+                    reason="Non-reliance",
+                    excluded=EXCL_WARRANT,
+                ),
+            )
+        },
+    )
     excluded_run = primary_test(
         behaviours, listing_dates=listing, events=events, outcome_available=True
     ).as_dict()
@@ -651,16 +673,19 @@ def test_the_warrant_restatement_is_excluded_from_the_primary(primary_fixture):
 
 def test_the_mechanical_despac_delisting_is_never_restored(primary_fixture):
     behaviours, listing = primary_fixture
-    events = {
-        2: (
-            event(
-                "25-NSE",
-                date(2023, 5, 4),
-                reason="Delisting notification",
-                excluded=EXCL_MECHANICAL_DELISTING,
-            ),
-        )
-    }
+    events = scored(
+        (1, 2, 3, 4),
+        {
+            2: (
+                event(
+                    "25-NSE",
+                    date(2023, 5, 4),
+                    reason="Delisting notification",
+                    excluded=EXCL_MECHANICAL_DELISTING,
+                ),
+            )
+        },
+    )
     for restore in (False, True):
         result = primary_test(
             behaviours,
@@ -694,10 +719,10 @@ def test_a_mover_that_cannot_be_placed_in_time_is_excluded_and_counted(tmp_path)
     behaviours = classify_issuers(read_ledger(path).rows)
     listing = {1: date(2020, 1, 1), 2: date(2020, 1, 1), 3: date(2020, 1, 1)}
     result = primary_test(
-        behaviours, listing_dates=listing, events={}, outcome_available=True
+        behaviours, listing_dates=listing, events=scored((1, 2, 3, 4)), outcome_available=True
     ).as_dict()
-    assert result["n_excluded_untimed"] == 1
-    assert result["excluded_untimed"][0]["cik"] == 3
+    assert result["n_excluded_from_scoring"] == 1
+    assert result["excluded_from_scoring"][0]["cik"] == 3
     assert result["movers"]["n"] == 1
 
 
@@ -731,7 +756,7 @@ def test_primary_is_unavailable_when_no_mover_carries_a_date(tmp_path):
     result = primary_test(
         classify_issuers(read_ledger(path).rows),
         listing_dates={1: date(2020, 1, 1), 2: date(2020, 1, 1)},
-        events={},
+        events=scored((1, 2)),
         outcome_available=True,
     )
     assert result.available is False
@@ -805,17 +830,20 @@ def test_counter_test_without_rulings_is_unavailable(empty_ledger):
 
 def test_sensitivity_publishes_both_deltas(split_ledger):
     listing = {cik: date(2020, 1, 1) for cik in (1, 2, 3, 4)}
-    events = {
-        3: (
-            event(
-                "8-K",
-                date(2024, 1, 1),
-                items=("4.02",),
-                reason="Non-reliance",
-                excluded=EXCL_WARRANT,
-            ),
-        )
-    }
+    events = scored(
+        (1, 2, 3, 4),
+        {
+            3: (
+                event(
+                    "8-K",
+                    date(2024, 1, 1),
+                    items=("4.02",),
+                    reason="Non-reliance",
+                    excluded=EXCL_WARRANT,
+                ),
+            )
+        },
+    )
     result = sensitivity(
         split_ledger.rows,
         listing_dates=listing,
@@ -837,7 +865,7 @@ def test_benign_labels_leave_both_the_numerator_and_the_denominator(split_ledger
     result = sensitivity(
         split_ledger.rows,
         listing_dates={cik: date(2020, 1, 1) for cik in (1, 2, 3, 4)},
-        events={},
+        events=scored((1, 2, 3, 4)),
         outcome_available=True,
     )
     assert result["primary"]["n"] == 6 and result["primary"]["discontinued"] == 2
@@ -851,7 +879,7 @@ def test_sensitivity_labels_avoid_the_forbidden_vocabulary(split_ledger):
     result = sensitivity(
         split_ledger.rows,
         listing_dates={cik: date(2020, 1, 1) for cik in (1, 2, 3, 4)},
-        events={},
+        events=scored((1, 2, 3, 4)),
         outcome_available=True,
     )
     assert not analysis.FORBIDDEN_PATTERN.search(result["primary"]["label"])
@@ -1294,7 +1322,7 @@ def test_the_power_statement_carries_the_realised_arm_sizes(primary_fixture):
     """METHOD.md §7.2 and §12: the power statement is published beside the result."""
     behaviours, listing = primary_fixture
     note = primary_test(
-        behaviours, listing_dates=listing, events={}, outcome_available=True
+        behaviours, listing_dates=listing, events=scored((1, 2, 3, 4)), outcome_available=True
     ).as_dict()["power_note"]
     assert "1 Keeper(s)" in note and "3 Mover(s)" in note
     assert "underpowered" in note.lower()
@@ -1441,3 +1469,176 @@ def test_an_unreadable_inclusion_ruling_is_recorded_not_guessed(tmp_path):
     assert ledger.rows == ()
     assert len(ledger.invalid) == 1
     assert "neither a yes nor a no" in ledger.invalid[0]["problem"]
+
+
+# ==========================================================================
+# 15. Regressions found in review
+# ==========================================================================
+
+
+def test_an_issuer_whose_index_could_not_be_read_is_not_scored_as_clean(primary_fixture):
+    """The CRITICAL failure this guards: a failed EDGAR retrieval is not a zero.
+
+    `_collect_events` records a successful read as `events[cik] = (...)`, an
+    empty successful read as `events[cik] = ()`, and a failure by leaving the
+    key out. Treating the third as the second would drag both arms of the only
+    confirmatory test toward "no adverse event", silently.
+    """
+    behaviours, listing = primary_fixture
+    # CIK 3's filing index could not be retrieved; CIK 4's was read and was empty.
+    events = scored((1, 2, 4), {2: (event("NT 10-K", date(2023, 1, 1)),)})
+    result = primary_test(
+        behaviours, listing_dates=listing, events=events, outcome_available=True
+    ).as_dict()
+
+    scored_ciks = {row["cik"] for row in result["per_issuer"]}
+    assert 3 not in scored_ciks
+    assert 4 in scored_ciks  # read, and genuinely held nothing
+    excluded = {row["cik"]: row["reason"] for row in result["excluded_from_scoring"]}
+    assert 3 in excluded
+    assert "could be retrieved" in excluded[3]
+    assert result["n_excluded_from_scoring"] == 1
+    # the arm sizes shrink to what was actually observed, and say so
+    assert result["movers"]["n"] == 2
+    assert result["keepers"]["n"] == 1
+
+
+def test_the_published_claim_about_unread_issuers_is_true_of_the_code(split_ledger):
+    """finding.json says an unread issuer is absent from both arms. Check it is."""
+    analysed = run(
+        make_inputs(
+            cohort=[cohort_row(i) for i in (1, 2, 3, 4, 5)],
+            ledger=split_ledger,
+            outcome_available=True,
+        )
+    )
+    finding = dict(analysed.finding)
+    claim = finding["outcome_variable"]["errors_note"]
+    assert "is not scored as having no adverse event" in claim
+
+    partial = AnalysisInputs(
+        as_at=config.AS_AT_DATE,
+        generated="2026-08-28T00:00:00+00:00",
+        cohort=tuple(cohort_row(i) for i in (1, 2, 3, 4, 5)),
+        ledger=split_ledger,
+        events=scored((1, 2)),  # 3 and 4 could not be read
+        outcome_available=True,
+        outcome_reason="",
+    )
+    primary = dict(run(partial).finding)["primary_test"]
+    assert primary["keepers"]["n"] + primary["movers"]["n"] == 2
+    assert primary["n_excluded_from_scoring"] == 2
+
+
+def test_a_quote_is_never_paired_with_an_accession_it_did_not_come_from(tmp_path):
+    """HIGH: the defining sentence may stand in for the FIRST appearance only."""
+    path = write_ledger(
+        tmp_path / "metrics.csv",
+        [
+            metric(
+                1,
+                "Adjusted Widgets",
+                "DISCONTINUED",
+                accession="0001-19-000001",
+                form="424B4",
+                filing_date="2019-05-01",
+                defining_sentence="We define Adjusted Widgets as widgets adjusted for seasonality.",
+                last_appearance_accession="0001-23-000099",
+                last_appearance_form="10-K",
+                last_appearance_date="2023-11-14",
+            )
+        ],
+        columns=LEDGER_COLUMNS
+        + (
+            "accession",
+            "form",
+            "filing_date",
+            "defining_sentence",
+            "last_appearance_accession",
+            "last_appearance_form",
+            "last_appearance_date",
+        ),
+    )
+    ledger = read_ledger(path, cohort_ciks=[1])
+    entry = analysis.build_metrics_payload(ledger, [cohort_row(1)])["metrics"][0]
+    assert entry["first_appearance"]["accession"] == "0001-19-000001"
+    assert entry["first_appearance"]["quote"].startswith("We define")
+    # the later accession has no verified quote, so no citation is published
+    assert entry["last_appearance"] is None
+
+
+def test_the_scoreboard_does_not_call_a_metric_alive_before_it_existed(tmp_path):
+    """HIGH: ALIVE means 'reported, definition unchanged' in that year."""
+    path = write_ledger(
+        tmp_path / "metrics.csv",
+        [metric(1, "Late Arrival", "ALIVE", first_appearance_date="2022-06-01")],
+    )
+    ledger = read_ledger(path, cohort_ciks=[1])
+    board = analysis.build_scoreboard_payload(
+        ledger, [cohort_row(1, listing="2019-05-01")], classify_issuers(ledger.rows), "2024-08-28"
+    )
+    cells = {cell["fy"]: cell["state"] for cell in board["issuers"][0]["cells"]}
+    assert cells["FY2020"] != "ALIVE"
+    assert cells["FY2021"] != "ALIVE"
+    assert cells["FY2022"] == "INTRODUCED"
+    assert cells["FY2023"] == "ALIVE"
+
+
+def test_a_part_adjudicated_ledger_is_not_described_as_unwritten(tmp_path):
+    """MEDIUM: 'has not been written yet' is false once the file exists."""
+    path = write_ledger(
+        tmp_path / "metrics.csv",
+        [metric(1, "Ruled in, no state yet", "", include="TRUE")],
+        columns=LEDGER_COLUMNS + ("include",),
+    )
+    ledger = read_ledger(path, cohort_ciks=[1])
+    finding = dict(run(make_inputs(cohort=[cohort_row(1)], ledger=ledger)).finding)
+    for key in ("reason", "base_rate", "counter_test", "sensitivity", "primary_test"):
+        text = finding[key] if isinstance(finding[key], str) else finding[key]["reason"]
+        assert "has not been written yet" not in text
+        assert "ruled included under §4" in text
+    assert finding["available"] is False
+
+
+def test_an_absent_ledger_is_still_described_as_absent(empty_ledger):
+    finding = dict(run(make_inputs(cohort=[cohort_row(1)], ledger=empty_ledger)).finding)
+    assert "has not been written yet" in finding["reason"]
+    assert "has not been written yet" in finding["base_rate"]["reason"]
+
+
+def test_a_reviewers_own_words_do_not_fail_the_publication_gate(tmp_path):
+    """MEDIUM: §7.2 censors this study's prose, not a human's rationale.
+
+    A benign label is the reviewer's verbatim record. It must not be able to
+    hard-fail the build, which would write none of the three published files.
+    """
+    path = write_ledger(
+        tmp_path / "metrics.csv",
+        [
+            metric(
+                1,
+                "Take Rate",
+                "DISCONTINUED",
+                state_change_date="2023-01-05",
+                benign="TRUE",
+                benign_label="Superseded by ASC 606, which caused the definition to lapse",
+            ),
+            metric(2, "Kept", "ALIVE"),
+        ],
+    )
+    ledger = read_ledger(path, cohort_ciks=[1, 2])
+    analysed = run(
+        make_inputs(
+            cohort=[cohort_row(1), cohort_row(2)], ledger=ledger, outcome_available=True
+        )
+    )
+    finding = dict(analysed.finding)
+    # the reviewer's wording survives verbatim...
+    assert any(
+        "caused" in label for label in finding["sensitivity"]["benign_labels"]
+    )
+    # ...and the gate the build applies does not reject the payload for it
+    assert_no_forbidden_words(finding, "finding.json", skip_verbatim=True)
+    # while everything this module composes is still held to the rule
+    composed = {k: v for k, v in finding.items() if k != "sensitivity"}
+    assert forbidden_word_findings(composed, skip_verbatim=True) == []

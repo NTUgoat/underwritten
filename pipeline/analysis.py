@@ -503,6 +503,43 @@ class Ledger:
     def no_metrics_ciks(self) -> tuple[int, ...]:
         return tuple(sorted({r.cik for r in self.rows if r.is_issuer_row}))
 
+    @property
+    def analysis_reason(self) -> str:
+        """Why §7 has nothing to work with, in the ledger's actual state.
+
+        "Has not been written yet" is true of an absent file and false of one
+        that exists and is part-way through adjudication. Publishing the first
+        sentence in the second situation misdescribes the study's own progress
+        to a reader, so the two are distinguished here and the counts are named.
+        """
+        if not self.available:
+            return self.reason
+        if self.metric_rows:
+            return ""
+        parts = []
+        if self.awaiting_state:
+            parts.append(
+                f"{len(self.awaiting_state)} row(s) are ruled included under §4 and "
+                "carry no §5 terminal state yet"
+            )
+        if self.unruled:
+            parts.append(f"{len(self.unruled)} row(s) have not been ruled on")
+        if self.no_metrics_ciks:
+            parts.append(
+                f"{len(self.no_metrics_ciks)} issuer(s) are recorded as defining "
+                "no operating metric"
+            )
+        if self.ruled_out:
+            parts.append(
+                f"{len(self.ruled_out)} candidate(s) were ruled out at §4 inclusion"
+            )
+        detail = "; ".join(parts) if parts else "it holds no metric row"
+        return (
+            f"The adjudication ledger at {self.path} exists but carries no metric "
+            f"with a METHOD.md §5 terminal state: {detail}. No state is inferred "
+            "from the filed record and no figure is published in place of one."
+        )
+
     def as_dict(self) -> dict[str, Any]:
         return {
             "path": self.path,
@@ -807,7 +844,10 @@ def classify_issuers(
 
 
 def base_rate(
-    rows: Sequence[LedgerRow], cohort: Sequence[CohortRow]
+    rows: Sequence[LedgerRow],
+    cohort: Sequence[CohortRow],
+    *,
+    unavailable_reason: str = LEDGER_ABSENT_REASON,
 ) -> dict[str, Any]:
     """Share of adjudicated metrics in each terminal state, pooled and per issuer."""
     metrics = [r for r in rows if not r.is_issuer_row]
@@ -856,7 +896,7 @@ def base_rate(
 
     return {
         "available": total > 0,
-        "reason": "" if total > 0 else LEDGER_ABSENT_REASON,
+        "reason": "" if total > 0 else unavailable_reason,
         "denominator": total,
         "confidence": config.CONFIDENCE_LEVEL,
         "interval_method": "Clopper-Pearson exact binomial",
@@ -914,6 +954,7 @@ def primary_test(
     outcome_available: bool,
     outcome_reason: str = "",
     restore_warrants: bool = False,
+    unavailable_reason: str = LEDGER_ABSENT_REASON,
     resamples: int = config.BOOTSTRAP_RESAMPLES,
     seed: int = config.RANDOM_SEED,
 ) -> PrimaryTest:
@@ -926,7 +967,7 @@ def primary_test(
     quietly given the Keeper threshold.
     """
     if not behaviours:
-        return _unavailable_primary(LEDGER_ABSENT_REASON)
+        return _unavailable_primary(unavailable_reason)
     if not outcome_available:
         return _unavailable_primary(
             outcome_reason
@@ -952,6 +993,8 @@ def primary_test(
             n_movers=len(movers),
             n_keepers=len(keepers),
         )
+    # round() is round-half-to-even. Deterministic, and the choice only bites on
+    # an exact half-day median, where either neighbouring day is equally defensible.
     median_offset = round(statistics.median(offsets))
 
     thresholds: dict[int, date] = {}
@@ -960,6 +1003,22 @@ def primary_test(
         listing = listing_dates.get(behaviour.cik)
         if listing is None:
             skipped.append({"cik": behaviour.cik, "reason": "no listing date in the frozen cohort"})
+            continue
+        # An issuer absent from `events` is one whose filing index could not be
+        # read. That is NOT the same as an issuer whose index was read and held
+        # nothing, which arrives as an empty tuple. Scoring the first as "no
+        # adverse event" would pull both arms toward the null with no error and
+        # no trace, in the one confirmatory test this study runs.
+        if behaviour.cik not in events:
+            skipped.append(
+                {
+                    "cik": behaviour.cik,
+                    "reason": (
+                        "no filing index could be retrieved for this issuer, so "
+                        "its adverse-event status is unknown"
+                    ),
+                }
+            )
             continue
         if behaviour.group == MOVER:
             if behaviour.move_date is None:
@@ -989,7 +1048,7 @@ def primary_test(
         counted = [
             event
             for event in counting_events(
-                list(events.get(behaviour.cik, ())), restore_warrants=restore_warrants
+                list(events[behaviour.cik]), restore_warrants=restore_warrants
             )
             if event.filing.filing_date > threshold
         ]
@@ -1014,8 +1073,8 @@ def primary_test(
             "in proportions is undefined. Both arm sizes are published.",
             n_keepers=len(keeper_indicators),
             n_movers=len(mover_indicators),
-            n_excluded_untimed=len(skipped),
-            excluded_untimed=skipped,
+            n_excluded_from_scoring=len(skipped),
+            excluded_from_scoring=skipped,
         )
 
     keeper_proportion = clopper_pearson(sum(keeper_indicators), len(keeper_indicators))
@@ -1073,8 +1132,8 @@ def primary_test(
             "n_movers_with_a_dated_move": len(offsets),
         },
         "warrant_restatements_restored": restore_warrants,
-        "n_excluded_untimed": len(skipped),
-        "excluded_untimed": skipped,
+        "n_excluded_from_scoring": len(skipped),
+        "excluded_from_scoring": skipped,
         "per_issuer": per_issuer,
         "power_note": _power_note(len(keeper_indicators), len(mover_indicators)),
     }
@@ -1096,7 +1155,9 @@ COUNTER_VERDICT_RULE = (
 )
 
 
-def counter_test(rows: Sequence[LedgerRow]) -> dict[str, Any]:
+def counter_test(
+    rows: Sequence[LedgerRow], *, unavailable_reason: str = LEDGER_ABSENT_REASON
+) -> dict[str, Any]:
     """Discontinuation rate by the metric's own last-reported direction.
 
     Direction that the filed record does not settle is `UNDETERMINED` - an
@@ -1106,7 +1167,11 @@ def counter_test(rows: Sequence[LedgerRow]) -> dict[str, Any]:
     """
     metrics = [r for r in rows if not r.is_issuer_row]
     if not metrics:
-        return {"available": False, "reason": LEDGER_ABSENT_REASON, "verdict": "NOT_DETERMINABLE"}
+        return {
+            "available": False,
+            "reason": unavailable_reason,
+            "verdict": "NOT_DETERMINABLE",
+        }
 
     buckets: dict[str, dict[str, Any]] = {}
     for direction in DIRECTIONS:
@@ -1175,6 +1240,7 @@ def sensitivity(
     events: Mapping[int, Sequence[AdverseEvent]],
     outcome_available: bool,
     outcome_reason: str = "",
+    unavailable_reason: str = LEDGER_ABSENT_REASON,
     resamples: int = config.BOOTSTRAP_RESAMPLES,
     seed: int = config.RANDOM_SEED,
 ) -> dict[str, Any]:
@@ -1188,7 +1254,7 @@ def sensitivity(
     """
     metrics = [r for r in rows if not r.is_issuer_row]
     if not metrics:
-        return {"available": False, "reason": LEDGER_ABSENT_REASON}
+        return {"available": False, "reason": unavailable_reason}
 
     as_registered = _discontinuation_share(rows, drop_benign=False)
     benign_removed = _discontinuation_share(rows, drop_benign=True)
@@ -1686,7 +1752,9 @@ def _issuer_cells(
 
     Nothing is inferred about a state here: every cell reads a state the human
     already recorded, and a year the ledger cannot speak to is NOT_DETERMINABLE
-    rather than a guess.
+    rather than a guess. In particular a metric contributes to a year's cell
+    only from the year it was first defined onwards - a state is a claim about
+    that year, and the years before a metric existed are not years it was alive.
     """
     cells: list[dict[str, Any]] = []
     for label in fiscal_years:
@@ -1726,7 +1794,15 @@ def _issuer_cells(
                 }
             )
             continue
-        alive = [r for r in rows if r.state in ("ALIVE", "RENAMED", "ABSORBED")]
+        # A metric cannot have been "reported, definition unchanged" in a year
+        # before it was first defined. Without this gate the cell asserts a
+        # factual claim about that year that the ledger contradicts.
+        alive = [
+            r
+            for r in rows
+            if r.state in ("ALIVE", "RENAMED", "ABSORBED")
+            and (r.first_appearance_date is None or r.first_appearance_date.year <= year)
+        ]
         if alive:
             cells.append({"fy": label, "state": "ALIVE", "n": len(alive), "note": ""})
             continue
@@ -1773,7 +1849,14 @@ def _citation(
     accession = row.raw.get(f"{prefix}_accession", "") or (
         row.raw.get("accession", "") if fallback else ""
     )
-    quote = row.raw.get(f"{prefix}_quote", "") or row.raw.get("defining_sentence", "")
+    # The defining sentence came out of the §4 locator's own filing, so it may
+    # stand in for the FIRST appearance and nothing else. Pairing it with a
+    # later accession would publish a verbatim span against a document it was
+    # never read from - precisely what METHOD.md §8.3's re-fetch job exists to
+    # catch, and it would catch it.
+    quote = row.raw.get(f"{prefix}_quote", "") or (
+        row.raw.get("defining_sentence", "") if fallback else ""
+    )
     if not accession or not quote:
         return None
     return {
@@ -1918,29 +2001,31 @@ def run(inputs: AnalysisInputs) -> Analysis:
         row.cik: row.listing_date for row in cohort if row.listing_date is not None
     }
 
-    rates = base_rate(rows, cohort)
-    counter = counter_test(rows)
+    # One reason, describing the ledger as it actually is: absent, or present
+    # and part-way through adjudication. Every unavailable block carries it.
+    nothing_yet = ledger.analysis_reason
+
+    rates = base_rate(rows, cohort, unavailable_reason=nothing_yet)
+    counter = counter_test(rows, unavailable_reason=nothing_yet)
     primary = primary_test(
         behaviours,
         listing_dates=listing_dates,
         events=inputs.events,
         outcome_available=inputs.outcome_available,
         outcome_reason=inputs.outcome_reason,
+        unavailable_reason=nothing_yet,
         resamples=inputs.resamples,
         seed=inputs.seed,
     )
-    sensitivities = (
-        sensitivity(
-            rows,
-            listing_dates=listing_dates,
-            events=inputs.events,
-            outcome_available=inputs.outcome_available,
-            outcome_reason=inputs.outcome_reason,
-            resamples=inputs.resamples,
-            seed=inputs.seed,
-        )
-        if ledger.available
-        else {"available": False, "reason": ledger.reason}
+    sensitivities = sensitivity(
+        rows,
+        listing_dates=listing_dates,
+        events=inputs.events,
+        outcome_available=inputs.outcome_available,
+        outcome_reason=inputs.outcome_reason,
+        unavailable_reason=nothing_yet,
+        resamples=inputs.resamples,
+        seed=inputs.seed,
     )
     arm = projection_arm(inputs.projections, inputs.realised_revenue, cohort)
 
@@ -1950,8 +2035,8 @@ def run(inputs: AnalysisInputs) -> Analysis:
     finding: dict[str, Any] = {
         "as_at": inputs.as_at,
         "generated": inputs.generated,
-        "available": ledger.available,
-        "reason": "" if ledger.available else ledger.reason,
+        "available": ledger.available and bool(ledger.metric_rows),
+        "reason": nothing_yet,
         "cohort": {
             "n_issuers": len(cohort),
             "target_n": config.COHORT_TARGET_N,
@@ -1965,10 +2050,10 @@ def run(inputs: AnalysisInputs) -> Analysis:
             ),
             "n_issuers_adjudicated": len(behaviours) if ledger.available else None,
         },
-        "base_rate": _publishable(rates, ledger.reason),
-        "counter_test": _publishable(counter, ledger.reason),
-        "sensitivity": _publishable(sensitivities, ledger.reason),
-        "primary_test": _publishable(primary.as_dict(), ledger.reason),
+        "base_rate": _publishable(rates, nothing_yet),
+        "counter_test": _publishable(counter, nothing_yet),
+        "sensitivity": _publishable(sensitivities, nothing_yet),
+        "primary_test": _publishable(primary.as_dict(), nothing_yet),
         "projection_arm": arm,
         "exclusions_applied": _exclusions_applied(
             inputs.events, outcome_available=inputs.outcome_available
