@@ -94,6 +94,15 @@ class MetricCandidate:
 # as …`, and excluding them would drop the candidate entirely.
 _NAME = r"(?P<name>[^.;]{2,120}?)"
 
+# A run of capitalised words - how companies write their own metric names.
+# Used where the name sits *before* the trigger phrase, because an unrestricted
+# backwards capture would drag in eighty characters of the preceding clause.
+# Case-sensitive on purpose; the trigger itself stays case-insensitive via a
+# scoped `(?i:...)` group.
+_TITLE_PHRASE = (
+    r"(?P<name>(?:[A-Z][A-Za-z0-9&/'’\-]*\s+){0,5}[A-Z][A-Za-z0-9&/'’\-]*)"
+)
+
 _DEFINITION_LOCATORS: tuple[Locator, ...] = (
     Locator(
         "we_define",
@@ -123,20 +132,15 @@ _DEFINITION_LOCATORS: tuple[Locator, ...] = (
     Locator(
         "is_defined_as",
         "definition",
-        re.compile(
-            r"(?P<name>[A-Z][A-Za-z0-9 ()\"'‘’“”/&+-]{2,80}?)"
-            r"\s+is\s+defined\s+as\b",
-            re.IGNORECASE,
-        ),
+        re.compile(_TITLE_PHRASE + r"(?i:\s+is\s+defined\s+as)\b"),
         "X is defined as",
     ),
     Locator(
         "which_we_define",
         "definition",
         re.compile(
-            r"(?P<name>[A-Z][A-Za-z0-9 ()\"'‘’“”/&+-]{2,80}?)"
-            r"\s*,?\s+which\s+we\s+(?:define|calculate|compute)\b",
-            re.IGNORECASE,
+            _TITLE_PHRASE
+            + r"(?i:\s*,?\s+which\s+we\s+(?:define|calculate|compute))\b"
         ),
         "X, which we define",
     ),
@@ -184,7 +188,7 @@ _HEADING_LOCATORS: tuple[Locator, ...] = (
         "heading_non_gaap",
         "heading",
         re.compile(
-            r"\bNon[\s‐-―-]?GAAP\s+(?:Financial\s+)?"
+            r"\bNon[\s‐-―\-]?GAAP\s+(?:Financial\s+)?"
             r"(?:Measures|Metrics|Information)\b",
             re.IGNORECASE,
         ),
@@ -423,7 +427,7 @@ MAX_RECORDED_APPEARANCES_PER_DOCUMENT = 2
 # Whitespace *or* a hyphen may separate two tokens of a phrase. `\s` covers
 # U+00A0 for str patterns, which is the whole reason `normalise_whitespace`
 # exists - see outcomes.normalise_whitespace and tests/test_outcomes.py.
-_SEPARATOR = r"[\s‐-―-]+"
+_SEPARATOR = r"[\s‐-―\-]+"
 _TOKEN_SPLIT = re.compile(_SEPARATOR)
 
 # A phrase must be this substantial before the split-tag-tolerant fallback is
@@ -452,10 +456,15 @@ def _token_pattern(token: str) -> str:
         return re.escape(token[:-3]) + r"(?:y|ies)"
     if lowered.endswith("ss"):
         return re.escape(token) + r"(?:es)?"
+    # `(?:es?)?` - not `(?:e?s)?` - because the stem has lost the "es" and both
+    # the singular ("Experience") and the plural ("Experiences") must be
+    # reachable from it. `e?s` cannot produce a bare "e" and would silently miss
+    # every singular, which is exactly the kind of quiet miss that turns into a
+    # false absence.
     if lowered.endswith(("ses", "xes", "ches", "shes")):
-        return re.escape(token[:-2]) + r"(?:es)?"
+        return re.escape(token[:-2]) + r"(?:es?)?"
     if lowered.endswith("es"):
-        return re.escape(token[:-2]) + r"(?:e?s)?"
+        return re.escape(token[:-2]) + r"(?:es?)?"
     if lowered.endswith("s"):
         return re.escape(token[:-1]) + r"s?"
     if lowered.endswith("y") and token[-2].lower() not in "aeiou":
@@ -797,21 +806,37 @@ def _decide(
     if not presence:
         return (
             NOT_DETERMINABLE,
-            "The corpus contains no periodic report, so it defines no reporting "
-            "periods and the four-period test cannot be run.",
+            (
+                "The corpus contains no periodic report, so it defines no "
+                "reporting periods and the four-period test cannot be run."
+            ),
         )
     if corpus.n_documents == 0:
         return (
             NOT_DETERMINABLE,
-            "No document in this issuer's corpus could be read, so absence cannot "
-            "be distinguished from a failure to retrieve.",
+            (
+                "No document in this issuer's corpus could be read, so absence "
+                "cannot be distinguished from a failure to retrieve."
+            ),
         )
     if n_appearances == 0:
         return (
             NOT_DETERMINABLE,
-            f"The phrase {phrase!r} appears nowhere in the corpus, so there is no "
-            "first appearance to measure a disappearance from. A phrase the issuer "
-            "never used cannot be one it discontinued.",
+            (
+                f"The phrase {phrase!r} appears nowhere in the corpus, so there is "
+                "no first appearance to measure a disappearance from. A phrase the "
+                "issuer never used cannot be one it discontinued."
+            ),
+        )
+
+    if trailing >= len(presence):
+        return (
+            NOT_DETERMINABLE,
+            (
+                "The phrase appears in the corpus but in no document that falls "
+                "inside a reporting period, so the corpus and its period index "
+                "disagree."
+            ),
         )
 
     absent_run = presence[len(presence) - trailing :] if trailing else ()
@@ -819,36 +844,44 @@ def _decide(
     if trailing < required_periods:
         return (
             ABSENCE_TEST_NOT_MET,
-            f"Absent for {trailing} consecutive reporting period(s); "
-            f"{required_periods} are required. Most recent appearance is in period "
-            f"{presence[len(presence) - trailing - 1].label}.",
+            (
+                f"Absent for {trailing} consecutive reporting period(s); "
+                f"{required_periods} are required. Most recent appearance is in "
+                f"period {presence[len(presence) - trailing - 1].label}."
+            ),
         )
 
     empty = [p.label for p in absent_run if p.n_documents == 0]
     if empty:
         return (
             NOT_DETERMINABLE,
-            "The phrase is absent from every period searched, but "
-            f"{len(empty)} period(s) in that run contain no readable document "
-            f"({', '.join(empty[:4])}). Absence from an empty period is absence of "
-            "evidence, not evidence of absence.",
+            (
+                "The phrase is absent from every period searched, but "
+                f"{len(empty)} period(s) in that run contain no readable document "
+                f"({', '.join(empty[:4])}). Absence from an empty period is "
+                "absence of evidence, not evidence of absence."
+            ),
         )
 
     broken = [p.label for p in absent_run if p.n_failed_documents]
     if broken:
         return (
             NOT_DETERMINABLE,
-            "The phrase is absent from every period searched, but "
-            f"{len(broken)} period(s) in that run contain a document that could not "
-            f"be read ({', '.join(broken[:4])}). The metric may appear in a document "
-            "this study failed to retrieve.",
+            (
+                "The phrase is absent from every period searched, but "
+                f"{len(broken)} period(s) in that run contain a document that "
+                f"could not be read ({', '.join(broken[:4])}). The metric may "
+                "appear in a document this study failed to retrieve."
+            ),
         )
 
     return (
         ABSENCE_TEST_MET,
-        f"Absent from every document in the corpus for {trailing} consecutive "
-        f"reporting periods ({absent_run[0].label} to {absent_run[-1].label}), "
-        f"against the {required_periods} required by METHOD.md §6. This is the "
-        "mechanical condition for DISCONTINUED; the terminal state and its "
-        "cause remain a human ruling.",
+        (
+            f"Absent from every document in the corpus for {trailing} consecutive "
+            f"reporting periods ({absent_run[0].label} to {absent_run[-1].label}), "
+            f"against the {required_periods} required by METHOD.md §6. This is "
+            "the mechanical condition for DISCONTINUED; the terminal state and its "
+            "cause remain a human ruling."
+        ),
     )

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+
+{% block content %}
+<section class="band band--head">
+  <div class="wrap wrap--reading">
+    <p class="kicker">
+      <span>Changelog</span>
+      <span class="kicker__sep">/</span>
+      <span>append-only</span>
+    </p>
+    <h1 class="page-title">Every amendment, dated</h1>
+    <p class="page-lede">Nothing in the pre-registration is edited silently. Each entry
+    records what changed, why, and the commit it superseded. An amendment made before data
+    collection and recorded here is a correction; the same change made afterwards and left
+    unrecorded would be tuning. Rendered verbatim from <code>CHANGELOG.md</code>.</p>
+  </div>
+</section>
+
+<section class="band band--doc">
+  <div class="wrap wrap--doc">
+    {% if toc %}
+    <nav class="doc__toc" aria-label="Changelog contents">
+      <h2 class="doc__toc-h">Entries</h2>
+      <ol>
+        {% for entry in toc %}
+        <li><a href="#{{ entry.id }}">{{ entry.text }}</a></li>
+        {% endfor %}
+      </ol>
+    </nav>
+    {% endif %}
+    <div class="doc">
+      {% if document_available %}
+      {{ document_html|safe }}
+      {% else %}
+      {{ m.absent('CHANGELOG.md could not be read from the repository root.', 'CHANGELOG.md') }}
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="band band--alt">
+  <div class="wrap">{{ m.provenance_strip(sources) }}</div>
+</section>
+{% endblock %}

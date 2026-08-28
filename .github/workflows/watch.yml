@@ -55,8 +55,9 @@ jobs:
           if [ -z "${SEC_CONTACT}" ]; then
             echo "::error::SEC_CONTACT repository secret is not set."
             echo "The SEC fair-access policy requires a User-Agent with a real"
-            echo "contact address. pipeline/edgar.py refuses to construct a"
-            echo "client without one. Set the secret before enabling this job."
+            echo "contact address. Unset, pipeline/config.py falls back to a"
+            echo "hardcoded default, so CI would identify itself as someone"
+            echo "else. Set the secret before enabling this job."
             exit 1
           fi
           case "${SEC_CONTACT}" in

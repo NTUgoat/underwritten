@@ -373,8 +373,55 @@ def adjudication_ledger() -> Dataset:
     return load_csv("adjudication/metrics.csv")
 
 
+def cohort_funnel() -> Dataset:
+    """Candidates enumerated, accepted, and rejected by criterion. METHOD.md 3."""
+    return load_json("derived/cohort_funnel.json")
+
+
 def manifest() -> Dataset:
-    return load_json("manifest/sources.json")
+    """Every manifest in data/manifest/, merged and deduplicated by URL.
+
+    The retrieval client writes one manifest per stage of the pipeline
+    (``cohort_sources.json`` and any later ones), so the provenance page reads
+    the whole directory rather than a single hardcoded filename. A manifest that
+    is unreadable is reported, never skipped silently.
+    """
+    directory = DATA / "manifest"
+    files = sorted(directory.glob("*.json")) if directory.is_dir() else []
+    if not files:
+        return Dataset(Source("data/manifest/*.json", exists=False))
+
+    documents: dict[str, dict[str, Any]] = {}
+    as_at_values: list[str] = []
+    errors: list[str] = []
+
+    for path in files:
+        loaded = load_json(f"manifest/{path.name}")
+        if not loaded.available:
+            errors.append(f"{path.name}: {loaded.source.error}")
+            continue
+        payload = loaded.payload if isinstance(loaded.payload, dict) else {}
+        as_at = str(payload.get("as_at") or "").strip()
+        if as_at:
+            as_at_values.append(as_at)
+        for document in payload.get("documents") or []:
+            if isinstance(document, dict) and document.get("url"):
+                documents.setdefault(str(document["url"]), document)
+
+    merged = sorted(documents.values(), key=lambda row: str(row.get("url", "")))
+    label = f"data/manifest/*.json ({len(files)} file{'' if len(files) == 1 else 's'})"
+    # A manifest that fails to parse is only fatal if it was the only one.
+    fatal = "; ".join(errors) if errors and not merged else ""
+    return Dataset(
+        Source(label, exists=True, error=fatal),
+        payload={
+            "as_at": sorted(as_at_values)[-1] if as_at_values else "",
+            "n_documents": len(merged),
+            "documents": merged,
+            "files": [path.name for path in files],
+            "errors": errors,
+        },
+    )
 
 
 def method_document() -> Dataset:

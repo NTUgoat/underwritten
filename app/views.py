@@ -15,10 +15,10 @@ from __future__ import annotations
 
 import html
 import re
-from typing import Any, Iterable
+from typing import Any
 
 from fastapi import Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 
 from . import data
 
@@ -290,7 +290,7 @@ def register(app, templates) -> None:
                 page_id="positions",
                 page_title="Positions",
                 positions=payload.get("positions") or [],
-                as_at=payload.get("as_at"),
+                as_at_value=payload.get("as_at"),
                 sources=_sources(dataset),
             ),
         )
@@ -348,7 +348,7 @@ def register(app, templates) -> None:
                 page_id="provenance",
                 page_title="Provenance",
                 manifest_available=dataset.available,
-                as_at=payload.get("as_at"),
+                as_at_value=payload.get("as_at"),
                 n_documents=_int_or_none(payload.get("n_documents")),
                 documents=documents if isinstance(documents, list) else [],
                 sources=_sources(dataset),

@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+
+{% block content %}
+<section class="band band--head">
+  <div class="wrap wrap--reading">
+    <p class="kicker">
+      <span>Method</span>
+      <span class="kicker__sep">/</span>
+      <span>pre-registered {{ site.preregistered }}</span>
+      <span class="kicker__sep">/</span>
+      <span>tag <code>{{ site.preregistration_tag }}</code></span>
+    </p>
+    <h1 class="page-title">The pre-registration, in full</h1>
+    <p class="page-lede">Written and committed before any filing was retrieved, any metric
+    extracted, or any statistic computed. Rendered here verbatim from
+    <code>METHOD.md</code> in the repository. Nothing in it is edited silently; every
+    amendment is dated in the <a href="/changelog">changelog</a> with the commit it
+    superseded.</p>
+  </div>
+</section>
+
+{# ------------------------------------------------- the specification counter #}
+<section class="band band--alt">
+  <div class="wrap">
+    <h2 class="band__h">Specification counter</h2>
+    <p class="band__sub">Every specification run against the data is logged with its
+    timestamp and its result, including the ones that produced nothing. Backtest
+    overfitting is a counting problem before it is anything else.</p>
+
+    {% if spec_rows %}
+    <p class="counter">
+      <span class="counter__n">{{ spec_rows|length|num }}</span>
+      <span class="counter__t">specifications run. Pre-registered: #1. All {{ spec_rows|length|num }} shown below.</span>
+    </p>
+    <div class="scroller">
+      <table class="table">
+        <thead>
+          <tr>{% for column in spec_rows[0].keys() %}<th scope="col">{{ column|replace('_', ' ') }}</th>{% endfor %}</tr>
+        </thead>
+        <tbody>
+          {% for row in spec_rows %}
+          <tr>{% for value in row.values() %}<td>{{ value }}</td>{% endfor %}</tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="counter">
+      <span class="counter__n">{{ NOT_YET_RUN }}</span>
+      <span class="counter__t">No specification has been run against the data. The count
+      published here is the total, not a selection from it.</span>
+    </p>
+    {{ m.absent('The specification log is appended to on every run.', 'data/derived/spec_log.csv') }}
+    {% endif %}
+  </div>
+</section>
+
+{# ------------------------------------------------------- the exclusion table #}
+<section class="band">
+  <div class="wrap">
+    <h2 class="band__h">Exclusions</h2>
+    <p class="band__sub">Two kinds. Cohort exclusions record candidates that failed an
+    inclusion test — no company is ever removed for its result. Outcome exclusions are the
+    two classes of filing that Amendment 1 removes from the primary adverse-event
+    variable; both are counted and labelled rather than dropped.</p>
+
+    <h3 class="sub-h">Outcome exclusions, Amendment 1</h3>
+    <div class="scroller">
+      <table class="table">
+        <thead><tr><th scope="col">label</th><th scope="col">rule</th><th scope="col" class="n">applied</th></tr></thead>
+        <tbody>
+          <tr>
+            <th scope="row"><code>SECTOR_WIDE_WARRANT_RESTATEMENT</code></th>
+            <td>8-K Item 4.02 filed on or after 2021-04-12 whose text cites the SEC staff
+            statement on warrants issued by special purpose acquisition companies, or
+            attributes the non-reliance to warrant or Class A share classification.
+            Evidence about one SEC statement, not about an issuer.</td>
+            <td class="n">{{ exclusions_applied.get('SECTOR_WIDE_WARRANT_RESTATEMENT')|num }}</td>
+          </tr>
+          <tr>
+            <th scope="row"><code>MECHANICAL_DESPAC_DELISTING</code></th>
+            <td>Form 25 or 25-NSE filed within ±30 days of an 8-K carrying Item 2.01 — the
+            predecessor shell's routine delisting at merger close. Genuine later
+            delistings are unaffected.</td>
+            <td class="n">{{ exclusions_applied.get('MECHANICAL_DESPAC_DELISTING')|num }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="caveat caveat--tight">Both exclusions make the primary hypothesis harder to
+    support, not easier, and the sensitivity re-runs the primary with the warrant
+    restatements restored. <a href="/changelog">The amendment, with the four filings it
+    was confirmed against</a>.</p>
+
+    <h3 class="sub-h">Cohort exclusions, C1–C5</h3>
+    {% if exclusion_rows %}
+    <div class="scroller">
+      <table class="table">
+        <thead>
+          <tr>{% for column in exclusion_rows[0].keys() %}<th scope="col">{{ column|replace('_', ' ') }}</th>{% endfor %}</tr>
+        </thead>
+        <tbody>
+          {% for row in exclusion_rows %}
+          <tr>{% for value in row.values() %}<td>{{ value }}</td>{% endfor %}</tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    {{ m.absent('Every candidate examined is recorded, whether or not it entered the cohort, so the funnel from candidates to cohort is fully reportable.', 'data/cohort/exclusions.csv') }}
+    {% endif %}
+  </div>
+</section>
+
+{# ------------------------------------------------------------- the document #}
+<section class="band band--doc">
+  <div class="wrap wrap--doc">
+    {% if toc %}
+    <nav class="doc__toc" aria-label="Method contents">
+      <h2 class="doc__toc-h">Contents</h2>
+      <ol>
+        {% for entry in toc %}
+        <li><a href="#{{ entry.id }}">{{ entry.text }}</a></li>
+        {% endfor %}
+      </ol>
+    </nav>
+    {% endif %}
+    <div class="doc">
+      {% if document_available %}
+      {{ document_html|safe }}
+      {% else %}
+      {{ m.absent('METHOD.md could not be read from the repository root.', 'METHOD.md') }}
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="band band--alt">
+  <div class="wrap">{{ m.provenance_strip(sources) }}</div>
+</section>
+{% endblock %}

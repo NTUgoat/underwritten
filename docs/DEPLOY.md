@@ -58,8 +58,14 @@ It should **not** be authenticated, and it should **not** report healthy before 
 precomputed artifacts it needs have loaded — a container that answers 200 while unable to
 serve a page will pass the deploy and fail the reader.
 
-If the path ever changes, three places change with it: `deploy.healthcheckPath` in
-`railway.json`, the `HEALTHCHECK` line in `Dockerfile`, and this section.
+If the path ever changes, three places change with it: `healthcheck` in
+`.railway/railway.ts`, the `HEALTHCHECK` line in `Dockerfile`, and this section.
+
+> **As at 28 August 2026 the route does not exist.** Running the built image and requesting
+> `/healthz` returns `404 {"detail":"Not Found"}`; the application currently exposes `/`,
+> `/note`, `/cohort`, `/positions`, `/resolved`, `/method`, `/provenance` and `/changelog`.
+> **Railway will therefore fail the healthcheck and refuse to promote the deployment until
+> `/healthz` is added to `app/main.py`.** Delete this note once it is.
 
 ---
 
@@ -76,7 +82,7 @@ The start command lives in **one** place — the `Dockerfile` `CMD`:
 CMD ["sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers ${WEB_CONCURRENCY:-1} --proxy-headers --forwarded-allow-ips=*"]
 ```
 
-`railway.json` deliberately does **not** set `deploy.startCommand`. Two definitions of how
+`.railway/railway.ts` deliberately does **not** set a start command. Two definitions of how
 the process starts is one definition too many, and the one in the Dockerfile is the one
 that also applies locally. The `8000` fallback exists only for `docker run` on a laptop.
 
@@ -147,56 +153,24 @@ railway variables --set "SEC_CONTACT=Your Name you@example.com"
 | `SEC_CONTACT` | You | Not needed to serve precomputed artifacts, but `pipeline/config.py` falls back to a hardcoded default if it is unset. Set it explicitly so the deployed configuration is the same object as the local one. |
 | `WEB_CONCURRENCY` | You, optionally | uvicorn workers; defaults to 1. Each worker carries a full pandas/numpy import, so on a small instance replicas are cheaper than workers. Raise it only after watching memory. |
 
-Do not put `SEC_CONTACT` in `railway.json`. It is a real address and configuration files
-are public; the same value is a repository secret for GitHub Actions, for the same reason.
-
-### What `railway.json` sets
-
-```json
-{
-  "build":  { "builder": "DOCKERFILE", "dockerfilePath": "Dockerfile" },
-  "deploy": {
-    "healthcheckPath": "/healthz",
-    "healthcheckTimeout": 120,
-    "restartPolicyType": "ON_FAILURE",
-    "restartPolicyMaxRetries": 10
-  }
-}
-```
-
-- **`healthcheckPath: /healthz`** — Railway polls this before routing traffic to a new
-  deployment. A deployment that never answers 200 is not promoted, so a broken build
-  cannot replace a working site.
-- **`healthcheckTimeout: 120`** — seconds to wait for the first healthy response. Generous
-  on purpose: the app loads precomputed artifacts at import.
-- **`restartPolicyType: ON_FAILURE`** with **`restartPolicyMaxRetries: 10`** — restart a
-  crashed container, but stop after ten attempts rather than crash-looping indefinitely. A
-  process that has failed ten times is not going to be fixed by an eleventh restart, and a
-  stopped service is a louder signal than a restarting one.
+Do not put `SEC_CONTACT` in the Railway config file. It is a real address and
+configuration files are public; the same value is a repository secret for GitHub Actions,
+for the same reason.
 
 ---
 
-## Config as Code is deprecated — read this before the first deploy
+## Configuration lives in `.railway/railway.ts`, not `railway.json`
 
-Railway's own documentation states that **`railway.json` / `railway.toml` (Config as Code)
-is deprecated**, that **new services cannot opt into it**, and that existing files stop
-being read on **2026-12-01**. The replacement is Infrastructure as Code:
-`.railway/railway.ts`, applied with the CLI.
+`railway.json` was written first and then **deleted**. Railway's own documentation states
+that Config as Code is deprecated, that **"new services cannot opt into Config as Code"**,
+and that existing files stop being read on **2026-12-01** (hard cutoff).
 
-Two consequences, stated plainly rather than discovered later:
+This is a new service. A `railway.json` in this repository would therefore have been read
+by nobody, while looking exactly like working configuration — the healthcheck would simply
+never have been set, and nothing would have said so. Dead config that looks live is worse
+than no config, so it is gone.
 
-1. **On a newly created service, `railway.json` may be ignored entirely.** If it is, the
-   healthcheck path and the restart policy above are not in force. After the first
-   `railway up`, verify on the deployment details page that the settings show the
-   file-sourced icon. If they do not, set them in the service settings by hand:
-   *Settings → Deploy → Healthcheck Path* = `/healthz`, *Restart Policy* = `On Failure`,
-   max retries `10`.
-2. **Everything here needs migrating before 2026-12-01** regardless.
-
-`railway.json` is kept because it is explicit, reviewable and diffable, and because it is
-still honoured for legacy services. The equivalent under Infrastructure as Code is below,
-ready to paste into `.railway/railway.ts` (it is not committed, because creating it is a
-decision about how the project is managed, not a deployment detail):
+The committed replacement is `.railway/railway.ts`:
 
 ```ts
 import { defineRailway, project, service } from "railway/iac";
@@ -211,21 +185,36 @@ export default defineRailway(() => {
 });
 ```
 
-Then:
+Apply it with:
 
 ```bash
-npm install railway
-railway config plan      # preview; safe, read-only
-railway config apply     # applies after confirmation
+npm install railway     # the IaC DSL is a real npm package
+railway link
+railway config plan     # preview; safe, read-only
+railway config apply    # applies after confirmation
 ```
 
-**Note the gap:** the documented IaC service DSL exposes `healthcheck` and
-`healthcheckTimeout` but **no restart-policy field**. If you migrate, the restart policy
-must be set in the service settings by hand and will no longer be captured in code. That
-is a real regression in auditability and is recorded here rather than glossed over.
+- **`healthcheck: /healthz`** — Railway polls this before routing traffic to a new
+  deployment. A deployment that never answers 200 is not promoted, so a broken build
+  cannot replace a working site. The route must not touch the filesystem or render a
+  template, so that it succeeds even when `data/derived/` is empty.
+- **`healthcheckTimeout: 120`** — seconds to wait for the first healthy response.
+  Generous on purpose: the app loads precomputed artifacts at import.
 
-A service cannot be managed by both systems at once — `railway config plan` will refuse
-until `railway.json` is removed from the service.
+**Note the gap, since it is a real regression.** The IaC service DSL exposes `healthcheck`
+and `healthcheckTimeout` but **no restart-policy field**. The restart policy that
+`railway.json` used to carry (`ON_FAILURE`, max 10 retries) cannot be expressed in code
+and must be set by hand if wanted: *Settings → Deploy → Restart Policy* = `On Failure`,
+max retries `10`. That is less auditable than before, and it is recorded here rather than
+glossed over.
+
+**Build and start are not set here on purpose.** The `Dockerfile` is the single definition
+of how the process starts, so the container running on Railway is the one that runs
+locally.
+
+If IaC is not wanted at all, the fallback is entirely manual and works fine for one
+service: deploy with `railway up`, then set *Settings → Deploy → Healthcheck Path* =
+`/healthz` in the dashboard. Nothing else in this document depends on the choice.
 
 ---
 

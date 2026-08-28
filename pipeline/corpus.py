@@ -252,7 +252,7 @@ def _cached_text(sha256: str) -> str | None:
         return None
     try:
         return path.read_text(encoding="utf-8")
-    except OSError as exc:  # noqa: PERF203 - a broken cache entry is recoverable
+    except OSError as exc:  # a broken cache entry is recoverable, not fatal
         logger.warning("Text cache unreadable at %s: %s", path, exc)
         return None
 
@@ -262,7 +262,7 @@ def _store_text(sha256: str, text: str) -> None:
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding="utf-8")
-    except OSError as exc:  # noqa: BLE001 - the cache is an optimisation only
+    except OSError as exc:  # the text cache is an optimisation only
         logger.warning("Could not write text cache at %s: %s", path, exc)
 
 

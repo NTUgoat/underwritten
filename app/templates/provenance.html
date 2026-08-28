@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+
+{% block content %}
+<section class="band band--head">
+  <div class="wrap wrap--reading">
+    <p class="kicker">
+      <span>Provenance</span>
+      <span class="kicker__sep">/</span>
+      <span>as at {{ as_at_value|default(as_at, true) }}</span>
+    </p>
+    <h1 class="page-title">Every document, and its hash</h1>
+    <p class="page-lede">A SHA-256 is recorded for each retrieved document at the moment
+    it is read, on the same code path as the fetch. Any reader can pull the same URL from
+    sec.gov, hash it, and confirm it is byte-identical to the document this study read. A
+    scheduled job re-fetches random cited spans and fails if a stored verbatim span no
+    longer matches its source.</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="statements">
+      <article class="statement">
+        <h2 class="statement__h">Corpus boundary</h2>
+        <p>The corpus is every document an issuer filed or furnished to EDGAR: 10-K, 10-Q,
+        20-F, 40-F, 8-K and 6-K, <strong>including furnished earnings-release exhibits</strong>.
+        Investor decks, earnings-call transcripts, websites and press materials not
+        furnished to EDGAR are outside it.</p>
+        <p>Every claim this study makes is about the SEC-filed record and nothing more. A
+        metric called <span class="term">discontinued</span> here may still appear in an
+        investor deck. Where the boundary is material to a specific company, the state is
+        <span class="term">not determinable</span>, not discontinued.</p>
+      </article>
+
+      <article class="statement">
+        <h2 class="statement__h">Fair access</h2>
+        <p>All access respects the SEC fair-access policy: a declared User-Agent carrying a
+        real contact address, and a hard rate limit enforced in the client rather than left
+        to the caller. The limit is set below the published ceiling deliberately.</p>
+        <p>No commercial data vendor is used. No licensed feed is redistributed. Where a
+        price is needed it is derived from filed value divided by filed shares in Form 13F,
+        taken as the median across at least three unrelated large filers, with cross-filer
+        dispersion published. That is a licensing decision and is stated as one.</p>
+      </article>
+
+      <article class="statement">
+        <h2 class="statement__h">Independence</h2>
+        <p>Built entirely from public SEC filings, on personal hardware, on personal time.
+        No employer data, systems, methods or work product is used, referenced or relied
+        on. Where the author has a personal position in a cohort company it is disclosed on
+        the page where that company appears.</p>
+      </article>
+
+      <article class="statement">
+        <h2 class="statement__h">Dates</h2>
+        <p>This publication began on {{ site.preregistered }}. The documents it reads go
+        back to 2019. Those are two different claims and this site never conflates them:
+        where a figure is described as historical it refers to the age of the underlying
+        filed record, not to the age of this research.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="band band--alt">
+  <div class="wrap">
+    <header class="band__head">
+      <h2 class="band__h">Source manifest</h2>
+      <p class="band__sub">
+        {% if manifest_available %}
+        {{ n_documents|num }} documents recorded.
+        {% else %}
+        The manifest is written by the retrieval client the first time the corpus is pulled.
+        {% endif %}
+      </p>
+    </header>
+
+    {% if documents %}
+    <div class="scroller">
+      <table class="table table--manifest">
+        <thead>
+          <tr><th scope="col">document</th><th scope="col">sha-256</th>
+            <th scope="col" class="n">bytes</th><th scope="col">local path</th></tr>
+        </thead>
+        <tbody>
+          {% for document in documents %}
+          <tr>
+            <th scope="row"><a href="{{ document.url }}" rel="noopener nofollow">{{ document.url }}</a></th>
+            <td class="hash" title="{{ document.sha256 }}">{{ document.sha256|short_hash }}</td>
+            <td class="n">{{ document.bytes|filesize }}</td>
+            <td><code>{{ document.local_path }}</code></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    {{ m.absent('No document has been retrieved yet, so no hash exists to publish. An empty manifest is the honest state before a run, not an error.', 'data/manifest/sources.json') }}
+    {% endif %}
+
+    {{ m.provenance_strip(sources) }}
+  </div>
+</section>
+{% endblock %}

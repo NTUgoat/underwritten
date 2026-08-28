@@ -147,8 +147,11 @@ source .venv/bin/activate              # Windows: .venv\Scripts\activate
 
 **2. `SEC_CONTACT` — required, and not a formality.** The SEC's fair-access policy requires
 automated clients to declare a real contact address in the User-Agent header, and caps
-access at 10 requests/second. `pipeline/edgar.py` refuses to construct a client without an
-address and rate-limits itself to 8 requests/second, deliberately below the ceiling:
+access at 10 requests/second. `pipeline/edgar.py` refuses to construct a client whose
+contact string has no address in it, and rate-limits itself to 8 requests/second,
+deliberately below the ceiling. Set it explicitly: if it is unset, `pipeline/config.py`
+falls back to a hardcoded default, and the address sent to sec.gov on your behalf will be
+someone else's.
 
 ```bash
 export SEC_CONTACT="Your Name you@example.com"     # PowerShell: $env:SEC_CONTACT = "..."
@@ -203,7 +206,7 @@ the environment, imports the modules that do exist, prints what it will do, and 
 | `data/manifest/` | SHA-256 of every document read. Committed. |
 | `data/derived/` | Computed tables and the specification log. Committed. |
 | `data/raw/` | The cached EDGAR corpus. Gitignored, excluded from the image, reproducible from the manifest. |
-| `Dockerfile`, `.dockerignore`, `railway.json` | The deployed image and its Railway configuration. |
+| `Dockerfile`, `.dockerignore`, `.railway/railway.ts` | The deployed image and its Railway configuration. |
 | `docs/DEPLOY.md` | How the site is built and deployed. |
 | `.github/workflows/watch.yml` | The weekly re-read. Placeholder; see above. |
 
