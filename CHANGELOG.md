@@ -68,7 +68,7 @@ Confirmed against these filings, all public:
 
 ## 2026-08-28 — Amendment 2: C1b, listing documents only
 
-**Supersedes:** `067e532`
+**Supersedes:** `7fbcbc4`
 **Applies to:** METHOD.md §3, inclusion criteria
 **Status:** made **before data collection**. No cohort frozen, no metric extracted.
 
