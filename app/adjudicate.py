@@ -274,8 +274,14 @@ _GAAP_LEAD_WORDS = ("our", "the", "its", "consolidated", "companys", "company s"
 
 
 def normalise_name(raw: str) -> str:
-    """The grouping key for a metric name. Lossy on purpose, and only here."""
-    return _NON_ALNUM.sub(" ", normalise_whitespace(raw).casefold()).strip()
+    """The grouping key for a metric name.
+
+    Delegates to ``pipeline.metrics.metric_key`` so the grouping used here and
+    the key the §6 evidence stage writes are the same function rather than two
+    that merely look alike. They diverged once - punctuation-stripped here,
+    hyphen-preserving there - and every evidence lookup missed silently.
+    """
+    return pipeline_metrics.metric_key(raw)
 
 
 def normalise_sentence(raw: str) -> str:
@@ -1248,6 +1254,8 @@ def _group_context(
         "human_position": position + 1,
         "total": board.total,
         "n_ruled": board.n_ruled,
+        # NOT "evidence" - that key already holds the variant list below.
+        "absence": absence_evidence_for(group),
         "order": board.order,
         "suffix": suffix,
         "proposal": propose(group),
@@ -1276,6 +1284,54 @@ def _group_context(
             {"gid": g.gid, "state": board.status(g)}
             for g in board.groups[max(0, position - 40) : position + 40]
         ],
+    }
+
+
+@lru_cache(maxsize=1)
+def _absence_evidence_index() -> dict[tuple[int, str], dict]:
+    """METHOD.md §6 evidence, keyed by (cik, normalised metric name).
+
+    Computed by `pipeline.build_evidence` from the cached corpus. It is shown
+    beside the ruling because a §4 decision is easier and better with it: a
+    phrase appearing once in seven years is almost certainly boilerplate, and
+    one appearing five hundred times across every filing is almost certainly a
+    metric the issuer actually reports.
+
+    It is EVIDENCE, never a verdict. ABSENCE_TEST_MET is a necessary condition
+    for DISCONTINUED and not a sufficient one - a metric can meet it and simply
+    have been renamed. The page says so.
+    """
+    path = pipeline_config.DERIVED / "absence_evidence.json"
+    if not path.exists():
+        return {}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        logger.warning("Absence evidence unreadable: %s", exc)
+        return {}
+    index: dict[tuple[int, str], dict] = {}
+    for row in payload.get("evidence") or []:
+        try:
+            index[(int(row["cik"]), str(row["metric_key"]))] = row
+        except (KeyError, TypeError, ValueError):
+            continue
+    return index
+
+
+def absence_evidence_for(group: Group) -> dict | None:
+    """The §6 evidence for one group, or None when the stage has not run."""
+    try:
+        cik = int(group.cik)
+    except (TypeError, ValueError):
+        return None
+    row = _absence_evidence_index().get((cik, group.normalised))
+    if row is None:
+        return None
+    vector = row.get("presence_vector") or []
+    return {
+        **row,
+        "vector": "".join("1" if x else "0" for x in vector),
+        "n_present": sum(1 for x in vector if x),
     }
 
 

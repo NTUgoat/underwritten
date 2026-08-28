@@ -75,6 +75,27 @@
     <p class="adj-warn">This metric is defined <strong>{{ n_variants }} different ways</strong> across the filed record. A changed definition is what METHOD.md §5 <code>REDEFINED</code> is about, and it is only visible here.{% if hidden_variants %} Showing the {{ evidence|length }} most frequent; <strong>{{ hidden_variants }} further variant{{ '' if hidden_variants == 1 else 's' }} not shown</strong>. A group with this many variants is usually a section heading, where the captured text is the table that followed it rather than a definition.{% endif %}</p>
     {% endif %}
 
+    {% if absence %}
+    <section class="adj-absence">
+      <h3 class="adj-absence__h">§6 evidence <span class="adj-absence__tag">machine-computed · not a verdict</span></h3>
+      <p class="adj-absence__body">
+        <strong>{{ absence.status }}</strong> — {{ absence.reason }}
+        Appears <strong>{{ absence.n_appearances }}</strong> time{{ '' if absence.n_appearances == 1 else 's' }}
+        across {{ absence.n_documents_searched }} documents;
+        present in {{ absence.n_present }} of {{ absence.n_periods }} reporting periods,
+        absent for the last {{ absence.trailing_absent_periods }}.
+      </p>
+      <p class="adj-absence__vector"><code>{{ absence.vector }}</code>
+        <span class="muted">oldest period first; 1 = reported somewhere in the filed corpus that period</span></p>
+      <p class="adj-absence__warn">
+        A phrase appearing once or twice in seven years is almost certainly boilerplate.
+        One appearing in most periods is almost certainly a metric the issuer reports.
+        <strong>ABSENCE_TEST_MET is a necessary condition for <code>DISCONTINUED</code>, never a sufficient one</strong> —
+        a metric can meet it and simply have been renamed. That ruling is yours, at §5, not here.
+      </p>
+    </section>
+    {% endif %}
+
     {% for e in evidence %}
     <article class="adj-variant">
       <header class="adj-variant__head">

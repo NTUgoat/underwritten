@@ -1,0 +1,209 @@
+"""Entry point: run METHOD.md §6 for every located metric, before adjudication.
+
+This stage exists because §6 was defined and never invoked. That inverted the
+design: the reviewer would have been asked to rule `DISCONTINUED` without the
+mechanical evidence §6 requires in front of them, and a ruling made without it
+is not the ruling the method describes.
+
+The order matters and is deliberate:
+
+    corpus -> candidates -> **evidence (here)** -> human adjudication -> analysis
+
+The machine computes whether a phrase is absent for four consecutive reporting
+periods across the *entire* filed corpus. That is a necessary condition for
+`DISCONTINUED`, never a sufficient one, and this stage never writes a terminal
+state. Airbnb's "Nights and Experiences Booked" scores ABSENCE_TEST_MET and was
+not discontinued - it was renamed, and the new name first appears in an EX-99.1
+exhibit. Only a human reading the filings can tell those apart, which is exactly
+why this stage hands over evidence rather than a verdict.
+
+Offline: reads the cached corpus, never the network.
+
+    .venv/Scripts/python.exe -m pipeline.build_evidence
+"""
+
+from __future__ import annotations
+
+import csv
+import json
+import sys
+import time
+import warnings
+from collections import Counter, defaultdict
+
+from bs4 import XMLParsedAsHTMLWarning
+
+from . import config
+from .build_candidates import MIN_CORPUS_COMPLETENESS
+from .corpus import build as build_corpus
+from .edgar import EdgarClient, OfflineCacheMiss
+from .filings import complete_index
+from .metrics import absence_test, metric_key
+
+warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
+
+OUTPUT = config.DERIVED / "absence_evidence.json"
+
+
+def _cohort_rows() -> list[dict[str, str]]:
+    path = config.COHORT / "cohort_frozen.csv"
+    if not path.exists():
+        raise SystemExit(f"No frozen cohort at {path}.")
+    with path.open(encoding="utf-8", newline="") as handle:
+        return list(csv.DictReader(handle))
+
+
+def _candidates_by_cik() -> dict[int, dict[str, str]]:
+    """Unique metric phrases per issuer, keyed by the normalised name.
+
+    One entry per metric, not per occurrence - the same collapse the analysis
+    applies to the ledger. The value keeps a spelling the issuer actually used,
+    because that is what §6 searches for.
+    """
+    path = config.ADJUDICATION / "metrics_candidates.csv"
+    if not path.exists():
+        raise SystemExit(
+            f"No candidates at {path}. Run `python -m pipeline.build_candidates`."
+        )
+    out: dict[int, dict[str, str]] = defaultdict(dict)
+    with path.open(encoding="utf-8", newline="") as handle:
+        for row in csv.DictReader(handle):
+            name = (row.get("metric_name") or "").strip()
+            if not name:
+                continue
+            try:
+                cik = int(row["cik"])
+            except (KeyError, ValueError):
+                continue
+            key = metric_key(name)
+            if key:
+                out[cik].setdefault(key, name)
+    return out
+
+
+def main() -> int:
+    sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
+    client = EdgarClient(offline=True)
+    rows = _cohort_rows()
+    candidates = _candidates_by_cik()
+
+    print(f"Cohort: {len(rows)} issuers")
+    print(f"METHOD.md §6: absence across {config.DISCONTINUATION_PERIODS} consecutive")
+    print("reporting periods, over the entire filed corpus including exhibits.")
+    print()
+
+    evidence: list[dict] = []
+    skipped: list[dict] = []
+    statuses: Counter[str] = Counter()
+    started = time.time()
+
+    for i, row in enumerate(rows, start=1):
+        cik = int(row["cik"])
+        name = row["name"][:34]
+        phrases = candidates.get(cik, {})
+        if not phrases:
+            skipped.append({"cik": cik, "name": row["name"], "reason": "no candidates"})
+            continue
+
+        try:
+            corpus = build_corpus(client, cik, complete_index(client, cik))
+        except OfflineCacheMiss:
+            skipped.append({"cik": cik, "name": row["name"], "reason": "corpus not built"})
+            print(f"[{i:>2}/{len(rows)}] {name:<34} corpus not built - skipped")
+            continue
+
+        expected = int(row.get("n_corpus_filings") or 0)
+        if corpus.n_documents < max(1, int(expected * MIN_CORPUS_COMPLETENESS)):
+            skipped.append(
+                {
+                    "cik": cik,
+                    "name": row["name"],
+                    "reason": "corpus incomplete",
+                    "documents": corpus.n_documents,
+                    "expected_filings": expected,
+                }
+            )
+            print(f"[{i:>2}/{len(rows)}] {name:<34} corpus incomplete - skipped")
+            continue
+
+        per_issuer: Counter[str] = Counter()
+        for key, phrase in sorted(phrases.items()):
+            # No aliases here. A rename is a HUMAN ruling (§6); once the
+            # reviewer traces one, the test is re-run over the traced set.
+            result = absence_test(corpus, phrase)
+            per_issuer[result.status] += 1
+            statuses[result.status] += 1
+            evidence.append(
+                {
+                    "cik": cik,
+                    "issuer": row["name"],
+                    "arm": row["arm"],
+                    "metric_key": key,
+                    "phrase": phrase,
+                    "status": result.status,
+                    "reason": result.reason,
+                    "required_periods": result.required_periods,
+                    "n_periods": result.n_periods,
+                    "presence_vector": list(result.presence_vector),
+                    "trailing_absent_periods": result.trailing_absent_periods,
+                    "max_absent_run": result.max_absent_run,
+                    "n_appearances": result.n_appearances,
+                    "n_documents_searched": result.n_documents_searched,
+                    "n_documents_failed": result.n_documents_failed,
+                    "first_appearance": (
+                        result.first_appearance.as_row()
+                        if result.first_appearance
+                        and hasattr(result.first_appearance, "as_row")
+                        else None
+                    ),
+                    "last_appearance": (
+                        result.last_appearance.as_row()
+                        if result.last_appearance
+                        and hasattr(result.last_appearance, "as_row")
+                        else None
+                    ),
+                }
+            )
+
+        print(
+            f"[{i:>2}/{len(rows)}] {name:<34} {len(phrases):>3} metrics  "
+            f"{dict(per_issuer)}",
+            flush=True,
+        )
+
+    OUTPUT.write_text(
+        json.dumps(
+            {
+                "as_at": config.AS_AT_DATE,
+                "required_periods": config.DISCONTINUATION_PERIODS,
+                "issuers_measured": len({e["cik"] for e in evidence}),
+                "issuers_skipped": len(skipped),
+                "metrics": len(evidence),
+                "by_status": dict(statuses),
+                "skipped": skipped,
+                "evidence": evidence,
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    print()
+    print(f"Metrics tested   : {len(evidence):,}")
+    for status, count in statuses.most_common():
+        print(f"  {status:<24} {count:>5}")
+    print(f"Issuers skipped  : {len(skipped)}")
+    print(f"Elapsed          : {(time.time() - started) / 60:.1f} min")
+    print(f"Evidence         -> {OUTPUT}")
+    print()
+    print(
+        "ABSENCE_TEST_MET is a necessary condition for DISCONTINUED, never a\n"
+        "sufficient one. A metric can meet it and simply have been renamed -\n"
+        "Airbnb's 'Nights and Experiences Booked' does exactly that. Every\n"
+        "terminal state is still a human ruling."
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

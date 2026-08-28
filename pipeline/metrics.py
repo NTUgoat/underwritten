@@ -249,6 +249,26 @@ def _collapse_immediate_repeat(name: str) -> str:
     return name
 
 
+_METRIC_KEY_NON_ALNUM = re.compile(r"[^0-9a-z]+")
+
+
+def metric_key(raw: str) -> str:
+    """The canonical identity of a metric name. One definition, used everywhere.
+
+    Lossy on purpose: case, punctuation and whitespace are collapsed so that
+    "Non-GAAP Financial Measures" and "non GAAP financial measures" are one
+    metric rather than two.
+
+    This lives here rather than in any one consumer because two modules
+    independently deciding what "the same metric" means is a defect, not a
+    detail. The adjudication tool grouped on punctuation-stripped names while
+    the evidence stage keyed on hyphen-preserving ones, so every §6 lookup
+    missed silently and the ruling page rendered an evidence panel with every
+    field blank.
+    """
+    return _METRIC_KEY_NON_ALNUM.sub(" ", normalise_whitespace(raw).casefold()).strip()
+
+
 def clean_metric_name(raw: str) -> str:
     """Whitespace-collapsed, quote-stripped name. The sentence stays verbatim."""
     return _collapse_immediate_repeat(
