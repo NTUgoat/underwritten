@@ -1,9 +1,18 @@
 {
   "checked_on": "2026-08-28",
-  "baseline_established": true,
+  "baseline_established": false,
   "issuers_checked": 50,
   "errors": [],
-  "new_filings": [],
+  "new_filings": [
+    {
+      "cik": "1750593",
+      "issuer": "Fangdd Network Group Ltd.",
+      "form": "6-K",
+      "filed": "2026-08-28",
+      "accession": "0001213900-26-094695",
+      "url": "https://www.sec.gov/Archives/edgar/data/1750593/000121390026094695/0001213900-26-094695-index.htm"
+    }
+  ],
   "new_adverse_events": [],
   "kill_criteria_due": [],
   "open_positions": 0
