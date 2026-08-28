@@ -1,0 +1,23 @@
+# Raw SEC corpus — large, reproducible from manifest, never committed
+data/raw/
+*.duckdb.wal
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Env
+.env
+.env.local
+
+# Workflow scratch
+_wf.json
+
+# OS
+Thumbs.db
+.DS_Store
