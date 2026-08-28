@@ -1,31 +1,30 @@
-# The ongoing cadence (METHOD.md §9, §8.3, §8.5).
-#
-# The durability argument for this study is that it keeps reading after
-# publication: the cohort's CIKs are re-checked for new EDGAR filings, open kill
-# criteria are re-evaluated against those filings without the author's
-# involvement, and anything that changes is appended to a public changelog
-# rather than edited in silently.
-#
-# STATUS: the pipeline entry points this job will call DO NOT EXIST YET. Until
-# they do, the job installs the environment, imports the modules that do exist,
-# prints exactly what it will do, and exits 0. It does not fetch from EDGAR and
-# it does not write to the repository. Every TODO below names a real module or
-# says plainly that the module has still to be written.
-
 name: watch
+
+# The study's continuing operation.
+#
+# Cohort companies file on a schedule nobody here controls. This job runs weekly,
+# notices what is new, classifies any adverse filing event under METHOD.md §7.2
+# (honouring Amendment 1's exclusions), and reports any kill criterion whose date
+# has passed.
+#
+# It exists to make two claims true rather than asserted:
+#
+#   * The public record accrues whether or not the author touches the project.
+#   * A position is graded by a machine reading filings, not by its author
+#     deciding whether he still believes it - which is what METHOD.md §9 means by
+#     "evaluated by a scheduled job ... without the author's involvement".
+#
+# It commits the new high-water mark and report, so the diff each week is the
+# evidence. It never edits METHOD.md, the frozen cohort, or the adjudication
+# ledger - those are the study, and a scheduled job has no business touching them.
 
 on:
   schedule:
-    # Mondays, 06:17 UTC. Weekly is the right cadence for a filed-record study:
-    # EDGAR does not move faster than that in a way this watch would catch.
-    - cron: "17 6 * * 1"
+    - cron: "17 6 * * 1" # Mondays, 06:17 UTC
   workflow_dispatch:
 
 permissions:
-  contents: read
-  # TODO: raise to `contents: write` (or open a pull request instead) once the
-  # changelog-append step below is real. It is read-only while this job is a
-  # placeholder so a misfire cannot touch the repository.
+  contents: write
 
 concurrency:
   group: watch
@@ -33,131 +32,86 @@ concurrency:
 
 jobs:
   watch:
-    name: Re-read the filed record
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
-    env:
-      # SEC fair access (METHOD.md §10) requires a declared User-Agent carrying
-      # a real contact address. It is a repository secret, not a literal, so the
-      # author's address is not published in the workflow file - though it is
-      # sent to sec.gov on every request, which is the point of it.
-      # Set it at: Settings > Secrets and variables > Actions > New repository
-      # secret, name SEC_CONTACT, value e.g. "Jex Lin you@example.com".
-      SEC_CONTACT: ${{ secrets.SEC_CONTACT }}
-
     steps:
-      - name: Check out the repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Verify SEC_CONTACT is configured
+      - name: Require a real SEC contact
+        env:
+          SEC_CONTACT: ${{ secrets.SEC_CONTACT }}
         run: |
           if [ -z "${SEC_CONTACT}" ]; then
             echo "::error::SEC_CONTACT repository secret is not set."
-            echo "The SEC fair-access policy requires a User-Agent with a real"
-            echo "contact address. Unset, pipeline/config.py falls back to a"
-            echo "hardcoded default, so CI would identify itself as someone"
-            echo "else. Set the secret before enabling this job."
+            echo "The SEC fair-access policy requires a declared User-Agent carrying a"
+            echo "real contact address. Set it to e.g. 'Jex Lin jlin048@e.ntu.edu.sg'"
+            echo "under Settings > Secrets and variables > Actions."
             exit 1
           fi
           case "${SEC_CONTACT}" in
-            *@*) echo "SEC_CONTACT is set and contains a contact address." ;;
-            *)   echo "::error::SEC_CONTACT does not contain an '@' address."; exit 1 ;;
+            *@*) : ;;
+            *) echo "::error::SEC_CONTACT has no email address in it."; exit 1 ;;
           esac
 
-      - name: Set up Python 3.13
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
 
-      - name: Set up uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-
-      - name: Install dependencies
-        run: uv pip install --system -r pyproject.toml
-
-      - name: Import the pipeline
-        # Not decoration: this is the weekly proof that the study's code still
-        # installs and imports on a clean machine. It touches no network.
+      - name: Install
         run: |
-          python -c "
-          from pipeline import cohort, config, edgar, filings, outcomes
-          print('as-at date         :', config.AS_AT_DATE)
-          print('listing window     :', config.LISTING_WINDOW_START, '..', config.LISTING_WINDOW_END)
-          print('target n / floor n :', config.COHORT_TARGET_N, '/', config.COHORT_FLOOR_N)
-          print('absence test       :', config.DISCONTINUATION_PERIODS, 'consecutive reporting periods')
-          print('corpus forms       :', ', '.join(config.CORPUS_FORMS))
-          print('modules imported   : cohort, config, edgar, filings, outcomes')
-          "
+          python -m pip install --upgrade pip
+          pip install -e .
 
-      - name: Report the state of the frozen cohort
+      - name: Check the cohort for new filings
+        env:
+          SEC_CONTACT: ${{ secrets.SEC_CONTACT }}
+        run: python -m pipeline.watch --write
+
+      - name: Summarise into the run log
         run: |
-          if [ -f data/cohort/cohort_frozen.csv ]; then
-            echo "Frozen cohort present. Rows (including header):"
-            wc -l < data/cohort/cohort_frozen.csv
-          else
-            echo "data/cohort/cohort_frozen.csv does not exist yet."
-            echo "The cohort has not been frozen, so there is nothing to watch."
+          python - <<'PY'
+          import json, os, pathlib
+          report = json.loads(pathlib.Path("data/derived/watch_report.json").read_text(encoding="utf-8"))
+          lines = [
+              "## Cohort watch",
+              "",
+              f"Checked {report['issuers_checked']} issuers on {report['checked_on']}.",
+              "",
+          ]
+          if report.get("baseline_established"):
+              lines.append("First run: baseline established, nothing reported as new.")
+          else:
+              lines += [
+                  f"- New filings: **{len(report['new_filings'])}**",
+                  f"- New adverse events: **{len(report['new_adverse_events'])}**",
+                  f"- Kill criteria due: **{len(report['kill_criteria_due'])}**",
+                  "",
+              ]
+              for e in report["new_adverse_events"]:
+                  lines.append(f"  - {e['filed']} {e['form']} — {e['issuer']}: {e['reason']}")
+              for d in report["kill_criteria_due"]:
+                  lines.append(f"  - {d['position']} criterion #{d['n']} due {d['by_date']}: {d['test']}")
+          if report.get("errors"):
+              lines += ["", f"{len(report['errors'])} issuer(s) could not be reached; previous state carried forward."]
+          pathlib.Path(os.environ["GITHUB_STEP_SUMMARY"]).write_text("\n".join(lines), encoding="utf-8")
+          PY
+
+      - name: Commit the new state
+        run: |
+          git config user.name  "underwritten-watch[bot]"
+          git config user.email "underwritten-watch@users.noreply.github.com"
+          git add data/derived/watch_state.json data/derived/watch_report.json
+          if git diff --cached --quiet; then
+            echo "Nothing changed this week."
+            exit 0
           fi
+          NEW=$(python -c "import json;d=json.load(open('data/derived/watch_report.json'));print(len(d['new_filings']))")
+          ADV=$(python -c "import json;d=json.load(open('data/derived/watch_report.json'));print(len(d['new_adverse_events']))")
+          git commit -m "Cohort watch: ${NEW} new filing(s), ${ADV} adverse event(s)
 
-      - name: PLACEHOLDER - what this job will do once the entry points exist
-        # Exits 0 by design. This step is a statement of intent, not a stub that
-        # pretends to work. Nothing below has been run against EDGAR.
-        run: |
-          cat <<'PLAN'
-          ============================================================
-          WEEKLY WATCH - NOT YET IMPLEMENTED. NOTHING WAS FETCHED.
-          ============================================================
-
-          1. RE-CHECK THE COHORT'S CIKs FOR NEW FILINGS
-             Read data/cohort/cohort_frozen.csv, and for each CIK call
-             pipeline.filings.complete_index(client, cik) to pull the full
-             submissions index (it follows the overflow files, so the corpus is
-             not silently truncated). Diff against the filings already recorded
-             in data/manifest/sources.json and report only what is new.
-             Both functions exist today: pipeline/filings.py, pipeline/edgar.py.
-             TODO: no runnable entry point wraps them for a repeat read. The one
-             entry point that does exist, `python -m pipeline.build_cohort`, is
-             the one-shot freeze and must NOT be run by this job: re-running it
-             after the freeze would let the cohort drift, which is precisely
-             what METHOD.md section 3 exists to prevent. A separate watch entry
-             point has still to be written. Name it here when it is.
-
-          2. RE-EVALUATE OPEN KILL CRITERIA (METHOD.md section 9)
-             Every live position carries three dated, machine-checkable kill
-             criteria that are to be evaluated against incoming filings without
-             the author's involvement. A criterion that fires kills the position.
-             TODO: neither the positions store nor the evaluator exists. There is
-             no pipeline/positions.py and no pipeline/kill_criteria.py in this
-             repository. Do not invent them here; write them, then call them.
-
-          3. RE-CHECK ADVERSE FILING EVENTS (METHOD.md section 7.2, Amendment 1)
-             Classify any newly indexed filing with
-             pipeline.outcomes.classify(client, filings), which already applies
-             E1 (SECTOR_WIDE_WARRANT_RESTATEMENT) and E2
-             (MECHANICAL_DESPAC_DELISTING) as labels rather than deletions, and
-             pipeline.outcomes.summarise(events) for the counts.
-             Exists today: pipeline/outcomes.py.
-             TODO: as with (1), no scheduled entry point calls it.
-
-          4. RE-VERIFY CITED SPANS (METHOD.md section 8.3)
-             Re-fetch a random sample of cited documents and fail if a stored
-             verbatim span no longer matches its source, or if a SHA-256 in
-             data/manifest/sources.json no longer matches the retrieved bytes.
-             The hashing side already exists: pipeline.edgar.EdgarClient records
-             a SHA-256 on the same code path as every fetch.
-             TODO: the re-verification pass itself is unwritten.
-
-          5. APPEND TO THE PUBLIC CHANGELOG (METHOD.md section 8.5)
-             Anything found in 1-4 is appended - dated, with the accession number
-             that caused it - to the public changelog. Nothing is retroactively
-             edited; superseded views are struck through in place.
-             TODO: unwritten, and it needs `permissions: contents: write` above,
-             or a pull request, before it can commit anything.
-
-          This step exits 0 on purpose. It reports intent. When the entry points
-          exist, replace it - and delete this text rather than leaving it to rot
-          beside code that has overtaken it.
-          PLAN
+          Scheduled check of the frozen cohort against EDGAR. Adverse events are
+          classified under METHOD.md section 7.2 with Amendment 1's exclusions
+          applied. This job does not touch METHOD.md, the frozen cohort, or the
+          adjudication ledger."
+          git push
