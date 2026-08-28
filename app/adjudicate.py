@@ -84,6 +84,7 @@ import hashlib
 import json
 import logging
 import os
+import pathlib
 import re
 import urllib.parse
 from collections.abc import Sequence
@@ -926,12 +927,37 @@ _OFFSET_SLACK = 400
 
 
 @lru_cache(maxsize=8)
+@lru_cache(maxsize=24)
+def _extract_text(path_str: str, _stamp: tuple[int, int]) -> str | None:
+    """Extract text from one cached document. Keyed by path AND file identity.
+
+    Cached in process because the ruling page shows up to six variants and each
+    asks for the surrounding context of the same few documents. Without it a
+    multi-megabyte prospectus was re-parsed from bytes on every variant of every
+    page - 1.3 to 2.5 seconds a group, which across ~1,300 groups is half an
+    hour of a reviewer waiting rather than reading. With it, 0.02 seconds.
+
+    `_stamp` is (mtime_ns, size) and is part of the key on purpose: a cache
+    keyed on the URL alone returns stale text when the file underneath changes,
+    which would silently show the reviewer context from a document that is no
+    longer there. Bounded at 24 documents so a long session cannot grow without
+    limit.
+    """
+    from pipeline import corpus as pipeline_corpus
+
+    try:
+        return pipeline_corpus.html_to_text(pathlib.Path(path_str).read_bytes())
+    except Exception as exc:  # noqa: BLE001 - context is a convenience, never a claim
+        logger.debug("Could not extract %s: %s", path_str, exc)
+        return None
+
+
 def _document_text(url: str) -> str | None:
     """The locally cached document as text, or None.
 
     The retrieval client caches raw bytes under a hash of the URL, and the
     candidate offsets were computed against ``corpus.html_to_text`` of exactly
-    those bytes — so the same two functions reproduce the same string, and the
+    those bytes - so the same two functions reproduce the same string, and the
     offsets line up. If the cache is absent (a fresh clone, ``data/raw/`` being
     gitignored) this returns None and the reviewer is told so rather than shown
     a reconstruction.
@@ -939,16 +965,22 @@ def _document_text(url: str) -> str | None:
     if not url:
         return None
     try:
-        from pipeline import corpus as pipeline_corpus
         from pipeline import edgar as pipeline_edgar
 
         path = pipeline_edgar._cache_path(url)
-        if not path.is_file():
-            return None
-        return pipeline_corpus.html_to_text(path.read_bytes())
-    except Exception as exc:  # noqa: BLE001 - context is a convenience, never a claim
+        stat = path.stat()
+    except OSError:
+        return None
+    except Exception as exc:  # noqa: BLE001
         logger.debug("No local context for %s: %s", url, exc)
         return None
+    return _extract_text(str(path), (stat.st_mtime_ns, stat.st_size))
+
+
+# The cache lives on the inner function now that the key includes file identity.
+# Callers (and tests) that reach for `_document_text.cache_clear` still work.
+_document_text.cache_clear = _extract_text.cache_clear  # type: ignore[attr-defined]
+_document_text.cache_info = _extract_text.cache_info  # type: ignore[attr-defined]
 
 
 def surrounding_context(occurrence: Occurrence) -> dict[str, str]:
