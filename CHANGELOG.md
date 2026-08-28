@@ -306,9 +306,27 @@ adjudication tool had been unified onto `metrics.metric_key`. Three definitions
 of "the same metric" is how a denominator quietly differs from a numerator; it
 now uses `metric_key` like everything else.
 
+### Measured effect
+
+Run both ways over the 31 issuers whose corpus was complete at the time:
+
+| | groups |
+|---|---|
+| Located over the §6 corpus only | 467 |
+| Located over listing documents **and** the §6 corpus | **542** |
+| Findable **only** in the listing document | **75 (14% of the population)** |
+
+Not all 75 survive §4 — some are prospectus boilerplate ("in this prospectus",
+"vision") that a human will exclude. But several are unambiguously the thing the
+study measures: Lemonade's *adjusted gross margin*, *operating revenue* and
+*adjusted EBITDA margin*; Confluent's *contribution margin* and *contribution
+margin percentage*. Those are company-defined non-GAAP metrics that appeared in
+the prospectus and that the study, before this fix, could not see at all.
+
 ### How this was found
 
-Not by review. A recall check — reading the "Key Operating Metrics" section of
-real listing documents to see whether the locator was missing metrics presented
-in tables rather than in "we define X as" sentences — returned zero issuers
-examined, because no listing document was in the cache to read.
+Not by review, and not by a test. A recall check — reading the "Key Operating
+Metrics" section of real listing documents to see whether the locator was missing
+metrics presented in tables rather than in "we define X as" sentences — returned
+**zero issuers examined**, because there was no listing document in the cache to
+read. The question that found it was about something else entirely.
