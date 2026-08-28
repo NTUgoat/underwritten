@@ -2,6 +2,8 @@
 
 **Grading listing-document promises against the subsequent SEC-filed record.**
 
+**Live:** <https://underwritten-production.up.railway.app> · **Method:** [`METHOD.md`](METHOD.md) (pre-registered, tagged `preregistration-v1`, committed before any data was collected) · **Amendments:** [`CHANGELOG.md`](CHANGELOG.md)
+
 When a company lists, it publishes two kinds of promise nobody is obliged to keep. It
 invents a scoreboard — bespoke operating metrics it defined for itself, *"we define
 Adjusted Active Consumers as…"* — chosen because management believed those were the right

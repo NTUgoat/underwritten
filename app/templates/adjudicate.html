@@ -1,0 +1,216 @@
+{#- The ruling page. Local tool: it writes to disk, and it says so.
+
+    The one rule this template enforces visually is the one the publication
+    depends on — a proposal is drawn as a proposal (dashed, labelled, greyed)
+    and a ruling is drawn as a ruling (solid, signed, dated). Nothing on this
+    page commits anything until the reviewer presses a key on this group. -#}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>{{ human_position }}/{{ total }} · {{ group.display_name }} — adjudicate</title>
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/static/underwritten.css">
+<link rel="stylesheet" href="/static/adjudicate.css">
+</head>
+<body class="page adj">
+
+<header class="adj-bar">
+  <div class="adj-bar__id">
+    <a class="adj-bar__name" href="/">Underwritten</a>
+    <span class="adj-bar__tool">adjudication</span>
+    <span class="adj-bar__local" title="These routes exist only because UNDERWRITTEN_ADJUDICATE=1 is set. They write to disk and are never mounted on the public site.">local tool · writes to disk</span>
+  </div>
+
+  <div class="adj-bar__progress">
+    <span class="adj-prog__count"><strong>{{ n_ruled }}</strong> / {{ total }} groups ruled</span>
+    <span class="adj-prog__track" aria-hidden="true"><span class="adj-prog__fill" style="width: {{ ((n_ruled / total * 100) if total else 0)|round(1) }}%"></span></span>
+    <span class="adj-prog__here">group {{ human_position }} of {{ total }}</span>
+  </div>
+
+  <div class="adj-bar__who">
+    <label for="adj-reviewer">reviewer</label>
+    <input id="adj-reviewer" name="reviewer" type="text" spellcheck="false" autocomplete="off"
+           maxlength="12" value="{{ draft.reviewer or default_reviewer }}"
+           placeholder="initials" aria-describedby="adj-reviewer-why">
+    <span id="adj-reviewer-why" class="u-sr">Written into every row this session commits, with today's date.</span>
+    <a class="adj-bar__done" href="{{ done_url }}">summary</a>
+  </div>
+</header>
+
+<div class="adj-strip" aria-hidden="true">
+  {% for s in statuses %}
+  <span class="adj-dot {% if s.gid == group.gid %}is-here{% endif %} {% if s.state %}is-{{ s.state|lower }}{% endif %}"></span>
+  {% endfor %}
+</div>
+
+<main class="adj-main" id="main">
+
+<div class="adj-cols">
+
+  {# ---------------------------------------------------------- evidence -- #}
+  <section class="adj-evidence" aria-label="Evidence">
+
+    <div class="adj-head">
+      <p class="adj-head__cik">CIK {{ group.cik }}</p>
+      <h1 class="adj-head__name">{{ group.display_name }}</h1>
+      <p class="adj-head__facts">
+        <span class="adj-fact"><strong>{{ group.n }}</strong> occurrence{{ '' if group.n == 1 else 's' }}</span>
+        <span class="adj-fact">{{ group.first_date or '—' }} → {{ group.last_date or '—' }}</span>
+        <span class="adj-fact">{{ group.accessions|length }} filing{{ '' if group.accessions|length == 1 else 's' }}</span>
+        <span class="adj-fact">{{ group.forms|join(', ') or 'form not recorded' }}</span>
+      </p>
+      <p class="adj-head__note">One ruling here is written to all {{ group.n }} occurrence row{{ '' if group.n == 1 else 's' }} of this metric for this issuer.</p>
+    </div>
+
+    {% if group.variants|length > 1 %}
+    <p class="adj-warn">This metric is defined <strong>{{ group.variants|length }} different ways</strong> across the filed record. Read them both before ruling — a changed definition is what METHOD.md §5 <code>REDEFINED</code> is about, and it is only visible here.</p>
+    {% endif %}
+
+    {% for e in evidence %}
+    <article class="adj-variant">
+      <header class="adj-variant__head">
+        <span class="adj-variant__n">variant {{ loop.index }} of {{ evidence|length }}</span>
+        <span class="adj-variant__count">{{ e.variant.n }} occurrence{{ '' if e.variant.n == 1 else 's' }}</span>
+        <span class="adj-variant__span">{{ e.variant.first_date or '—' }} → {{ e.variant.last_date or '—' }}</span>
+      </header>
+
+      <blockquote class="adj-sentence">{{ e.variant.text }}</blockquote>
+
+      {% if e.context.available %}
+      <details class="adj-context">
+        <summary>surrounding context, from the retrieved document</summary>
+        <p class="adj-context__body"><span class="adj-context__side">…{{ e.context.before }}</span> <mark>{{ e.variant.text }}</mark> <span class="adj-context__side">{{ e.context.after }}…</span></p>
+      </details>
+      {% else %}
+      <p class="adj-context__none">{{ e.context.note }}</p>
+      {% endif %}
+
+      <div class="scroller">
+        <table class="table adj-occ">
+          <thead>
+            <tr><th scope="col">form</th><th scope="col">filed</th><th scope="col">accession</th><th scope="col">document</th><th scope="col">locator</th><th scope="col" class="n">offset</th></tr>
+          </thead>
+          <tbody>
+            {% for o in e.variant.occurrences %}
+            <tr>
+              <td>{{ o.form or '—' }}</td>
+              <td class="n">{{ o.filing_date or '—' }}</td>
+              <td class="hash">{% if o.filing_url %}<a href="{{ o.filing_url }}" target="_blank" rel="noopener nofollow">{{ o.accession or 'open on sec.gov' }}</a>{% else %}{{ o.accession or '—' }}{% endif %}</td>
+              <td class="muted">{{ o.document or '—' }}</td>
+              <td class="muted">{{ o.locator }}</td>
+              <td class="n">{{ o.char_offset }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </article>
+    {% else %}
+    <p class="adj-context__none">This group has no defining sentence recorded, which should not happen. Do not rule on it — open the filing and check the candidate file.</p>
+    {% endfor %}
+
+  </section>
+
+  {# ------------------------------------------------------------ ruling -- #}
+  <aside class="adj-rule" aria-label="Ruling">
+    <div class="adj-rule__sticky">
+
+      {# The proposal. Dashed, greyed, and labelled a proposal — because it is
+         one. Nothing here is selected, armed, or submitted on its behalf. #}
+      <div class="adj-proposal {% if proposal.verdict %}adj-proposal--{{ proposal.verdict|lower }}{% else %}adj-proposal--none{% endif %}">
+        <p class="adj-proposal__tag">machine proposal · not a ruling</p>
+        <p class="adj-proposal__verdict">{{ proposal.label }}</p>
+        <p class="adj-proposal__why">{{ proposal.reason }}</p>
+        <p class="adj-proposal__rule">rule: <code>{{ proposal.rule }}</code></p>
+      </div>
+
+      {% if existing %}
+      <div class="adj-existing">
+        <p class="adj-existing__tag">already ruled</p>
+        <p class="adj-existing__verdict">{{ existing._verdict|lower|replace('_', ' ') or existing.include }}</p>
+        <p class="adj-existing__meta">{{ existing.reviewer }} · {{ existing.review_date }}</p>
+        <p class="adj-existing__why">{{ existing.rationale }}</p>
+        <p class="adj-existing__note">Committing again replaces this ruling on every occurrence, and both are kept in the audit log.</p>
+      </div>
+      {% endif %}
+
+      {% if error %}<p class="adj-error" role="alert">{{ error }}</p>{% endif %}
+      <p class="adj-error" role="alert" id="adj-error" hidden></p>
+
+      <form class="adj-form" id="adj-form" method="post" action="{{ post_url }}">
+        <input type="hidden" name="reviewer" id="adj-reviewer-mirror" value="{{ draft.reviewer or default_reviewer }}">
+        <input type="hidden" name="rationale_source" id="adj-source" value="free_text">
+
+        <fieldset class="adj-verdicts">
+          <legend>your ruling</legend>
+          {% for v in verdicts %}
+          <label class="adj-verdict adj-verdict--{{ v|lower }}" data-verdict="{{ v }}">
+            <input type="radio" name="verdict" value="{{ v }}" {% if draft.verdict == v %}checked{% endif %}>
+            <span class="adj-verdict__key">{{ verdict_key[v] }}</span>
+            <span class="adj-verdict__label">{{ verdict_label[v] }}</span>
+          </label>
+          {% endfor %}
+          <p class="adj-verdicts__hint">A deferral is written as <code>NOT_DETERMINABLE</code>, never as an exclude (METHOD.md §5).</p>
+        </fieldset>
+
+        <div class="adj-presets" id="adj-presets">
+          <p class="adj-presets__idle">Arm a verdict to see its rationale presets.</p>
+          {% for v in verdicts %}
+          <ul class="adj-presets__set" data-for="{{ v }}" hidden>
+            {% for text in presets[v] %}
+            <li><button type="button" class="adj-preset" data-n="{{ loop.index }}" data-text="{{ text }}"><span class="adj-preset__n">{{ loop.index }}</span><span class="adj-preset__t">{{ text }}</span></button></li>
+            {% endfor %}
+          </ul>
+          {% endfor %}
+        </div>
+
+        <label class="adj-free" for="adj-rationale">rationale — written into every row, required</label>
+        <textarea id="adj-rationale" name="rationale" rows="3" maxlength="400"
+                  placeholder="Pick a preset by number, or type your own.">{{ draft.rationale or '' }}</textarea>
+
+        <div class="adj-actions">
+          <button class="btn" type="submit" id="adj-commit">commit ruling</button>
+          <a class="btn btn--quiet" href="{{ next_url or done_url }}" id="adj-skip">skip</a>
+          {% if prev_url %}<a class="btn btn--quiet" href="{{ prev_url }}" id="adj-back">back</a>{% endif %}
+        </div>
+        <p class="adj-actions__note">Autosaved on commit: the ledger is rewritten atomically after every ruling.</p>
+      </form>
+
+      <details class="adj-keys" id="adj-keys">
+        <summary>keyboard</summary>
+        <dl>
+          {% for key, what in keyboard_map %}
+          <div><dt><kbd>{{ key }}</kbd></dt><dd>{{ what }}</dd></div>
+          {% endfor %}
+        </dl>
+      </details>
+
+      <p class="adj-paths">
+        writes <code>{{ ledger_display }}</code><br>
+        audit <code>{{ log_display }}</code><br>
+        reads <code>{{ candidates_display }}</code>
+      </p>
+
+    </div>
+  </aside>
+
+</div>
+</main>
+
+<script id="adj-data" type="application/json">{
+  "group_id": {{ group.gid|tojson }},
+  "post_url": {{ post_url|tojson }},
+  "next_url": {{ (next_url or done_url)|tojson }},
+  "prev_url": {{ prev_url|tojson }},
+  "done_url": {{ done_url|tojson }},
+  "verdicts": {{ verdicts|list|tojson }}
+}</script>
+<script src="/static/adjudicate.js" defer></script>
+</body>
+</html>

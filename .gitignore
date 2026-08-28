@@ -25,3 +25,6 @@ Thumbs.db
 # Scratch artifacts left by research subagents — never part of the study
 ct.json
 tm.json
+
+# Runtime lock, not part of the study
+data/derived/corpus_build.lock

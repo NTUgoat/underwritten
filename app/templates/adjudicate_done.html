@@ -1,0 +1,123 @@
+{#- The summary page: what has been ruled, what is left, and where it was
+    written. It reports; it never rules. There is deliberately no control on
+    this page that can dispose of the remaining groups in bulk. -#}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Adjudication summary — Underwritten</title>
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/static/underwritten.css">
+<link rel="stylesheet" href="/static/adjudicate.css">
+</head>
+<body class="page adj">
+
+<header class="adj-bar">
+  <div class="adj-bar__id">
+    <a class="adj-bar__name" href="/">Underwritten</a>
+    <span class="adj-bar__tool">adjudication</span>
+    <span class="adj-bar__local">local tool · writes to disk</span>
+  </div>
+  <div class="adj-bar__progress">
+    <span class="adj-prog__count"><strong>{{ board.n_ruled }}</strong> / {{ board.total }} groups ruled</span>
+    <span class="adj-prog__track" aria-hidden="true"><span class="adj-prog__fill" style="width: {{ ((board.n_ruled / board.total * 100) if board.total else 0)|round(1) }}%"></span></span>
+  </div>
+  <div class="adj-bar__who">
+    <a class="adj-bar__done" href="/adjudicate{{ suffix }}">resume</a>
+  </div>
+</header>
+
+<main class="adj-main adj-main--summary" id="main">
+
+{% if state == 'no_candidates' %}
+<section class="adj-panel">
+  <h1 class="adj-panel__h">Nothing to adjudicate yet</h1>
+  <p>No candidate file was found, so there is nothing to rule on. The locator in
+  <code>pipeline.metrics</code> writes it; this tool only reads it.</p>
+  <p class="adj-paths">expects <code>{{ candidates_display }}</code></p>
+</section>
+
+{% else %}
+
+<section class="adj-panel">
+  <h1 class="adj-panel__h">{% if state == 'complete' %}Every group has been ruled{% else %}Adjudication in progress{% endif %}</h1>
+  <p class="adj-panel__lede">
+    {{ board.n_ruled }} of {{ board.total }} <span class="adj-dim">(issuer, metric)</span> groups carry a
+    signed ruling. Each ruling was written through to every occurrence of that
+    metric for that issuer, with the reviewer's initials, the date and a
+    rationale. No row was written that a human did not rule on.
+  </p>
+
+  <ul class="tally">
+    {% for t in board.tally() %}
+    <li class="tally__item"><span class="tally__label">{{ t.label }}</span><span class="tally__n">{{ t.n }}</span></li>
+    {% endfor %}
+    <li class="tally__item"><span class="tally__label">not yet ruled</span><span class="tally__n">{{ n_unruled|default(0, true) }}</span></li>
+  </ul>
+
+  <p class="adj-paths">
+    ledger <code>{{ ledger_display }}</code><br>
+    audit <code>{{ log_display }}</code><br>
+    candidates <code>{{ candidates_display }}</code>
+  </p>
+</section>
+
+{% if n_unruled|default(0, true) %}
+<section class="adj-panel">
+  <h2 class="adj-panel__h2">Still to rule — {{ n_unruled }}</h2>
+  <p class="adj-panel__note">Listed so they can be finished, not so they can be
+  disposed of together. Each link opens the evidence for that group.</p>
+  <div class="scroller">
+    <table class="table">
+      <thead><tr><th scope="col">CIK</th><th scope="col">metric</th><th scope="col" class="n">occurrences</th><th scope="col" class="n">first</th><th scope="col" class="n">last</th></tr></thead>
+      <tbody>
+        {% for g in unruled|default([], true) %}
+        <tr>
+          <td class="hash">{{ g.cik }}</td>
+          <th scope="row"><a href="/adjudicate/{{ g.gid }}{{ suffix }}">{{ g.display_name }}</a></th>
+          <td class="n">{{ g.n }}</td>
+          <td class="n">{{ g.first_date or '—' }}</td>
+          <td class="n">{{ g.last_date or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+
+{% if recent|default([], true) %}
+<section class="adj-panel">
+  <h2 class="adj-panel__h2">Most recent rows in the ledger</h2>
+  <p class="adj-panel__note">Read back from <code>{{ ledger_display }}</code> as
+  written, through <code>pipeline.metrics.read_rulings</code>.</p>
+  <div class="scroller">
+    <table class="table">
+      <thead><tr><th scope="col">metric</th><th scope="col">ruling</th><th scope="col">reviewer</th><th scope="col" class="n">date</th><th scope="col">rationale</th><th scope="col">accession</th></tr></thead>
+      <tbody>
+        {% for row in recent|default([], true) %}
+        <tr>
+          <th scope="row">{{ row.metric_name }}</th>
+          <td><span class="badge">{{ row.include }}</span></td>
+          <td>{{ row.reviewer }}</td>
+          <td class="n">{{ row.review_date }}</td>
+          <td class="def">{{ row.rationale }}</td>
+          <td class="hash">{{ row.accession }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+
+{% endif %}
+
+</main>
+</body>
+</html>

@@ -1,0 +1,14 @@
+# The EDGAR document cache: ~600MB, gitignored, reproducible from the manifest,
+# and actively written to while the corpus build runs. Railway's indexer walks
+# it otherwise and fails with a file-lock error mid-deploy.
+data/raw/
+
+.venv/
+.git/
+tests/
+docs/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.pyc
+.env

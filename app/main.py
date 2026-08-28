@@ -191,6 +191,16 @@ def create_app() -> FastAPI:
     )
 
     views.register(app, templates)
+
+    # The local adjudication tool writes rulings to disk, so it is mounted only
+    # when UNDERWRITTEN_ADJUDICATE=1 is set in the environment. Default off, and
+    # adjudicate.register() checks the same flag again before attaching a route,
+    # so the deployed public site never carries a write path.
+    from . import adjudicate
+
+    if adjudicate.is_enabled():
+        adjudicate.register(app, templates)
+
     return app
 
 

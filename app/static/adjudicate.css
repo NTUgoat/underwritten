@@ -1,0 +1,285 @@
+/* ==========================================================================
+   The adjudication tool. Same product, working clothes.
+
+   No colour, font or rule is redefined here: every value comes from the
+   custom properties in underwritten.css, which this file is always loaded
+   after. What changes is density — this is a screen a human sits in front of
+   for a few hours, not a page a reader visits once.
+
+   One visual rule is load-bearing. A machine PROPOSAL is dashed, muted and
+   labelled. A human RULING is solid, signed and dated. They must never be
+   mistakable for one another, because the published site says every ruling is
+   a human judgment and that claim has to stay literally true.
+   ========================================================================== */
+
+.adj { overflow-x: hidden; }
+.adj kbd {
+  font-family: var(--mono); font-size: 0.72rem; line-height: 1;
+  border: 1px solid var(--rule-2); padding: 0.2em 0.4em;
+  background: var(--paper-2); color: var(--ink);
+}
+
+/* ------------------------------------------------------------- the bar --- */
+
+.adj-bar {
+  position: sticky; top: 0; z-index: 20;
+  display: grid; gap: 0.4rem 1.4rem; align-items: center;
+  grid-template-columns: 1fr;
+  padding: 0.6rem var(--gutter);
+  background: var(--paper); border-bottom: 1px solid var(--rule-2);
+}
+@media (min-width: 62rem) {
+  .adj-bar { grid-template-columns: auto 1fr auto; }
+}
+
+.adj-bar__id { display: flex; align-items: baseline; gap: 0.55rem; flex-wrap: wrap; }
+.adj-bar__name { font-weight: 600; text-decoration: none; letter-spacing: 0.02em; }
+.adj-bar__tool {
+  font-family: var(--sans); font-size: 0.7rem; letter-spacing: 0.11em;
+  text-transform: uppercase; color: var(--ink-3);
+}
+.adj-bar__local {
+  font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.04em;
+  color: var(--flag); border: 1px solid var(--flag-line);
+  background: var(--flag-tint); padding: 0.12rem 0.42rem;
+}
+
+.adj-bar__progress {
+  display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+  font-family: var(--sans); font-size: 0.78rem; color: var(--ink-2);
+}
+.adj-prog__count strong { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--ink); }
+.adj-prog__track {
+  flex: 1 1 8rem; min-width: 6rem; height: 3px; background: var(--paper-3);
+  display: block; max-width: 22rem;
+}
+.adj-prog__fill { display: block; height: 100%; background: var(--ink); }
+.adj-prog__here { font-family: var(--mono); font-size: 0.72rem; color: var(--ink-3); }
+
+.adj-bar__who { display: flex; align-items: center; gap: 0.5rem; }
+.adj-bar__who label {
+  font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3);
+}
+.adj-bar__who input {
+  font-family: var(--mono); font-size: 0.82rem; width: 6.5rem;
+  background: var(--paper); color: var(--ink);
+  border: 1px solid var(--rule-2); border-radius: 0; padding: 0.28rem 0.4rem;
+}
+.adj-bar__who input:invalid, .adj-bar__who input.is-missing { border-color: var(--flag); }
+.adj-bar__done {
+  font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--ink-2);
+}
+
+/* the position strip: one mark per nearby group, current one filled */
+.adj-strip {
+  display: flex; gap: 2px; padding: 0.3rem var(--gutter);
+  border-bottom: 1px solid var(--rule); overflow: hidden;
+}
+.adj-dot { width: 6px; height: 10px; background: var(--paper-3); flex: 0 0 auto; }
+.adj-dot.is-include { background: var(--ink-2); }
+.adj-dot.is-exclude { background: var(--rule-2); }
+.adj-dot.is-not_determinable { background: var(--flag-line); }
+.adj-dot.is-mixed { background: var(--flag); }
+.adj-dot.is-here { background: var(--flag); width: 8px; }
+
+/* ---------------------------------------------------------- the layout --- */
+
+.adj-main { padding: 0 var(--gutter) calc(var(--step) * 2); }
+.adj-main--summary { max-width: 68rem; margin: 0 auto; padding-top: var(--step); }
+
+.adj-cols { display: grid; gap: 1.6rem; align-items: start; }
+@media (min-width: 68rem) {
+  .adj-cols { grid-template-columns: minmax(0, 1fr) 24rem; gap: 2.4rem; }
+}
+
+.adj-evidence { min-width: 0; padding-top: 1.1rem; }
+.adj-rule { min-width: 0; }
+@media (min-width: 68rem) {
+  .adj-rule__sticky { position: sticky; top: 5.2rem; padding-top: 1.1rem; }
+}
+
+/* -------------------------------------------------------- group header --- */
+
+.adj-head { border-bottom: 1px solid var(--rule-2); padding-bottom: 0.9rem; margin-bottom: 1.2rem; }
+.adj-head__cik {
+  font-family: var(--mono); font-size: 0.72rem; color: var(--ink-3);
+  letter-spacing: 0.04em; margin: 0 0 0.25rem;
+}
+.adj-head__name { font-size: clamp(1.4rem, 3vw, 2rem); margin: 0 0 0.5rem; }
+.adj-head__facts {
+  display: flex; flex-wrap: wrap; gap: 0.3rem 1.2rem; margin: 0 0 0.45rem;
+  font-family: var(--sans); font-size: 0.78rem; color: var(--ink-2);
+}
+.adj-fact strong { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--ink); }
+.adj-head__note { margin: 0; font-size: 0.84rem; color: var(--ink-3); }
+
+.adj-warn {
+  border-left: 2px solid var(--flag); background: var(--flag-tint);
+  padding: 0.7rem 0.9rem; margin: 0 0 1.2rem;
+  font-size: 0.9rem; color: var(--ink);
+}
+
+/* ------------------------------------------------------------ evidence --- */
+
+.adj-variant { border-top: 1px solid var(--rule); padding-top: 0.9rem; margin-bottom: 1.6rem; }
+.adj-variant:first-of-type { border-top: 0; padding-top: 0; }
+.adj-variant__head {
+  display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; margin-bottom: 0.6rem;
+  font-family: var(--mono); font-size: 0.7rem; color: var(--ink-3); letter-spacing: 0.03em;
+}
+.adj-variant__n { color: var(--ink-2); }
+
+.adj-sentence {
+  margin: 0 0 0.7rem; padding-left: 1rem; border-left: 2px solid var(--ink);
+  font-family: var(--serif); font-size: 1.02rem; line-height: 1.5;
+}
+.adj-sentence::before { content: "\201C"; }
+.adj-sentence::after { content: "\201D"; }
+
+.adj-context { margin-bottom: 0.7rem; }
+.adj-context summary {
+  font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--ink-3); cursor: pointer;
+}
+.adj-context__body {
+  margin: 0.5rem 0 0; padding: 0.7rem 0.9rem; background: var(--paper-2);
+  font-size: 0.86rem; line-height: 1.55; color: var(--ink-2);
+}
+.adj-context__body mark { background: transparent; color: var(--ink); font-weight: 600; }
+.adj-context__side { color: var(--ink-3); }
+.adj-context__none {
+  font-family: var(--sans); font-size: 0.76rem; color: var(--ink-3);
+  border-left: 1px dotted var(--rule-2); padding-left: 0.7rem; margin: 0 0 0.7rem;
+}
+
+.adj-occ { font-size: 0.76rem; }
+.adj-occ th, .adj-occ td { padding: 0.3rem 0.8rem 0.3rem 0; }
+
+/* ------------------------------------------------------- the proposal ---- */
+/* Dashed and muted, and it says "not a ruling" on it. Everything about this
+   block is designed to be impossible to mistake for a committed judgment. */
+
+.adj-proposal {
+  border: 1px dashed var(--rule-2); padding: 0.8rem 0.95rem; margin-bottom: 1rem;
+  background: transparent;
+}
+.adj-proposal__tag {
+  font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-3); margin: 0 0 0.4rem;
+}
+.adj-proposal__verdict {
+  font-family: var(--sans); font-size: 0.86rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2);
+  margin: 0 0 0.4rem;
+}
+.adj-proposal--exclude .adj-proposal__verdict { color: var(--flag); }
+.adj-proposal__why { margin: 0 0 0.35rem; font-size: 0.88rem; color: var(--ink-2); }
+.adj-proposal__rule { margin: 0; font-size: 0.72rem; color: var(--ink-3); }
+
+.adj-existing {
+  border-left: 2px solid var(--ink); padding: 0.1rem 0 0.1rem 0.9rem;
+  margin-bottom: 1rem;
+}
+.adj-existing__tag {
+  font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-3); margin: 0 0 0.3rem;
+}
+.adj-existing__verdict {
+  font-family: var(--sans); font-weight: 600; font-size: 0.9rem;
+  text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 0.2rem;
+}
+.adj-existing__meta { font-family: var(--mono); font-size: 0.72rem; color: var(--ink-3); margin: 0 0 0.35rem; }
+.adj-existing__why { font-size: 0.86rem; color: var(--ink-2); margin: 0 0 0.35rem; }
+.adj-existing__note { font-size: 0.74rem; color: var(--ink-3); margin: 0; }
+
+.adj-error {
+  border: 1px solid var(--flag); background: var(--flag-tint); color: var(--flag);
+  padding: 0.55rem 0.8rem; margin: 0 0 0.9rem; font-size: 0.84rem;
+}
+
+/* ------------------------------------------------------------ the form --- */
+
+.adj-form { margin: 0; }
+.adj-verdicts { border: 0; padding: 0; margin: 0 0 1rem; }
+.adj-verdicts legend {
+  font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-3); padding: 0; margin-bottom: 0.45rem;
+}
+.adj-verdict {
+  display: flex; align-items: center; gap: 0.6rem; cursor: pointer;
+  border: 1px solid var(--rule-2); padding: 0.45rem 0.6rem; margin-bottom: 0.35rem;
+  background: var(--paper);
+}
+.adj-verdict input { position: absolute; opacity: 0; width: 0; height: 0; }
+.adj-verdict__key {
+  font-family: var(--mono); font-size: 0.78rem; width: 1.5rem; height: 1.5rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--rule-2); color: var(--ink-2); flex: 0 0 auto;
+}
+.adj-verdict__label { font-family: var(--sans); font-size: 0.86rem; }
+.adj-verdict.is-armed { border-color: var(--ink); background: var(--paper-3); }
+.adj-verdict.is-armed .adj-verdict__key { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.adj-verdict.is-armed .adj-verdict__label { font-weight: 600; }
+.adj-verdict--exclude.is-armed { border-color: var(--flag); }
+.adj-verdict--exclude.is-armed .adj-verdict__key { background: var(--flag); border-color: var(--flag); }
+.adj-verdict:focus-within { outline: 2px solid var(--flag); outline-offset: 2px; }
+.adj-verdicts__hint { margin: 0.5rem 0 0; font-size: 0.74rem; color: var(--ink-3); }
+
+.adj-presets { margin-bottom: 0.9rem; }
+.adj-presets__idle { font-size: 0.78rem; color: var(--ink-3); margin: 0; }
+.adj-presets__set { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.25rem; }
+.adj-preset {
+  display: flex; gap: 0.55rem; align-items: baseline; width: 100%; text-align: left;
+  font-family: var(--sans); font-size: 0.8rem; line-height: 1.35; color: var(--ink-2);
+  background: transparent; border: 1px solid transparent; border-radius: 0;
+  padding: 0.32rem 0.4rem; cursor: pointer;
+}
+.adj-preset:hover, .adj-preset:focus-visible { border-color: var(--rule-2); color: var(--ink); }
+.adj-preset.is-chosen { border-color: var(--ink); background: var(--paper-2); color: var(--ink); }
+.adj-preset__n {
+  font-family: var(--mono); font-size: 0.72rem; color: var(--ink-3); flex: 0 0 1rem;
+}
+
+.adj-free {
+  display: block; font-family: var(--sans); font-size: 0.66rem;
+  letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3);
+  margin-bottom: 0.35rem;
+}
+.adj-form textarea {
+  width: 100%; font-family: var(--serif); font-size: 0.92rem; line-height: 1.45;
+  color: var(--ink); background: var(--paper); border: 1px solid var(--rule-2);
+  border-radius: 0; padding: 0.5rem 0.6rem; resize: vertical;
+}
+
+.adj-actions { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.8rem; flex-wrap: wrap; }
+.adj-actions__note { margin: 0.5rem 0 0; font-size: 0.72rem; color: var(--ink-3); }
+
+.adj-keys { margin-top: 1.2rem; border-top: 1px solid var(--rule); padding-top: 0.7rem; }
+.adj-keys summary {
+  font-family: var(--sans); font-size: 0.68rem; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--ink-3); cursor: pointer;
+}
+.adj-keys dl { margin: 0.6rem 0 0; display: grid; gap: 0.25rem; }
+.adj-keys div { display: flex; gap: 0.6rem; align-items: baseline; }
+.adj-keys dt { flex: 0 0 4.2rem; }
+.adj-keys dd { margin: 0; font-family: var(--sans); font-size: 0.76rem; color: var(--ink-2); }
+
+.adj-paths {
+  margin: 1.1rem 0 0; font-family: var(--mono); font-size: 0.68rem;
+  color: var(--ink-3); line-height: 1.7; word-break: break-all;
+}
+
+/* ----------------------------------------------------------- summary ----- */
+
+.adj-panel { border-top: 1px solid var(--rule); padding: calc(var(--step) * 1.1) 0; }
+.adj-panel:first-of-type { border-top: 0; }
+.adj-panel__h { font-size: clamp(1.5rem, 3.4vw, 2.2rem); margin-bottom: 0.7rem; }
+.adj-panel__h2 {
+  font-family: var(--sans); font-size: 0.78rem; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 0.7rem;
+}
+.adj-panel__lede { max-width: var(--measure); color: var(--ink-2); }
+.adj-panel__note { font-size: 0.84rem; color: var(--ink-3); max-width: var(--measure); }
+.adj-dim { color: var(--ink-3); }
