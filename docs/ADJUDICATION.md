@@ -345,7 +345,31 @@ consistent judgment; terminal state needs the filing history in front of you.
 
 ---
 
-## 6. Pace and honesty
+## 6. Why careless ruling destroys the finding, arithmetically
+
+This is not a moral point. It is what the numbers do.
+
+A dry run was made in which every `ABSENCE_TEST_MET` was mechanically ruled
+`DISCONTINUED` — the machine rubber-stamped, no reading. The result across the
+cohort was **2 Keepers against 27 Movers**: a bootstrap interval running from
+−33pp to +89pp, and a Fisher exact p of 0.43. The confirmatory test said nothing,
+because there was nothing left to compare against.
+
+That is the shape of a study with no finding in it.
+
+Most of the ~196 `ABSENCE_TEST_MET` results will not survive contact with the
+filings. Some are section headings §4 excludes outright. Some are renames — the
+metric is still reported under a new label. Some are benign reclassifications
+under ASC 280. **Every one you correctly reclassify moves an issuer back toward
+Keeper and makes the comparison informative.**
+
+So the arithmetic rewards reading and punishes speed, which is unusual and worth
+knowing before you start. The finding is not something the pipeline produces and
+you approve. It is something that exists only if the adjudication is real.
+
+---
+
+## 7. Pace and honesty
 
 Roughly **600 groups** are expected across 50 issuers. Most are seconds; a minority take
 minutes. If you find yourself averaging under five seconds a group across a long run, you
