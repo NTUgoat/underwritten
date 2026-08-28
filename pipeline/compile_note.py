@@ -114,18 +114,25 @@ class Citation:
 
 @dataclass
 class Problems:
+    """Collected authoring failures. Reported together, never one at a time.
+
+    `header` is set by the caller so the positions compiler does not report a
+    §9 violation under a §8.3 heading - a misleading error in a project whose
+    whole claim is precision is worse than a terse one.
+    """
+
     errors: list[str] = field(default_factory=list)
+    header: str = (
+        "The note was not written. METHOD.md §8.3 requires every numeral in "
+        "published prose to resolve to an accession number."
+    )
 
     def add(self, line_no: int, message: str) -> None:
         self.errors.append(f"  docs/note.md:{line_no}: {message}")
 
     def raise_if_any(self) -> None:
         if self.errors:
-            raise NoteError(
-                "The note was not written. METHOD.md §8.3 requires every "
-                "numeral in published prose to resolve to an accession "
-                f"number.\n\n" + "\n".join(self.errors)
-            )
+            raise NoteError(self.header + "\n\n" + "\n".join(self.errors))
 
 
 def parse_front_matter(text: str) -> tuple[dict[str, str], str, int]:
