@@ -295,13 +295,31 @@ class EdgarClient:
             key=lambda row: row["url"],
         )
 
-    def write_manifest(self, name: str = "sources.json") -> Path:
+    def write_manifest(
+        self, name: str = "sources.json", *, stage: str = "", covers: str = ""
+    ) -> Path:
+        """Write the hash manifest for the documents THIS client has read.
+
+        `stage` and `covers` are not decoration. METHOD.md §11 promises "a full
+        source manifest with SHA-256 hashes for every retrieved document", and
+        /provenance is the page that makes good on it. But each client only
+        knows what it fetched: the cohort build reads a few hundred submissions
+        records, the corpus build reads thousands of filings. Publishing one
+        stage's count as though it were the whole manifest overstates coverage
+        on the one page whose entire job is not overstating anything.
+
+        So every manifest declares which stage produced it and what that stage
+        covers, and the page names the stages present rather than implying
+        completeness.
+        """
         path = config.MANIFEST / name
         rows = self.manifest_rows()
         path.write_text(
             json.dumps(
                 {
                     "as_at": config.AS_AT_DATE,
+                    "stage": stage or path.stem,
+                    "covers": covers,
                     "n_documents": len(rows),
                     "documents": rows,
                 },

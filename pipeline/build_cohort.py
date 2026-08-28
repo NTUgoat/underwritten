@@ -74,7 +74,12 @@ def main() -> int:
     summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(f"Summary -> {summary_path}")
 
-    manifest_path = client.write_manifest("cohort_sources.json")
+    manifest_path = client.write_manifest(
+        "cohort_sources.json",
+        stage="cohort-selection",
+        covers="Submissions records and full-text-search responses read while "
+               "enumerating candidates and applying C0-C5. Not the filed corpus.",
+    )
     print(f"Manifest-> {manifest_path} ({len(client.manifest_rows())} documents)")
 
     if len(members) < config.COHORT_FLOOR_N:

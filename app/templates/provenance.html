@@ -69,11 +69,24 @@
       <h2 class="band__h">Source manifest</h2>
       <p class="band__sub">
         {% if manifest_available %}
-        {{ n_documents|num }} documents recorded.
+        {{ n_documents|num }} documents recorded, across {{ stages|length }} pipeline
+        stage{{ '' if stages|length == 1 else 's' }}. A manifest covers only the stage
+        that wrote it, and this page names them rather than implying the set is complete:
         {% else %}
         The manifest is written by the retrieval client the first time the corpus is pulled.
         {% endif %}
       </p>
+      {% if manifest_available %}
+      <table class="table table--stages">
+        <thead><tr><th scope="col">stage</th><th scope="col" class="n">documents</th><th scope="col">covers</th></tr></thead>
+        <tbody>
+          {% for s in stages %}
+          <tr><td><code>{{ s.stage }}</code></td><td class="n">{{ s.n_documents|num }}</td><td class="muted">{{ s.covers or 'not declared' }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+
       {% if manifest_errors %}
       <p class="band__sub band__sub--warn">One or more manifest files could not be read and
       are <strong>not</strong> represented in the table below:

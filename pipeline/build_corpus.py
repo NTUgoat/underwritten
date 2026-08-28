@@ -137,7 +137,12 @@ def main() -> int:
     print(f"Documents failed : {total_failures:,}")
     print(f"Elapsed          : {elapsed / 60:.1f} min")
     print(f"Coverage         -> {out}")
-    print(f"Manifest         -> {client.write_manifest('corpus_sources.json')}")
+    print(f"Manifest         -> {client.write_manifest(
+        "corpus_sources.json",
+        stage="filed-corpus",
+        covers="Every document read for the section 6 absence test: annual, "
+               "quarterly and current reports, including EX-99 exhibits.",
+    )}")
 
     if total_failures:
         print()

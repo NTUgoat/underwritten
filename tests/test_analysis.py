@@ -1386,13 +1386,52 @@ def test_a_candidate_ruled_out_at_inclusion_never_reaches_section_seven(tmp_path
     assert len(ledger.ruled_out) == 1
 
 
-def test_the_candidate_id_becomes_the_published_metric_id(tmp_path):
+def test_metric_identity_is_the_metric_not_the_occurrence(tmp_path):
+    """candidate_id identifies an OCCURRENCE and must never become metric_id.
+
+    The ledger holds one row per located occurrence - a single ruling is written
+    through to every one of them, over a thousand rows for a section heading.
+    Using candidate_id as the metric identity made each occurrence a separate
+    metric, inflating the §7.1 denominator by a factor set purely by how often
+    the phrase happened to be mentioned. This test previously asserted that
+    behaviour; it now asserts against it.
+    """
     path = write_ledger(
         tmp_path / "metrics.csv",
         [metric(1, "Adjusted Active Consumers", "ALIVE", candidate_id="abc123")],
         columns=LEDGER_COLUMNS + ("candidate_id",),
     )
-    assert read_ledger(path).rows[0].metric_id == "abc123"
+    assert read_ledger(path).rows[0].metric_id != "abc123"
+    assert read_ledger(path).rows[0].metric_id == "1-adjusted-active-consumers"
+
+
+def test_occurrences_of_one_metric_collapse_to_one_metric(tmp_path):
+    """Forty rows of one ruled metric are one metric in the base rate."""
+    path = write_ledger(
+        tmp_path / "metrics.csv",
+        [
+            metric(1, "In Force Premium", "ALIVE", candidate_id=f"occ{i}")
+            for i in range(40)
+        ],
+        columns=LEDGER_COLUMNS + ("candidate_id",),
+    )
+    ledger = read_ledger(path)
+    assert len(ledger.rows) == 1, "the §7.1 denominator counts metrics, not mentions"
+
+
+def test_a_state_conflict_between_rows_is_reported_not_resolved(tmp_path):
+    """Two rows of one metric disagreeing is a real ledger inconsistency."""
+    path = write_ledger(
+        tmp_path / "metrics.csv",
+        [
+            metric(1, "In Force Premium", "ALIVE", candidate_id="occ1"),
+            metric(1, "In Force Premium", "DISCONTINUED", candidate_id="occ2"),
+        ],
+        columns=LEDGER_COLUMNS + ("candidate_id",),
+    )
+    ledger = read_ledger(path)
+    assert len(ledger.rows) == 1
+    assert any("conflicts with" in str(row) for row in ledger.invalid)
 
 
 def test_the_first_appearance_citation_falls_back_to_the_locator_columns(tmp_path):

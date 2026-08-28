@@ -672,10 +672,22 @@ def read_ledger(
         rows.append(
             LedgerRow(
                 row_number=offset,
+                # METRIC identity, never OCCURRENCE identity.
+                #
+                # The ledger holds one row per located occurrence - the
+                # adjudication tool writes a single ruling through to every
+                # occurrence of that metric, which for a section heading is over
+                # a thousand rows. `candidate_id` is unique per (cik, accession,
+                # filename, offset), so falling back to it made each occurrence a
+                # distinct metric: 2,833 ledger rows became 2,833 "metrics" where
+                # the data hold 79. §7.1 is the headline base rate and its exact
+                # binomial interval, so that inflates the denominator by ~36x and
+                # narrows the interval to a width the evidence cannot support.
+                #
+                # Identity is therefore (cik, normalised name), and rows are
+                # deduplicated on it below.
                 metric_id=(
-                    clean.get("metric_id")
-                    or clean.get("candidate_id")
-                    or f"{cik}-{slugify(name)}"
+                    clean.get("metric_id") or f"{cik}-{slugify(name)}"
                 ),
                 cik=cik,
                 metric_name=name,
@@ -691,6 +703,33 @@ def read_ledger(
                 raw=MappingProxyType(dict(clean)),
             )
         )
+
+    # Collapse occurrences to metrics. One ruling is written through to every
+    # row of that metric, so the rows for a given metric_id carry the same
+    # verdict; keeping the first is keeping the ruling, not choosing between
+    # rulings. A row whose state DISAGREES with the one already seen is a real
+    # inconsistency in the ledger and is reported rather than silently resolved.
+    deduped: dict[str, LedgerRow] = {}
+    conflicts: list[dict[str, str]] = []
+    for row in rows:
+        seen = deduped.get(row.metric_id)
+        if seen is None:
+            deduped[row.metric_id] = row
+        elif seen.state != row.state:
+            conflicts.append(
+                {
+                    "metric_id": row.metric_id,
+                    "row": str(row.row_number),
+                    "problem": (
+                        f"state {row.state!r} conflicts with {seen.state!r} "
+                        f"recorded at row {seen.row_number} for the same metric"
+                    ),
+                }
+            )
+    n_occurrences = len(rows)
+    rows = list(deduped.values())
+    if conflicts:
+        invalid.extend(conflicts)
 
     if not rows:
         counted = [

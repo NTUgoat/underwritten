@@ -371,6 +371,10 @@ def register(app, templates) -> None:
                 as_at_value=payload.get("as_at"),
                 n_documents=_int_or_none(payload.get("n_documents")),
                 documents=documents if isinstance(documents, list) else [],
+                # Each manifest declares which pipeline stage produced it, so
+                # the page can name the stages present instead of publishing one
+                # stage's count as though it covered everything read.
+                stages=payload.get("stages") or [],
                 manifest_errors=payload.get("errors") or [],
                 sources=_sources(dataset),
             ),

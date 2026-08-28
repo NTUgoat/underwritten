@@ -394,6 +394,7 @@ def manifest() -> Dataset:
     documents: dict[str, dict[str, Any]] = {}
     as_at_values: list[str] = []
     errors: list[str] = []
+    stages: list[dict[str, Any]] = []
 
     for path in files:
         loaded = load_json(f"manifest/{path.name}")
@@ -404,6 +405,19 @@ def manifest() -> Dataset:
         as_at = str(payload.get("as_at") or "").strip()
         if as_at:
             as_at_values.append(as_at)
+        # Each manifest declares the stage that produced it. The page names the
+        # stages present rather than publishing one stage's count as though it
+        # were the whole manifest - METHOD.md §11 promises hashes for every
+        # retrieved document, and overstating coverage on the provenance page
+        # is the one place this study cannot afford to be loose.
+        stages.append(
+            {
+                "file": path.name,
+                "stage": str(payload.get("stage") or path.stem),
+                "covers": str(payload.get("covers") or ""),
+                "n_documents": len(payload.get("documents") or []),
+            }
+        )
         for document in payload.get("documents") or []:
             if isinstance(document, dict) and document.get("url"):
                 documents.setdefault(str(document["url"]), document)
@@ -419,6 +433,7 @@ def manifest() -> Dataset:
             "n_documents": len(merged),
             "documents": merged,
             "files": [path.name for path in files],
+            "stages": sorted(stages, key=lambda s: s["stage"]),
             "errors": errors,
         },
     )
