@@ -73,12 +73,13 @@
 
     <p class="filters__count">
       {% if ledger_available %}
-      Showing <strong>{{ rows|length|num }}</strong> of {{ total_rows|num }} adjudicated metrics.
+      Showing <strong>{{ rows|length|num }}</strong> of {{ total_rows|num }} adjudicated metrics,
       {% else %}
-      <span class="pending">{{ PENDING }}</span> — the ledger is empty until
-      <code>data/derived/metrics.json</code> is written. The filters above are live and
-      will work against it unchanged.
+      <span class="pending">{{ PENDING }}</span> — no metric has been adjudicated, so the
+      filters currently narrow the frozen cohort only. They will narrow the metric ledger
+      unchanged once <code>data/derived/metrics.json</code> is written. Showing
       {% endif %}
+      <strong>{{ cohort_rows|length|num }}</strong> of {{ total_cohort_rows|num }} issuers.
     </p>
 
     {% if rows %}
@@ -220,19 +221,40 @@
     its result.</p>
     {% if cohort_rows %}
     <div class="scroller">
-      <table class="table">
+      <table class="table table--cohort">
         <thead>
           <tr>
-            {% for column in cohort_rows[0].keys() %}<th scope="col">{{ column|replace('_', ' ') }}</th>{% endfor %}
+            <th scope="col">issuer</th>
+            <th scope="col">arm</th>
+            <th scope="col">sector (SIC)</th>
+            <th scope="col">listing document</th>
+            <th scope="col" class="n">listed</th>
+            <th scope="col" class="n">annual reports since</th>
+            <th scope="col" class="n">corpus filings</th>
           </tr>
         </thead>
         <tbody>
           {% for row in cohort_rows %}
-          <tr>{% for value in row.values() %}<td>{{ value }}</td>{% endfor %}</tr>
+          <tr>
+            <th scope="row">
+              {{ row.name }}
+              {% if row.ticker %}<span class="muted">{{ row.ticker }}</span>
+              {% else %}<span class="muted">no ticker on file</span>{% endif %}
+            </th>
+            <td>{{ row.arm|lower }}</td>
+            <td>{{ row.sic_description }} <span class="muted">{{ row.sic }}</span></td>
+            <td><a href="https://www.sec.gov/Archives/edgar/data/{{ row.cik }}/{{ row.listing_accession|replace('-', '') }}/{{ row.listing_accession }}-index.htm" rel="noopener nofollow">{{ row.listing_form }}</a>
+              <span class="muted">{{ row.listing_accession }}</span></td>
+            <td class="n">{{ row.listing_date }}</td>
+            <td class="n">{{ row.n_annual_reports_after_listing|num }}</td>
+            <td class="n">{{ row.n_corpus_filings|num }}</td>
+          </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
+    {% elif cohort_available %}
+    <p class="case__none">No issuer matches those filters. <a href="/cohort#ledger">Clear them</a>.</p>
     {% else %}
     {{ m.absent('The frozen company list is committed before extraction begins.', 'data/cohort/cohort_frozen.csv') }}
     {% endif %}

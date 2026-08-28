@@ -8,7 +8,7 @@
 :root {
   --paper:      #fbfaf7;
   --paper-2:    #f3f1ea;
-  --paper-3:    #ecead9;
+  --paper-3:    #e9e6dc;
   --ink:        #1a1917;
   --ink-2:      #4c4a44;
   --ink-3:      #7a776e;
@@ -32,7 +32,7 @@
   :root {
     --paper:     #131311;
     --paper-2:   #191917;
-    --paper-3:   #201f1b;
+    --paper-3:   #222119;
     --ink:       #e9e6dd;
     --ink-2:     #b3aea2;
     --ink-3:     #857f73;
@@ -67,6 +67,7 @@ body {
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
+@supports (overflow-x: clip) { body { overflow-x: clip; } }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -114,6 +115,7 @@ hr { border: 0; }
   margin-bottom: 0.55rem;
 }
 .band__sub { color: var(--ink-2); max-width: 42rem; margin-bottom: 0; }
+.band__sub--warn { color: var(--flag); font-size: 0.9rem; margin-top: 0.6rem; }
 .sub-h {
   font-family: var(--sans); font-size: 0.78rem; letter-spacing: 0.08em;
   text-transform: uppercase; color: var(--ink-3);
@@ -193,6 +195,8 @@ hr { border: 0; }
 .realised__k::after { content: " "; }
 .realised__v { color: var(--ink); font-weight: 500; }
 .realised__item--flag { color: var(--flag); }
+.realised--funnel { font-size: 0.72rem; color: var(--ink-3); margin-bottom: 1.5rem; }
+.realised--funnel .realised__v { color: var(--ink-2); }
 
 .rule { border-top: 1px solid var(--rule); margin: 0 0 1.4rem; }
 
@@ -315,9 +319,9 @@ hr { border: 0; }
 /* --------------------------------------------------------- absence marks -- */
 
 .pending {
-  font-family: var(--mono); font-size: 0.82em; color: var(--flag);
-  background: var(--flag-tint); border-bottom: 1px solid var(--flag-line);
-  padding: 0.04em 0.3em; white-space: nowrap;
+  font-family: var(--mono); font-size: 0.8em; color: var(--ink-3);
+  background: var(--paper-3); border-bottom: 1px dotted var(--rule-2);
+  padding: 0.05em 0.34em; white-space: nowrap; letter-spacing: -0.01em;
 }
 .pending__what { color: var(--ink-3); }
 
@@ -326,18 +330,18 @@ hr { border: 0; }
   max-width: 42rem; background: transparent;
 }
 .absent__mark {
-  font-family: var(--mono); font-size: 0.82rem; color: var(--flag);
+  font-family: var(--mono); font-size: 0.8rem; color: var(--ink-3);
   letter-spacing: 0.04em; margin-bottom: 0.4rem;
 }
 .absent__what { color: var(--ink-2); margin-bottom: 0.4rem; font-size: 0.95rem; }
 .absent__path { font-family: var(--mono); font-size: 0.72rem; color: var(--ink-3); margin: 0; }
 
 .notice {
-  border-top: 2px solid var(--flag); padding-top: 0.9rem;
+  border-top: 2px solid var(--ink); padding-top: 0.9rem;
   margin-bottom: calc(var(--step) * 1.4);
 }
 .notice__mark {
-  font-family: var(--mono); font-size: 0.78rem; color: var(--flag);
+  font-family: var(--mono); font-size: 0.78rem; color: var(--ink-3);
   letter-spacing: 0.05em; margin-bottom: 0.5rem;
 }
 .notice p { color: var(--ink-2); }

@@ -74,6 +74,12 @@
         The manifest is written by the retrieval client the first time the corpus is pulled.
         {% endif %}
       </p>
+      {% if manifest_errors %}
+      <p class="band__sub band__sub--warn">One or more manifest files could not be read and
+      are <strong>not</strong> represented in the table below:
+        {% for error in manifest_errors %}<code>{{ error }}</code>{% if not loop.last %}; {% endif %}{% endfor %}.
+      The count above is therefore a floor, not the whole corpus.</p>
+      {% endif %}
     </header>
 
     {% if documents %}

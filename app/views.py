@@ -56,11 +56,7 @@ def _inline(text: str) -> str:
 
 
 def _split_row(line: str) -> list[str]:
-    stripped = line.strip()
-    if stripped.startswith("|"):
-        stripped = stripped[1:]
-    if stripped.endswith("|"):
-        stripped = stripped[:-1]
+    stripped = line.strip().removeprefix("|").removesuffix("|")
     return [cell.strip() for cell in stripped.split("|")]
 
 
@@ -273,6 +269,11 @@ def register(app, templates) -> None:
         filtered = data.filter_metrics(rows, sector=sector, arm=arm, state=state)
         selected = data.find_metric(rows, metric_id)
 
+        # The sector and arm facets come from the frozen cohort as well as the
+        # ledger, so both filters work against the committed company list before
+        # a single metric has been adjudicated.
+        issuers = data.filter_issuers(frozen.rows, sector=sector, arm=arm)
+
         return render(
             "cohort.html",
             _context(
@@ -282,12 +283,16 @@ def register(app, templates) -> None:
                 ledger_available=ledger.available,
                 rows=filtered,
                 total_rows=len(rows),
-                facets=data.facets(rows),
+                facets=data.merge_facets(
+                    data.facets(rows), data.cohort_facets(frozen.rows)
+                ),
                 tally=data.state_tally(filtered),
                 selected=selected,
                 filters={"sector": sector, "arm": arm, "state": state},
                 board=board.payload if isinstance(board.payload, dict) else {},
-                cohort_rows=frozen.rows,
+                cohort_rows=issuers,
+                total_cohort_rows=len(frozen.rows),
+                cohort_available=frozen.available,
                 sources=_sources(ledger, board, frozen),
             ),
         )
@@ -366,6 +371,7 @@ def register(app, templates) -> None:
                 as_at_value=payload.get("as_at"),
                 n_documents=_int_or_none(payload.get("n_documents")),
                 documents=documents if isinstance(documents, list) else [],
+                manifest_errors=payload.get("errors") or [],
                 sources=_sources(dataset),
             ),
         )

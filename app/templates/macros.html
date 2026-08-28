@@ -139,14 +139,17 @@
 {%- endmacro -%}
 
 
-{#- A statistic with its interval. Never renders a point estimate alone. -#}
+{#- A share, with its interval where the specification produces one. A missing
+    interval is left off rather than marked pending: not every quantity in the
+    pre-registration carries one, and a pending mark would misreport that. -#}
 {%- macro interval(value, low, high, places=1) -%}
 <span class="stat">
   <span class="stat__point">{{ value|pct(places) }}</span>
-  {% if low is not none and high is not none %}
+  {# `is defined` matters as much as `is not none`: a key absent from the JSON
+     arrives as Undefined, which is not None, and would otherwise render an
+     interval made of two pending marks. #}
+  {% if low is defined and low is not none and high is defined and high is not none %}
   <span class="stat__ci">95% CI {{ low|pct(places) }} – {{ high|pct(places) }}</span>
-  {% else %}
-  <span class="stat__ci">{{ PENDING }} interval</span>
   {% endif %}
 </span>
 {%- endmacro -%}

@@ -415,7 +415,7 @@ def manifest() -> Dataset:
     return Dataset(
         Source(label, exists=True, error=fatal),
         payload={
-            "as_at": sorted(as_at_values)[-1] if as_at_values else "",
+            "as_at": max(as_at_values) if as_at_values else "",
             "n_documents": len(merged),
             "documents": merged,
             "files": [path.name for path in files],
@@ -456,6 +456,40 @@ def facets(rows: list[dict[str, Any]]) -> dict[str, list[str]]:
     return {"sectors": sectors, "arms": arms}
 
 
+def cohort_facets(rows: list[dict[str, str]]) -> dict[str, list[str]]:
+    """Sector and arm values present in the frozen cohort CSV.
+
+    The sector is the SIC description EDGAR itself assigns. No hand-built
+    taxonomy sits between the reader and the filing.
+    """
+    sectors = sorted({str(r.get("sic_description") or "").strip() for r in rows} - {""})
+    arms = sorted({str(r.get("arm") or "").strip() for r in rows} - {""})
+    return {"sectors": sectors, "arms": arms}
+
+
+def merge_facets(*sets: dict[str, list[str]]) -> dict[str, list[str]]:
+    """Union of several facet dictionaries, as a new dictionary."""
+    sectors: set[str] = set()
+    arms: set[str] = set()
+    for facet in sets:
+        sectors.update(facet.get("sectors", []))
+        arms.update(facet.get("arms", []))
+    return {"sectors": sorted(sectors), "arms": sorted(arms)}
+
+
+def filter_issuers(
+    rows: list[dict[str, str]], *, sector: str = "", arm: str = ""
+) -> list[dict[str, str]]:
+    """The frozen cohort narrowed by the same two facets the ledger uses."""
+
+    def keep(row: dict[str, str]) -> bool:
+        if sector and str(row.get("sic_description") or "") != sector:
+            return False
+        return not (arm and str(row.get("arm") or "") != arm)
+
+    return [row for row in rows if keep(row)]
+
+
 def filter_metrics(
     rows: list[dict[str, Any]],
     *,
@@ -470,9 +504,7 @@ def filter_metrics(
             return False
         if arm and str(row.get("arm") or "") != arm:
             return False
-        if state and str(row.get("state") or "") != state:
-            return False
-        return True
+        return not (state and str(row.get("state") or "") != state)
 
     return [row for row in rows if keep(row)]
 

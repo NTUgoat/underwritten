@@ -311,17 +311,19 @@ def _earnings_8k() -> Filing:
 
 
 def test_exhibit_files_finds_the_furnished_earnings_release():
-    found, failure = exhibit_files(_StubClient(), _earnings_8k())
+    found, failures = exhibit_files(_StubClient(), _earnings_8k())
 
-    assert failure is None
+    assert failures == ()
     assert found == (("d147144dex991.htm", "EX-99.1"),)
 
 
-def test_exhibit_files_degrades_to_the_filename_when_the_header_fails():
-    found, failure = exhibit_files(_StubClient(header=None), _earnings_8k())
+def test_a_failed_header_still_yields_exhibits_but_records_the_gap():
+    """The filename fallback cannot see an exhibit named "release.htm", so an
+    unreadable header is a coverage gap even when it recovers something."""
+    found, failures = exhibit_files(_StubClient(header=None), _earnings_8k())
 
-    assert failure is None
     assert [name for name, _ in found] == ["d147144dex991.htm"]
+    assert [f.stage for f in failures] == ["header"]
 
 
 def test_unreadable_directory_is_a_recorded_gap_not_an_empty_filing():
@@ -329,10 +331,11 @@ def test_unreadable_directory_is_a_recorded_gap_not_an_empty_filing():
         def fetch_json(self, url):
             raise OSError("HTTP 500")
 
-    found, failure = exhibit_files(Broken(), _earnings_8k())
+    found, failures = exhibit_files(Broken(), _earnings_8k())
 
     assert found == ()
-    assert failure is not None and failure.stage == "index"
+    assert [f.stage for f in failures] == ["index"]
+    assert "HTTP 500" in failures[0].error
 
 
 # ===========================================================================
@@ -904,3 +907,35 @@ def test_nbsp_in_a_later_filing_does_not_manufacture_an_absence():
 def test_required_periods_must_be_positive():
     with pytest.raises(ValueError):
         absence_test(_periods("1000000"), PHRASE, required_periods=0)
+
+
+def test_overlapping_heading_patterns_yield_one_candidate():
+    """"Key Business Metrics" contains "Business Metrics" - that is one heading."""
+    document = make_document(
+        "acc-h",
+        "Key Business Metrics We review the following measures to run the business.",
+    )
+    headings = [c for c in locate_in_document(document) if c.locator.startswith("heading")]
+
+    assert [c.metric_name for c in headings] == ["Key Business Metrics"]
+
+
+def test_a_heading_repeated_into_its_own_definition_is_not_doubled():
+    document = make_document(
+        "acc-d",
+        "Adjusted EBITDA Adjusted EBITDA is defined as net loss adjusted for taxes.",
+    )
+    hit = next(c for c in locate_in_document(document) if c.locator == "is_defined_as")
+
+    assert hit.metric_name == "Adjusted EBITDA"
+    assert hit.defining_sentence.startswith("Adjusted EBITDA Adjusted EBITDA is defined")
+
+
+def test_the_ledger_is_written_atomically(tmp_path):
+    """A half-written ledger would lose rulings; the write goes via a sibling."""
+    path = tmp_path / "metrics_candidates.csv"
+    write_candidates(locate_in_document(_s1_document()), path)
+
+    assert path.exists()
+    assert not (tmp_path / "metrics_candidates.csv.partial").exists()
+    assert list(tmp_path.iterdir()) == [path]

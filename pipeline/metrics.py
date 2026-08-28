@@ -34,6 +34,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import logging
+import os
 import re
 from dataclasses import dataclass
 from datetime import date
@@ -234,9 +235,25 @@ def _heading_span(text: str, start: int) -> tuple[int, int]:
     return start, max(finish, min(len(text), start + 1))
 
 
+def _collapse_immediate_repeat(name: str) -> str:
+    """"Adjusted EBITDA Adjusted EBITDA" -> "Adjusted EBITDA".
+
+    A heading sitting immediately above its own defining sentence makes a
+    backwards capture read the name twice. Collapsing an exact doubling is a
+    textual tidy, not a judgement: the verbatim sentence is untouched.
+    """
+    tokens = name.split()
+    half = len(tokens) // 2
+    if half and len(tokens) % 2 == 0 and tokens[:half] == tokens[half:]:
+        return " ".join(tokens[:half])
+    return name
+
+
 def clean_metric_name(raw: str) -> str:
     """Whitespace-collapsed, quote-stripped name. The sentence stays verbatim."""
-    return normalise_whitespace(raw).strip(_QUOTE_STRIP).strip()
+    return _collapse_immediate_repeat(
+        normalise_whitespace(raw).strip(_QUOTE_STRIP).strip()
+    )
 
 
 def candidate_id(
@@ -253,10 +270,21 @@ def locate_in_document(
     """Every candidate span in one document. Emits; never judges."""
     text = document.text
     found: dict[tuple[str, str, str], MetricCandidate] = {}
+    # Heading patterns overlap by construction - "Key Business Metrics" contains
+    # "Business Metrics". Two patterns locating the same characters is one
+    # candidate, not two, so a heading match wholly inside an accepted one is
+    # dropped. Locator order decides which wins, and the specific patterns are
+    # listed first. Definition locators are exempt: two different constructions
+    # in one sentence really are two things to rule on.
+    heading_spans: list[tuple[int, int]] = []
 
     for locator in locators:
         for match in locator.pattern.finditer(text):
             if locator.kind == "heading":
+                span = (match.start(), match.end())
+                if any(lo <= span[0] and span[1] <= hi for lo, hi in heading_spans):
+                    continue
+                heading_spans.append(span)
                 begin, finish = _heading_span(text, match.start())
                 name = clean_metric_name(match.group(0))
             else:
@@ -399,12 +427,17 @@ def write_candidates(
             path,
         )
 
+    # Written to a sibling file and moved into place. This ledger holds human
+    # rulings; a process that dies halfway through a direct write would leave a
+    # truncated one, and METHOD.md §4 calls that ledger "the study".
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", newline="", encoding="utf-8") as handle:
+    staging = path.with_name(path.name + ".partial")
+    with staging.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=list(LEDGER_FIELDS))
         writer.writeheader()
         writer.writerows(rows)
         writer.writerows(orphans)
+    os.replace(staging, path)
     return path
 
 
@@ -559,6 +592,18 @@ class PeriodPresence:
     n_failed_documents: int
 
 
+def _appearance_columns(prefix: str, appearance: Appearance | None) -> dict[str, str]:
+    """Flat columns for one appearance, blank when there is none."""
+    if appearance is None:
+        return {f"{prefix}_{k}": "" for k in ("accession", "date", "url", "context")}
+    return {
+        f"{prefix}_accession": appearance.accession,
+        f"{prefix}_date": appearance.filing_date.isoformat(),
+        f"{prefix}_url": appearance.url,
+        f"{prefix}_context": appearance.context,
+    }
+
+
 @dataclass(frozen=True)
 class AbsenceEvidence:
     """The full result of the §6 test. Rich by design - a bare boolean is not
@@ -603,25 +648,8 @@ class AbsenceEvidence:
             "n_appearances": self.n_appearances,
             "n_documents_searched": self.n_documents_searched,
             "n_documents_failed": self.n_documents_failed,
-            "first_appearance_accession": (
-                self.first_appearance.accession if self.first_appearance else ""
-            ),
-            "first_appearance_date": (
-                self.first_appearance.filing_date.isoformat()
-                if self.first_appearance
-                else ""
-            ),
-            "last_appearance_accession": (
-                self.last_appearance.accession if self.last_appearance else ""
-            ),
-            "last_appearance_date": (
-                self.last_appearance.filing_date.isoformat()
-                if self.last_appearance
-                else ""
-            ),
-            "last_appearance_context": (
-                self.last_appearance.context if self.last_appearance else ""
-            ),
+            **_appearance_columns("first_appearance", self.first_appearance),
+            **_appearance_columns("last_appearance", self.last_appearance),
         }
 
 

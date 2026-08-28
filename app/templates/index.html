@@ -75,10 +75,10 @@
         {% if counter.improving or counter.deteriorating %}
         <dl class="check__pair">
           <div><dt>last reported improving</dt>
-            <dd>{{ m.interval(counter.improving.share, none, none) }}
+            <dd>{{ m.interval(counter.improving.share, counter.improving.ci_low, counter.improving.ci_high) }}
               <span class="check__n">{{ counter.improving.discontinued|num }} of {{ counter.improving.n|num }}</span></dd></div>
           <div><dt>last reported deteriorating</dt>
-            <dd>{{ m.interval(counter.deteriorating.share, none, none) }}
+            <dd>{{ m.interval(counter.deteriorating.share, counter.deteriorating.ci_low, counter.deteriorating.ci_high) }}
               <span class="check__n">{{ counter.deteriorating.discontinued|num }} of {{ counter.deteriorating.n|num }}</span></dd></div>
         </dl>
         <p class="check__verdict">

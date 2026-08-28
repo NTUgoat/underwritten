@@ -14,7 +14,8 @@ from typing import Any
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from jinja2 import ChainableUndefined
+from jinja2 import ChainableUndefined, Undefined
+from jinja2.exceptions import UndefinedError
 
 from . import data, views
 
@@ -29,7 +30,7 @@ SITE: dict[str, Any] = {
     "author": "Jex Lin",
     "preregistered": "28 August 2026",
     "preregistration_tag": "preregistration-v1",
-    "listing_window": "2019-2021",
+    "listing_window": "2019–2021",
     "corpus": "SEC EDGAR only",
 }
 
@@ -59,57 +60,70 @@ def _as_at() -> str:
 # template filters - every one of them refuses to invent a value
 # --------------------------------------------------------------------------
 
+#: A missing key reaches a filter as jinja2.Undefined, whose __int__ and
+#: __float__ raise UndefinedError rather than TypeError. Coercing it inside a
+#: try/except that catches only TypeError/ValueError is exactly how an absent
+#: figure turns into a 500 instead of a visible pending mark, so every numeric
+#: filter goes through _number() and nothing coerces directly.
+_MISSING = (Undefined, type(None))
+
+
+def _number(value: Any) -> float | None:
+    """The value as a float, or None if it is absent or not a number."""
+    if isinstance(value, _MISSING):
+        return None
+    if isinstance(value, str) and not value.strip():
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError, UndefinedError):
+        return None
+
 
 def _pct(value: Any, places: int = 1) -> str:
     """A share in [0, 1] as a percentage. A missing share stays missing."""
-    try:
-        number = float(value)
-    except (TypeError, ValueError):
-        return data.PENDING
-    return f"{number * 100:.{places}f}%"
+    number = _number(value)
+    return data.PENDING if number is None else f"{number * 100:.{places}f}%"
 
 
 def _pp(value: Any, places: int = 1) -> str:
     """An already-in-percentage-points figure, with an explicit sign."""
-    try:
-        number = float(value)
-    except (TypeError, ValueError):
-        return data.PENDING
-    return f"{number:+.{places}f} pp"
+    number = _number(value)
+    return data.PENDING if number is None else f"{number:+.{places}f} pp"
 
 
 def _num(value: Any) -> str:
-    try:
-        return f"{int(value):,}"
-    except (TypeError, ValueError):
-        return data.PENDING
+    number = _number(value)
+    return data.PENDING if number is None else f"{int(number):,}"
 
 
 def _bps(value: Any) -> str:
-    try:
-        return f"{int(round(float(value))):,} bps"
-    except (TypeError, ValueError):
-        return data.PENDING
+    number = _number(value)
+    return data.PENDING if number is None else f"{round(number):,} bps"
 
 
 def _plain(value: Any) -> str:
     """A string that may be absent. Absence is shown, never smoothed over."""
-    text = str(value or "").strip()
-    return text or data.PENDING
+    if isinstance(value, _MISSING):
+        return data.PENDING
+    return str(value).strip() or data.PENDING
 
 
 def _state_label(value: Any) -> str:
-    return str(value or "").replace("_", " ").lower() or data.PENDING
+    if isinstance(value, _MISSING):
+        return data.PENDING
+    return str(value).replace("_", " ").lower() or data.PENDING
 
 
 def _state_class(value: Any) -> str:
-    return "s-" + str(value or "unknown").lower().replace("_", "-")
+    if isinstance(value, _MISSING) or not str(value).strip():
+        return "s-unknown"
+    return "s-" + str(value).lower().replace("_", "-")
 
 
 def _bytes(value: Any) -> str:
-    try:
-        size = float(value)
-    except (TypeError, ValueError):
+    size = _number(value)
+    if size is None:
         return data.PENDING
     for unit in ("B", "kB", "MB", "GB"):
         if size < 1024 or unit == "GB":
@@ -119,7 +133,9 @@ def _bytes(value: Any) -> str:
 
 
 def _short_hash(value: Any) -> str:
-    text = str(value or "").strip()
+    if isinstance(value, _MISSING):
+        return data.PENDING
+    text = str(value).strip()
     if len(text) < 16:
         return text or data.PENDING
     return f"{text[:12]}…{text[-8:]}"

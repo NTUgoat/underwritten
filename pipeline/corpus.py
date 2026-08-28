@@ -31,12 +31,19 @@ from __future__ import annotations
 import html as html_module
 import logging
 import re
+import warnings
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 from typing import Iterable, Sequence
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning
+
+# A handful of documents filed with a .htm extension are actually XML. Reading
+# them with an HTML parser is deliberate here - this module wants text out of
+# whatever the issuer filed, not a faithful tree - so bs4's advisory warning is
+# noise that would otherwise fire hundreds of times per issuer.
+warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
 
 from . import config
 from .edgar import (
@@ -359,38 +366,51 @@ def is_exhibit_99(filename: str, doc_type: str | None) -> bool:
 
 def exhibit_files(
     client: EdgarClient, filing: Filing
-) -> tuple[tuple[tuple[str, str], ...], DocumentFailure | None]:
+) -> tuple[tuple[tuple[str, str], ...], tuple[DocumentFailure, ...]]:
     """EX-99.x files in one filing, as `(filename, doc_type)` pairs.
 
-    Returns `((), failure)` when the filing directory cannot be listed, so the
+    Returns `((), failures)` when the filing directory cannot be listed, so the
     caller records a coverage gap rather than assuming the filing had no
     exhibits. Those two things must never be confused.
+
+    A readable directory with an unreadable submission header still yields
+    exhibits, via the filename fallback - but the header failure is *also*
+    returned, because the fallback cannot see an exhibit whose filename does not
+    announce itself. An unenumerable 8-K is precisely the gap through which a
+    metric could still be reported while looking absent, so it is recorded and
+    left for the §6 test to weigh, not swallowed.
     """
-    index_url = filing_index_json_url(filing.cik, filing.accession)
-    try:
-        entries = parse_directory(client.fetch_json(index_url))
-    except Exception as exc:  # noqa: BLE001 - one bad index must not stop a run
-        return (), DocumentFailure(
+    def gap(filename: str, url: str, stage: str, exc: BaseException) -> DocumentFailure:
+        return DocumentFailure(
             cik=filing.cik,
             accession=filing.accession,
             form=filing.form,
             filing_date=filing.filing_date,
-            filename="index.json",
-            url=index_url,
-            stage="index",
+            filename=filename,
+            url=url,
+            stage=stage,
             error=f"{type(exc).__name__}: {exc}",
         )
 
-    # Header types are authoritative but optional: if the page cannot be read we
-    # fall back to the filename pattern rather than losing the exhibits.
+    index_url = filing_index_json_url(filing.cik, filing.accession)
     try:
-        types = parse_submission_header(
-            client.fetch_text(submission_header_url(filing.cik, filing.accession))
-        )
+        entries = parse_directory(client.fetch_json(index_url))
+    except Exception as exc:  # noqa: BLE001 - one bad index must not stop a run
+        return (), (gap("index.json", index_url, "index", exc),)
+
+    # Header types are authoritative; the filename pattern is the fallback.
+    failures: list[DocumentFailure] = []
+    header_url = submission_header_url(filing.cik, filing.accession)
+    try:
+        types = parse_submission_header(client.fetch_text(header_url))
     except Exception as exc:  # noqa: BLE001
-        logger.debug(
-            "Submission header unavailable for %s: %s", filing.accession, exc
+        logger.warning(
+            "Submission header unavailable for %s; falling back to filename "
+            "matching, which can miss an oddly named exhibit: %s",
+            filing.accession,
+            exc,
         )
+        failures.append(gap(header_url.rsplit("/", 1)[-1], header_url, "header", exc))
         types = {}
 
     found: list[tuple[str, str]] = []
@@ -403,7 +423,7 @@ def exhibit_files(
         if is_exhibit_99(filename, doc_type):
             found.append((filename, doc_type or "EX-99"))
 
-    return tuple(found), None
+    return tuple(found), tuple(failures)
 
 
 # --- Document loading ------------------------------------------------------
@@ -505,9 +525,8 @@ def _filing_documents(
 
     wanted = {form.upper() for form in exhibit_forms}
     if include_exhibits and filing.form.upper() in wanted:
-        exhibits, index_failure = exhibit_files(client, filing)
-        if index_failure is not None:
-            failures.append(index_failure)
+        exhibits, exhibit_failures = exhibit_files(client, filing)
+        failures.extend(exhibit_failures)
         for filename, doc_type in exhibits:
             if filename == primary_name:
                 continue
