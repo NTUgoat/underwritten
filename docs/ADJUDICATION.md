@@ -124,6 +124,35 @@ conditions on the final two *reported* periods and this metric has none.
 NEVER_REPORTED, not folded into the rationale, because the primary is re-run with them
 removed and published both ways.
 
+### The de-SPAC projections (§7.5), separately
+
+The second arm of the study grades the multi-year revenue projections de-SPAC
+managements filed in their S-4. Run:
+
+```powershell
+.venv\Scripts\python.exe -m pipeline.find_projections
+```
+
+It writes `data/adjudication/projections_worklist.csv` with one row per de-SPAC
+issuer, pre-filled with the accession, form, filing date, a link to the document
+on sec.gov, and ~2,600 characters of the located section — so you are reading a
+page, not hunting through a two-megabyte registration statement. 16 of the 26 have
+a locatable section; the rest either have no projection table or their S-4 was not
+cached at the time.
+
+Four columns are blank because §7.5 requires them read by a person:
+`fiscal_year`, `projected_revenue`, `page`, `caption`. The method says why —
+*"Hand transcription is deliberate: it is cheaper than parsing, unimpeachable, and
+it is itself the reading work."* A parsed number cannot be defended in an
+interview; a transcribed one with a page reference can.
+
+Fill them in, save as `data/adjudication/projections.csv`, and §7.5 computes the
+realisation ratio with its coverage rate published.
+
+This arm is **optional for a first publication**. If time runs short, §7.5
+degrades cleanly to unavailable with a stated reason and the §7.1/§7.2 finding
+stands on its own.
+
 ### The machine's proposal
 
 Each group carries a proposed ruling with the rule it fired on, rendered dashed and
