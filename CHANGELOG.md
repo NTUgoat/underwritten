@@ -330,3 +330,64 @@ Metrics" section of real listing documents to see whether the locator was missin
 metrics presented in tables rather than in "we define X as" sentences — returned
 **zero issuers examined**, because there was no listing document in the cache to
 read. The question that found it was about something else entirely.
+
+---
+
+## 2026-08-29 — Amendment 5: `NEVER_REPORTED`, and the one that cuts the other way
+
+**Applies to:** METHOD.md §5, and §7.1 reporting.
+**Status:** before any ruling exists. No terminal state has been assigned by anyone.
+
+### Read this first
+
+The four amendments before this one all made the hypothesis **harder** to support.
+That asymmetry was the argument for trusting them: a correction that costs you
+evidence is distinguishable from tuning.
+
+**This amendment does the opposite.** It creates a state that will make the headline
+larger. It is being recorded with that stated plainly, and with a mitigation, because
+an amendment that helps the author deserves more scrutiny than one that hurts him,
+not less.
+
+### What the data showed
+
+Once listing documents were finally being read (see the previous entry), 107 of 946
+candidate metrics turned out to appear in the listing document and in **no subsequent
+filing at all**. The §6 absence test cannot describe that: it measures absence across
+reporting periods and needs a first appearance to measure absence *from*. So all 107
+landed in `NOT_DETERMINABLE`.
+
+That is the wrong answer. Consider Super League Enterprise, which published five
+metrics under a heading reading "KPI" in its own prospectus — *Always On Venues*,
+*Experiences*, *Conversion Registered Accounts*, *Engagement Participations*,
+*Gameplay Hours*. Three of them appear in no document the company has filed since.
+Recording that as "the filed record does not settle it" is not conservatism; the
+filed record settles it completely.
+
+### What changed
+
+A new §5 terminal state, `NEVER_REPORTED`: defined in the listing document, appearing
+in no subsequent filing. It is **not** a special case of `DISCONTINUED` — a
+discontinued metric was reported and then stopped; this one was promised and never
+reported.
+
+### The mitigation, which is the point
+
+§7.1 publishes the base rate **twice**: once counting `NEVER_REPORTED` as abandonment,
+once treating it as `NOT_DETERMINABLE`, with the difference stated in percentage
+points. A reader who thinks this state should not exist can read the study as though
+it does not, without recomputing anything.
+
+The state is still a **human ruling**. The machine's evidence is narrower and purely
+factual — *this phrase occurs in the listing document and in nothing filed afterwards*.
+Whether that means the promise was abandoned, or the issuer renamed the metric before
+its first report, or the phrase was never a metric at all, is adjudicated like every
+other terminal state. Many of the 107 will not survive §4 at all: several are
+prospectus boilerplate.
+
+### Why not simply leave it
+
+That option was considered and rejected deliberately, not by default. Leaving it as
+`NOT_DETERMINABLE` would have been unimpeachable and would have discarded the clearest
+evidence in the dataset. Publishing both numbers costs nothing and lets the reader
+decide, which is a better answer than either silence or a single number.

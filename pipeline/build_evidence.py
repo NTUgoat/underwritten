@@ -38,7 +38,8 @@ from .build_candidates import MIN_CORPUS_COMPLETENESS
 from .corpus import build as build_corpus
 from .edgar import EdgarClient, OfflineCacheMiss
 from .filings import complete_index
-from .metrics import absence_test, metric_key
+from .build_candidates import listing_documents
+from .metrics import absence_test, metric_key, phrase_pattern
 
 warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
 
@@ -155,13 +156,36 @@ def main() -> int:
             print(f"[{i:>2}/{len(rows)}] {name:<34} corpus incomplete - skipped")
             continue
 
+        # The listing document is not part of the §6 corpus, by design. But
+        # METHOD.md §5 NEVER_REPORTED turns on whether a phrase occurs there and
+        # nowhere afterwards, so it is searched separately for that one fact.
+        try:
+            listing_text = " ".join(
+                d.text for d in listing_documents(client, index, row)
+            )
+        except Exception:  # noqa: BLE001 - absence of a listing doc is not fatal
+            listing_text = ""
+
         per_issuer: Counter[str] = Counter()
         for key, phrase in sorted(phrases.items()):
             # No aliases here. A rename is a HUMAN ruling (§6); once the
             # reviewer traces one, the test is re-run over the traced set.
             result = absence_test(corpus, phrase)
+
+            # Purely factual, and deliberately narrow: does the phrase occur in
+            # the listing document, and nowhere in anything filed afterwards?
+            # That is the evidence for NEVER_REPORTED. It is NOT the state -
+            # the phrase may have been renamed before the first report, or may
+            # never have been a metric. A human rules, as on every other state.
+            in_listing = bool(
+                listing_text and phrase_pattern(phrase).search(listing_text)
+            )
+            never_reported_eligible = in_listing and result.n_appearances == 0
+
             per_issuer[result.status] += 1
             statuses[result.status] += 1
+            if never_reported_eligible:
+                statuses["(never-reported evidence)"] += 1
             evidence.append(
                 {
                     "cik": cik,
@@ -179,6 +203,8 @@ def main() -> int:
                     "n_appearances": result.n_appearances,
                     "n_documents_searched": result.n_documents_searched,
                     "n_documents_failed": result.n_documents_failed,
+                    "in_listing_document": in_listing,
+                    "never_reported_eligible": never_reported_eligible,
                     "first_appearance": _appearance(result.first_appearance),
                     "last_appearance": _appearance(result.last_appearance),
                 }

@@ -131,7 +131,21 @@ exactly one terminal state as at 2026-08-28:
 | `RENAMED` | Same underlying definition, new label. Traced and treated as continuous. |
 | `ABSORBED` | Superseded by a broader metric that the company explicitly states subsumes it. |
 | `DISCONTINUED` | Meets the four-period absence test in §6. |
+| `NEVER_REPORTED` | Defined in the listing document and appearing in **no** subsequent filing. Not a special case of `DISCONTINUED`: a discontinued metric was reported and then stopped, this one was promised and never reported at all. Added by amendment 29 August 2026 — see `CHANGELOG.md`, and note that this is the one amendment that cuts in favour of the hypothesis. |
 | `NOT_DETERMINABLE` | The filed record does not settle the question. Used, and published. |
+
+**`NEVER_REPORTED` is reported twice, always.** Because this state was added after
+the data existed and it makes the headline larger, §7.1 publishes the base rate both
+with `NEVER_REPORTED` counted as abandonment and with it treated as
+`NOT_DETERMINABLE`, and states the difference in percentage points. A reader who
+thinks the state should not exist can read the study as though it does not.
+
+The §6 absence test cannot establish this state — it measures absence across periods
+and needs a first appearance to measure from. The machine's evidence is narrower and
+purely factual: *the phrase occurs in the listing document and in no document filed
+afterwards*. Whether that is `NEVER_REPORTED`, a renaming the issuer adopted before
+its first report, or a phrase that was never a metric at all, remains a human ruling
+like every other terminal state.
 
 Cosmetic rewording, rounding changes, and unit changes are **not** `REDEFINED`. The
 distinction between substantive and cosmetic is a human ruling and is recorded with its
