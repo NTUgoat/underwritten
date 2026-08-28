@@ -55,6 +55,17 @@ AS_AT_DATE = "2026-08-28"
 # the entire filed corpus, before a metric may be called DISCONTINUED.
 DISCONTINUATION_PERIODS = 4
 
+# METHOD.md §3 C0. A newly listed issuer has a short EDGAR history: an IPO filer
+# appears weeks before listing, a SPAC shell one to three years before its
+# combination. A company with decades of filings did not list in this window,
+# whatever registration statement it happens to have filed. Five years is
+# deliberately generous - the real separation is 0-3 years against 25+.
+MAX_PRE_LISTING_HISTORY_YEARS = 5
+
+# A de-SPAC registered late in the window may close the following year, so
+# completion is allowed to fall this far beyond the window end.
+DESPAC_COMPLETION_GRACE_MONTHS = 12
+
 # --- Form types ------------------------------------------------------------
 
 LISTING_FORMS = ("424B4", "424B3", "424B1", "S-1", "F-1", "S-4", "F-4")

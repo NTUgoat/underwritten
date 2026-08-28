@@ -6,21 +6,23 @@
   ],
   "target_n": 50,
   "floor_n": 25,
-  "candidates_enumerated": 602,
+  "candidates_enumerated": 689,
   "candidates_by_arm": {
-    "DESPAC": 177,
-    "IPO": 425
+    "IPO": 373,
+    "DESPAC": 316
   },
   "accepted": 50,
   "accepted_by_arm": {
-    "DESPAC": 49,
-    "IPO": 1
+    "IPO": 24,
+    "DESPAC": 26
   },
-  "rejected": 21,
+  "rejected": 116,
   "rejected_by_criterion": {
-    "C1c": 13,
-    "C3": 4,
-    "C1b": 4
+    "C0": 87,
+    "C3": 9,
+    "C1b": 15,
+    "C1c": 4,
+    "C2": 1
   },
   "met_target": true,
   "met_floor": true

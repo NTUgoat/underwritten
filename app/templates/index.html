@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block title %}{{ site.name }} — {{ site.tagline }}{% endblock %}
+
+{% block content %}
+{% set cohort = finding.cohort or {} %}
+{% set base_rate = finding.base_rate or {} %}
+{% set counter = finding.counter_test or {} %}
+{% set sens = finding.sensitivity or {} %}
+{% set primary = finding.primary_test or {} %}
+
+{# ---------------------------------------------------------------- the fold #}
+<section class="fold">
+  <div class="wrap">
+    <p class="kicker">
+      <span>Pre-registered {{ site.preregistered }}</span>
+      <span class="kicker__sep">/</span>
+      <span>as at {{ finding.as_at|default(as_at, true) }}</span>
+      <span class="kicker__sep">/</span>
+      <span>specification&nbsp;#1 of the pre-registration</span>
+    </p>
+
+    <h1 class="finding">
+      {% if finding.finding and finding.finding.segments %}
+        {{ m.prose(finding.finding.segments) }}
+      {% else %}
+        Of the {{ m.pending() }} operating metrics that {{ m.pending() }} US issuers
+        defined for themselves in their {{ site.listing_window }} listing documents,
+        {{ m.pending() }} had been discontinued or substantively redefined by
+        {{ finding.as_at|default(as_at, true) }}.
+      {% endif %}
+    </h1>
+
+    <p class="realised">
+      <span class="realised__item"><span class="realised__k">realised n</span>
+        <span class="realised__v">{{ cohort.n_issuers|num }}</span> issuers</span>
+      <span class="realised__item"><span class="realised__k">metrics adjudicated</span>
+        <span class="realised__v">{{ cohort.n_metrics|num }}</span></span>
+      <span class="realised__item"><span class="realised__k">pre-registered target</span>
+        <span class="realised__v">50</span></span>
+      <span class="realised__item"><span class="realised__k">floor</span>
+        <span class="realised__v">25</span></span>
+      {% if cohort.floor_met is defined and cohort.floor_met is not none %}
+      <span class="realised__item realised__item--flag">{{ 'floor met' if cohort.floor_met else 'floor NOT met — published as a null result' }}</span>
+      {% endif %}
+    </p>
+
+    <hr class="rule">
+
+    {# The counter-test and the sensitivity sit here, directly beneath the
+       finding, because both were committed to before the data existed and both
+       are published whichever way they come out. #}
+    <div class="checks">
+      <article class="check">
+        <h2 class="check__h">Counter-test <span class="check__ref">pre-registered, 7.3</span></h2>
+        <p class="check__claim">Metrics disappear regardless of which way they were moving.</p>
+        {% if counter.improving or counter.deteriorating %}
+        <dl class="check__pair">
+          <div><dt>last reported improving</dt>
+            <dd>{{ m.interval(counter.improving.share, none, none) }}
+              <span class="check__n">{{ counter.improving.discontinued|num }} of {{ counter.improving.n|num }}</span></dd></div>
+          <div><dt>last reported deteriorating</dt>
+            <dd>{{ m.interval(counter.deteriorating.share, none, none) }}
+              <span class="check__n">{{ counter.deteriorating.discontinued|num }} of {{ counter.deteriorating.n|num }}</span></dd></div>
+        </dl>
+        <p class="check__verdict">
+          Difference {{ counter.difference_pp|pp }}.
+          {% if counter.segments %}{{ m.prose(counter.segments) }}{% endif %}
+        </p>
+        {% if counter.verdict %}
+        <p class="check__badge v-{{ counter.verdict|lower|replace('_','-') }}">{{ counter.verdict|state_label }}</p>
+        {% endif %}
+        {% else %}
+        <p class="check__empty">{{ m.pending() }} — if metrics vanish at similar rates
+          whether improving or deteriorating, the headline above is substantially
+          weakened, and that result is published here with the same prominence.</p>
+        {% endif %}
+      </article>
+
+      <article class="check">
+        <h2 class="check__h">Benign-cause sensitivity <span class="check__ref">pre-registered, 7.4</span></h2>
+        <p class="check__claim">The primary re-run with hand-labelled benign causes removed.</p>
+        {% if sens.primary or sens.benign_removed %}
+        <dl class="check__pair">
+          <div><dt>{{ sens.primary.label|default('as pre-registered', true) }}</dt>
+            <dd>{{ sens.primary.value|pct }}</dd></div>
+          <div><dt>{{ sens.benign_removed.label|default('benign causes removed', true) }}</dt>
+            <dd>{{ sens.benign_removed.value|pct }}</dd></div>
+        </dl>
+        <p class="check__verdict">Difference {{ sens.delta_pp|pp }}.
+          {% if sens.segments %}{{ m.prose(sens.segments) }}{% endif %}</p>
+        {% if sens.benign_labels %}
+        <p class="check__list">Benign causes counted:
+          {% for label in sens.benign_labels %}<span class="term">{{ label }}</span>{% if not loop.last %}, {% endif %}{% endfor %}.</p>
+        {% endif %}
+        {% else %}
+        <p class="check__empty">{{ m.pending() }} — segment reclassification under
+          ASC 280, supersession by an accounting standard, a comment-letter-driven
+          non-GAAP change, and disposal of the measured business are labelled by hand
+          and the primary is published both with and without them.</p>
+        {% endif %}
+      </article>
+    </div>
+  </div>
+</section>
+
+{# ------------------------------------------------------- the base rate, 7.1 #}
+<section class="band">
+  <div class="wrap">
+    <header class="band__head">
+      <h2 class="band__h">The base rate</h2>
+      <p class="band__sub">Terminal state of every adjudicated metric as at
+        {{ finding.as_at|default(as_at, true) }}, with an exact binomial 95% interval.
+        This is the headline. Everything below it is a smaller claim.</p>
+    </header>
+
+    {% if base_rate.states %}
+    <div class="scroller">
+      <table class="table table--rates">
+        <thead>
+          <tr><th scope="col">Terminal state</th><th scope="col" class="n">n</th>
+            <th scope="col" class="n">share</th><th scope="col" class="n">95% CI</th>
+            <th scope="col">definition</th></tr>
+        </thead>
+        <tbody>
+          {% for row in base_rate.states %}
+          <tr>
+            <th scope="row"><span class="swatch {{ row.state|state_class }}"></span>{{ row.state|state_label }}</th>
+            <td class="n">{{ row.n|num }}</td>
+            <td class="n">{{ row.share|pct }}</td>
+            <td class="n">{% if row.ci_low is not none and row.ci_high is not none %}{{ row.ci_low|pct }} – {{ row.ci_high|pct }}{% else %}{{ PENDING }}{% endif %}</td>
+            <td class="def">{{ CELL_LEGEND.get(row.state, '') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        {% if base_rate.denominator %}
+        <tfoot><tr><th scope="row">denominator</th><td class="n">{{ base_rate.denominator|num }}</td>
+          <td colspan="3" class="def">included metrics across all issuers</td></tr></tfoot>
+        {% endif %}
+      </table>
+    </div>
+    {% else %}
+    {{ m.absent('The base rate is published when the adjudication ledger is complete. Nothing stands in for it in the meantime.', 'data/derived/finding.json') }}
+    {% endif %}
+  </div>
+</section>
+
+{# ------------------------------------------- the signal, 7.2, below the rate #}
+<section class="band band--alt">
+  <div class="wrap">
+    <header class="band__head">
+      <h2 class="band__h">The signal</h2>
+      <p class="band__sub">Specification #1, the only confirmatory test. Issuers split by
+        their own metric behaviour: <span class="term">keepers</span> discontinued and
+        substantively redefined nothing; <span class="term">movers</span> did at least one.
+        The comparison is an association with a wide interval, and it is reported after the
+        base rate because the base rate is the more reliable claim.</p>
+    </header>
+
+    {% if primary.keepers or primary.movers %}
+    <div class="scroller">
+      <table class="table">
+        <thead><tr><th scope="col">arm</th><th scope="col" class="n">n issuers</th>
+          <th scope="col" class="n">with an adverse filing event</th><th scope="col" class="n">share</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">keepers</th><td class="n">{{ primary.keepers.n|num }}</td>
+            <td class="n">{{ primary.keepers.adverse|num }}</td><td class="n">{{ primary.keepers.share|pct }}</td></tr>
+          <tr><th scope="row">movers</th><td class="n">{{ primary.movers.n|num }}</td>
+            <td class="n">{{ primary.movers.adverse|num }}</td><td class="n">{{ primary.movers.share|pct }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="stats">
+      <li><span class="stats__k">difference</span><span class="stats__v">{{ primary.difference_pp|pp }}</span></li>
+      <li><span class="stats__k">bootstrap 95% CI (10,000 resamples)</span>
+        <span class="stats__v">{% if primary.bootstrap_ci_pp %}{{ primary.bootstrap_ci_pp[0]|pp }} – {{ primary.bootstrap_ci_pp[1]|pp }}{% else %}{{ PENDING }}{% endif %}</span></li>
+      <li><span class="stats__k">Fisher exact, two-sided</span>
+        <span class="stats__v">{% if primary.fisher_p is not none and primary.fisher_p != '' %}p = {{ primary.fisher_p }}{% else %}{{ PENDING }}{% endif %}</span></li>
+      <li><span class="stats__k">Mann-Whitney U on per-issuer event counts</span>
+        <span class="stats__v">{% if primary.mann_whitney %}U = {{ primary.mann_whitney.u }}, p = {{ primary.mann_whitney.p }}{% else %}{{ PENDING }}{% endif %}</span></li>
+    </ul>
+    {% else %}
+    {{ m.absent('The confirmatory test is published when the outcome extraction has run against the frozen cohort.', 'data/derived/finding.json') }}
+    {% endif %}
+
+    <p class="caveat">
+      {{ primary.power_note|default('At n = 50 this study is underpowered for anything but a large effect. It cannot support a causal claim and does not make one: the words cause, predicts and leads to do not appear in the findings.', true) }}
+    </p>
+
+    {% if finding.exclusions_applied %}
+    <p class="caveat caveat--tight">Excluded from the outcome variable by Amendment 1, counted rather than dropped:
+      {% for label, count in finding.exclusions_applied.items() %}<span class="term">{{ label|state_label }}</span> {{ count|num }}{% if not loop.last %}; {% endif %}{% endfor %}.
+      <a href="/changelog">Why</a>.</p>
+    {% endif %}
+  </div>
+</section>
+
+{# -------------------------------------------------------- the one graphic #}
+<section class="band">
+  <div class="wrap">
+    <header class="band__head">
+      <h2 class="band__h">The scoreboard</h2>
+      <p class="band__sub">One row per issuer, one column per fiscal year, one mark per
+        year for what happened to that issuer's own metrics. Keepers first, movers
+        below. The whole study is in this grid.</p>
+    </header>
+
+    {% if board.issuers and board.fiscal_years %}
+    {{ m.scoreboard_grid(board) }}
+    {% else %}
+    {{ m.absent('The scoreboard renders once the cohort is frozen and every metric has a terminal state. Until then the legend below is the only part of it that is true.', 'data/derived/scoreboard.json') }}
+    {% endif %}
+
+    {{ m.legend() }}
+  </div>
+</section>
+
+{# ------------------------------------------------------------------- links #}
+<section class="band band--alt">
+  <div class="wrap">
+    <nav class="onward" aria-label="Read on">
+      <a class="onward__item" href="/note">
+        <span class="onward__k">The note</span>
+        <span class="onward__d">What the ledger says, written out, signed and dated, with its revision log.</span></a>
+      <a class="onward__item" href="/cohort">
+        <span class="onward__k">The ledger</span>
+        <span class="onward__d">Every adjudicated metric, its life history, and the initials of whoever ruled on it.</span></a>
+      <a class="onward__item" href="/positions">
+        <span class="onward__k">Positions</span>
+        <span class="onward__d">Constructive only, on live names, priced as a spread over a bottom-up hurdle.</span></a>
+      <a class="onward__item" href="/resolved">
+        <span class="onward__k">Resolved</span>
+        <span class="onward__d">Adverse conclusions, and only where the outcome is already on the public record.</span></a>
+      <a class="onward__item" href="/method">
+        <span class="onward__k">Method</span>
+        <span class="onward__d">The pre-registration in full, the specification counter, and the exclusion table.</span></a>
+      <a class="onward__item" href="/provenance">
+        <span class="onward__k">Provenance</span>
+        <span class="onward__d">A SHA-256 for every document read, so a reader can check byte-identity.</span></a>
+    </nav>
+    {{ m.provenance_strip(sources) }}
+  </div>
+</section>
+
+{% endblock %}

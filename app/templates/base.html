@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ page_title }} — {{ site.name }}{% endblock %}</title>
+<meta name="description" content="{{ site.tagline }}. Pre-registered {{ site.preregistered }}.">
+<meta name="author" content="{{ site.author }}">
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/static/underwritten.css">
+</head>
+<body class="page page--{{ page_id }}">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="masthead__name" href="/">{{ site.name }}</a>
+    <p class="masthead__tagline">{{ site.tagline }}</p>
+    <nav class="masthead__nav" aria-label="Sections">
+      <ul>
+        {% for item in nav %}
+        <li><a href="{{ item.href }}"{% if item.id == page_id %} aria-current="page"{% endif %}>{{ item.label }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="main">
+{% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div class="footer__block">
+        <h2 class="footer__h">What this is</h2>
+        <p>A pre-registered study of the operating metrics US companies defined for
+        themselves in their {{ site.listing_window }} listing documents, graded against
+        every document they have filed with the SEC since. Pre-registered
+        {{ site.preregistered }}, tag <code>{{ site.preregistration_tag }}</code>,
+        before any filing was retrieved.</p>
+      </div>
+      <div class="footer__block">
+        <h2 class="footer__h">What it is not</h2>
+        <p>Not investment advice. Not a claim about causation. No adverse forward-looking
+        view is published on any live company. The corpus is the SEC-filed record and
+        nothing else — investor decks, transcripts and press materials are outside it.</p>
+      </div>
+      <div class="footer__block">
+        <h2 class="footer__h">Independence</h2>
+        <p>Built from public SEC filings, on personal hardware, on personal time. No
+        employer data, systems, methods or work product is used or relied on. No
+        commercial data vendor. No licensed feed is redistributed.</p>
+      </div>
+    </div>
+    <p class="footer__sign">
+      <span>{{ site.author }}</span>
+      <span class="footer__dot">·</span>
+      <span>as at {{ as_at }}</span>
+      <span class="footer__dot">·</span>
+      <a href="/method">Method</a>
+      <span class="footer__dot">·</span>
+      <a href="/changelog">Changelog</a>
+      <span class="footer__dot">·</span>
+      <a href="/provenance">Provenance</a>
+    </p>
+  </div>
+</footer>
+
+<script src="/static/cite.js" defer></script>
+</body>
+</html>

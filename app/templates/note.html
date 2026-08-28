@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+
+{% block content %}
+{% set skeleton = [
+  ('What was promised', 'The scoreboard each issuer invented for itself, and the projections the de-SPACs filed. Both abandonable at will, both in the listing document, both quoted verbatim.'),
+  ('What the filed record shows', 'The terminal state of every adjudicated metric as at the as-at date, with its exact binomial interval, and what the four-period absence test did and did not settle.'),
+  ('The counter-test', 'Whether metrics disappear at similar rates when they were improving as when they were deteriorating. Committed to before the data existed, published either way.'),
+  ('What the exclusions cost', 'The April 2021 SPAC warrant restatement wave and the mechanical de-SPAC delisting, both counted rather than dropped, and what the primary looks like with them restored.'),
+  ('The de-SPAC projection arm', 'Hand-transcribed prospective financial information against realised revenue from XBRL companyfacts, reported as a realisation ratio with its coverage rate.'),
+  ('What this does not show', 'n is small, the corpus is the SEC-filed record only, survivorship bites in the later periods, and one human did the adjudicating.'),
+  ('What would change my mind', 'The specific findings in the filed record that would overturn each claim above, written down before anyone offers them.')
+] %}
+
+<article class="note">
+  <div class="wrap wrap--reading">
+
+    <header class="note__head">
+      <p class="kicker">
+        <span>Note</span>
+        <span class="kicker__sep">/</span>
+        <span>{{ note.dated|default(as_at, true) }}</span>
+        {% if note.word_count %}<span class="kicker__sep">/</span><span>{{ note.word_count|num }} words</span>{% endif %}
+      </p>
+      <h1 class="note__title">
+        {% if note.title %}{{ note.title }}{% else %}The scoreboard they invented for themselves{% endif %}
+      </h1>
+      <p class="note__standfirst">
+        {% if note.standfirst %}{{ note.standfirst }}{% else %}
+        Between 2019 and 2021 a large cohort of US companies listed on the strength of
+        operating metrics they defined themselves and, in the de-SPACs, revenue
+        projections they filed themselves. This note grades those promises against every
+        document the same companies have since filed with the SEC — and says plainly
+        where the filed record does not settle the question.
+        {% endif %}
+      </p>
+      <p class="note__by">
+        <span class="note__author">{{ note.author|default(site.author, true) }}</span>
+        <span class="note__dot">·</span>
+        <span>pre-registered {{ site.preregistered }}</span>
+        <span class="note__dot">·</span>
+        <span>corpus: {{ site.corpus }}</span>
+      </p>
+    </header>
+
+    {% if sections %}
+
+    <nav class="note__toc" aria-label="Contents">
+      <h2 class="note__toc-h">Contents</h2>
+      <ol>
+        {% for section in sections %}
+        <li><a href="#{{ section.id|default(section.heading|slug, true) }}">{{ section.heading }}</a></li>
+        {% endfor %}
+      </ol>
+    </nav>
+
+    {% for section in sections %}
+    <section class="note__section" id="{{ section.id|default(section.heading|slug, true) }}">
+      <h2 class="note__h2">{{ section.heading }}</h2>
+      {% for block in section.blocks %}
+        {% if block.pull %}
+      <p class="pull">{{ block.pull }}</p>
+        {% elif block.struck %}
+      <p class="struck">
+        <del>{{ m.prose(block.struck.segments) }}</del>
+        <span class="struck__note">Superseded {{ block.struck.date }} — {{ block.struck.note }}</span>
+      </p>
+        {% else %}
+      <p>{{ m.prose(block.segments) }}</p>
+        {% endif %}
+      {% endfor %}
+    </section>
+    {% endfor %}
+
+    {% else %}
+
+    <div class="notice">
+      <p class="notice__mark">{{ PENDING }}</p>
+      <p>The note is not written. It is published when the adjudication ledger is
+      complete, and not before — a note written ahead of the ledger would be a view in
+      search of evidence, which is the failure mode this whole method exists to avoid.</p>
+      <p>What it will contain is fixed, and is set out below. Each section will carry its
+      figures as citation chips: every numeral resolves to an accession number, and a
+      numeral that cannot be resolved is not printed.</p>
+    </div>
+
+    <section class="note__section">
+      <h2 class="note__h2">The shape of the note</h2>
+      <ol class="skeleton">
+        {% for heading, blurb in skeleton %}
+        <li class="skeleton__item">
+          <h3 class="skeleton__h">{{ heading }}</h3>
+          <p class="skeleton__d">{{ blurb }}</p>
+          <p class="skeleton__mark">{{ PENDING }}</p>
+        </li>
+        {% endfor %}
+      </ol>
+    </section>
+
+    {% endif %}
+
+    <section class="note__section note__section--revisions" id="revisions">
+      <h2 class="note__h2">Revision log</h2>
+      <p class="note__lede">Nothing here is retroactively edited. A superseded view is
+      struck through in place with a dated note, and the strike stays visible.</p>
+      {% if revisions %}
+      <ol class="revisions">
+        {% for revision in revisions %}
+        <li class="revision">
+          <p class="revision__date">{{ revision.date }}</p>
+          <p class="revision__what">{{ revision.what }}</p>
+          {% if revision.supersedes %}<p class="revision__super">supersedes <code>{{ revision.supersedes }}</code></p>{% endif %}
+        </li>
+        {% endfor %}
+      </ol>
+      {% else %}
+      <p class="revisions__empty">No revisions. This note has not yet had a first version.</p>
+      {% endif %}
+    </section>
+
+    <p class="signature">
+      <span class="signature__name">{{ note.author|default(site.author, true) }}</span>
+      <span class="signature__date">{{ note.dated|default(as_at, true) }}</span>
+    </p>
+
+    {{ m.provenance_strip(sources) }}
+  </div>
+</article>
+{% endblock %}

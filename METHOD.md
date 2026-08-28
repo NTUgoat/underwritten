@@ -66,6 +66,7 @@ Frozen before extraction. A company enters the cohort if **all** hold:
 
 | # | Criterion |
 |---|---|
+| C0 | **The issuer is newly listed.** Its earliest EDGAR filing of any type is no more than **5 years** before the registration statement. An IPO filer appears on EDGAR weeks before listing; a SPAC shell one to three years before its combination; a company with decades of filings did not list in this window whatever registration statement it filed. Applies to **both** arms. Added by amendment 28 August 2026 — see `CHANGELOG.md`. |
 | C1 | Completed an IPO, direct listing, or de-SPAC business combination with an effective registration statement dated between **2019-01-01 and 2021-12-31** inclusive. |
 | C1b | **The registration statement is a listing document, not a follow-on offering.** An S-1 registers any offering, including secondary and resale offerings by long-public companies. Operationalised as: the issuer filed **no periodic report** (10-K, 20-F, 40-F, 10-Q) before the registration statement's filing date. The Form 8-A exchange-registration date is recorded alongside as corroboration. Added by amendment 28 August 2026, before data collection — see `CHANGELOG.md`. |
 | C2 | Is an **operating company** at listing. Blank-check shells that had not yet completed a business combination, closed-end funds, and pure holding vehicles are excluded. |

@@ -150,3 +150,111 @@ Verified after the fix: GrafTech rejected under C1b; Affirm accepted (IPO,
 listing = registration = 2020-11-18); Nikola accepted (de-SPAC, registration
 2020-03-13, listing 2020-06-08, 9 annual reports, SIC 3711 — correctly updated away
 from blank-check on completion).
+
+---
+
+## 2026-08-28 — Amendment 3: C0, and a de-SPAC locator that identifies de-SPACs
+
+**Supersedes:** `5b876de`
+**Applies to:** METHOD.md §3 and §4 (candidate location)
+**Status:** made **before any metric was extracted or any statistic computed**. A cohort
+file had been produced and was **discarded in full**; it is superseded, not amended.
+
+### What went wrong
+
+The first cohort build returned n=50 and reported success. Inspecting it showed
+**Advanced Micro Devices, Analog Devices, Bristol Myers Squibb, Canadian Pacific, M&T
+Bank and S&P Global** — 49 of 50 members labelled de-SPAC, 31 of them banks. Not one is
+a 2019-2021 listing. Two independent errors compounded:
+
+**1. The de-SPAC locator did not identify de-SPACs.** The phrase used was *"Certain
+Unaudited Prospective Financial Information"*. That is the standard caption for
+management projections in **any** merger proxy or S-4 — AMD/Xilinx, Bristol
+Myers/Celgene, S&P Global/IHS Markit all carry it. Form S-4 registers any business
+combination, not a de-SPAC. The locator was selecting large-cap acquirers.
+
+**2. Nothing tested whether a de-SPAC-arm issuer was newly listed.** C1b (Amendment 2)
+was correctly restricted to the IPO arm, which left the de-SPAC arm with no
+already-public test at all. AMD's first EDGAR filing is 1994-01-27; it entered a cohort
+of 2019-2021 listings unchallenged.
+
+These interacted with the pre-registered CIK-ascending walk order. CIK is issued
+sequentially, so the walk begins at the **oldest** registrants on EDGAR. With the filter
+broken, all 50 slots filled with 1990s registrants before the walk ever reached a
+genuine 2019 listing. The ordering is still outcome-blind — a company's CIK cannot know
+whether it will later restate — but it is strongly **age**-correlated, which is exactly
+why the age rule must be explicit rather than assumed. The ordering rule is unchanged.
+
+### What changed
+
+- **New C0, both arms.** The issuer's earliest EDGAR filing must be no more than
+  `MAX_PRE_LISTING_HISTORY_YEARS = 5` before the registration statement. The observed
+  separation is not marginal: 26.8 years (AMD), 25.1 (Bristol Myers), 22.9 (GrafTech)
+  against 0.1 (Affirm) and 2.3 (Nikola).
+- **De-SPAC locator replaced** with `"blank check company"`, how a SPAC describes itself
+  in its own registration statement. In S-4/F-4 over the window this returns 1,151
+  filings, and the issuers are SPACs (Bird Global, Property Solutions Acquisition,
+  Tortoise Acquisition II, RMG Acquisition, ACON S2 Acquisition). The projection table
+  is now verified at document level in the §7.5 stage rather than used to select the
+  cohort — selection and measurement should not share an instrument.
+- **De-SPAC completion window.** Completion must fall within the listing window plus
+  `DESPAC_COMPLETION_GRACE_MONTHS = 12`, so a late-2021 registration that closed in 2022
+  qualifies while AMD's 2022 close on a 2020 registration does not.
+
+Also noted: EDGAR full-text search does **not** AND multiple quoted phrases. Adding a
+second phrase *raised* the hit count (1,151 to 1,346), so multi-phrase queries cannot be
+used to narrow a search and were not.
+
+### Why this is recorded rather than quietly fixed
+
+No result had been computed, so nothing here is tuning. But the failure is worth keeping
+on the record for its own sake: the build reported `ACCEPTED: 50` and met its
+pre-registered target while being entirely invalid. A green count is not a finding. The
+check that caught it was reading the fifty company names, and that is the only reason
+this study did not publish a cohort of 2019-2021 listings containing Bristol Myers
+Squibb.
+
+Verified after the fix: AMD, Bristol Myers and GrafTech all rejected under C0; Affirm
+(IPO) and Nikola (de-SPAC) both accepted with correct arm-specific listing dates.
+
+---
+
+## 2026-08-28 — Amendment 4: arm assignment, and annual periods vs annual filings
+
+**Supersedes:** `5b876de`
+**Applies to:** METHOD.md §3 (C3) and candidate deduplication
+**Status:** before any metric was extracted or statistic computed.
+
+### 1. A SPAC's own IPO registration is not the operating company's listing
+
+A CIK can match both locators: the shell files an S-1 for its own SPAC IPO, and years
+later an S-4 registers the combination. Deduplication kept the **earlier** filing, so
+the shell's IPO became the listing. **Celularity** (CIK 1752828) was recorded as an IPO
+listing on 2019-04-26 — that is the GX Acquisition shell's S-1. Celularity listed on
+completion, **2021-07-22**.
+
+The de-SPAC reading now wins whenever both exist, carrying its own registration date.
+Within a single arm the earliest match still wins, since registration statements are
+amended repeatedly and the first is closest to the listing.
+
+This is deliberately **not** implemented as "has an 8-K Item 2.01". Operating companies
+file Item 2.01 for any material acquisition: **Super League Enterprise** (CIK 1621672)
+is a genuine January 2019 IPO with three of them. Arm is decided by which registration
+statement the issuer filed, never by later acquisition activity.
+
+After the fix: Celularity is de-SPAC, registration 2021-01-25, listing 2021-07-22;
+Super League remains an IPO listing on 2019-01-04.
+
+### 2. C3 counts annual periods, not annual filings
+
+`ANNUAL_FORMS` includes `10-K/A` and `20-F/A`, so amendments were inflating the count.
+Super League showed **11** annual reports (7 10-K plus 4 10-K/A) and FORUM MARKETS
+**14** (9 plus 5) — more than the years either had been listed. An issuer could have
+satisfied "three subsequent annual reports" with two years and an amendment. Amended
+forms are now excluded from the C3 count. The cohort maximum falls to 8, consistent
+with a January 2019 listing measured to August 2026.
+
+### Resulting cohort
+
+n = 50 (target met), 26 de-SPAC and 24 IPO, listing dates 2019-01-04 to 2021-11-01.
+Funnel: 116 candidates rejected — C0 87, C1b 15, C3 9, C1c 4, C2 1.

@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+
+{% block content %}
+<section class="band band--head">
+  <div class="wrap">
+    <p class="kicker">
+      <span>The ledger</span>
+      <span class="kicker__sep">/</span>
+      <span>as at {{ board.as_at|default(as_at, true) }}</span>
+    </p>
+    <h1 class="page-title">Every metric, and what became of it</h1>
+    <p class="page-lede">Candidate metrics are located by pattern search. Pattern search
+    decides nothing. Every candidate below was ruled on by hand, and every ruling carries
+    the reviewer's initials, the date, the verbatim defining sentence, the accession
+    number and a one-line rationale. This ledger is the study; disagree with it row by
+    row.</p>
+  </div>
+</section>
+
+{# ------------------------------------------------------------ the matrix #}
+<section class="band">
+  <div class="wrap">
+    <h2 class="band__h">The matrix</h2>
+    {% if board.issuers and board.fiscal_years %}
+    {{ m.scoreboard_grid(board) }}
+    {% else %}
+    {{ m.absent('The matrix renders once every metric has a terminal state.', 'data/derived/scoreboard.json') }}
+    {% endif %}
+    {{ m.legend() }}
+  </div>
+</section>
+
+{# ------------------------------------------------------------- the filters #}
+<section class="band band--alt" id="ledger">
+  <div class="wrap">
+    <h2 class="band__h">Filter the ledger</h2>
+    <form class="filters" method="get" action="/cohort" data-autosubmit>
+      <div class="filters__field">
+        <label for="f-sector">Sector <span class="filters__hint">SIC code as EDGAR assigns it</span></label>
+        <select id="f-sector" name="sector">
+          <option value="">all sectors</option>
+          {% for option in facets.sectors %}
+          <option value="{{ option }}"{% if option == filters.sector %} selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="filters__field">
+        <label for="f-arm">Arm <span class="filters__hint">how the company listed</span></label>
+        <select id="f-arm" name="arm">
+          <option value="">both arms</option>
+          {% for option in facets.arms %}
+          <option value="{{ option }}"{% if option == filters.arm %} selected{% endif %}>{{ option|lower }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="filters__field">
+        <label for="f-state">Terminal state <span class="filters__hint">METHOD.md 5</span></label>
+        <select id="f-state" name="state">
+          <option value="">any state</option>
+          {% for option in METRIC_STATES %}
+          <option value="{{ option }}"{% if option == filters.state %} selected{% endif %}>{{ option|state_label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="filters__actions">
+        <button type="submit" class="btn">Apply</button>
+        {% if filters.sector or filters.arm or filters.state %}
+        <a class="btn btn--quiet" href="/cohort#ledger">Clear</a>
+        {% endif %}
+      </div>
+    </form>
+
+    <p class="filters__count">
+      {% if ledger_available %}
+      Showing <strong>{{ rows|length|num }}</strong> of {{ total_rows|num }} adjudicated metrics.
+      {% else %}
+      <span class="pending">{{ PENDING }}</span> — the ledger is empty until
+      <code>data/derived/metrics.json</code> is written. The filters above are live and
+      will work against it unchanged.
+      {% endif %}
+    </p>
+
+    {% if rows %}
+    <ul class="tally">
+      {% for row in tally %}
+      {% if row.n %}
+      <li class="tally__item"><span class="swatch {{ row.state|state_class }}"></span>
+        <span class="tally__label">{{ row.state|state_label }}</span>
+        <span class="tally__n">{{ row.n|num }}</span></li>
+      {% endif %}
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+</section>
+
+{# -------------------------------------------------- the selected life history #}
+{% if selected %}
+<section class="band band--case" id="life">
+  <div class="wrap wrap--reading">
+    <p class="kicker">
+      <span>Life history</span>
+      <span class="kicker__sep">/</span>
+      <span>{{ selected.issuer }}</span>
+      {% if selected.ticker %}<span class="kicker__sep">/</span><span>{{ selected.ticker }}</span>{% endif %}
+    </p>
+    <h2 class="case__title">{{ selected.name }}</h2>
+    <p class="case__state">
+      <span class="badge {{ selected.state|state_class }}">{{ selected.state|state_label }}</span>
+      {% if selected.absence_periods %}
+      <span class="case__periods">absent {{ selected.absence_periods }} consecutive reporting periods across the whole corpus</span>
+      {% endif %}
+      {% if selected.direction_at_last_report %}
+      <span class="case__dir">last reported direction: {{ selected.direction_at_last_report|state_label }}</span>
+      {% endif %}
+    </p>
+
+    {{ m.citation_block(selected.first_appearance, 'First appearance — the defining sentence, verbatim') }}
+
+    {% if selected.definition_changes %}
+    <h3 class="case__h">Definition changes</h3>
+    {% for change in selected.definition_changes %}
+    <div class="diff">
+      <p class="diff__head">
+        <span class="diff__date">{{ change.date }}</span>
+        <span class="diff__kind">{{ 'substantive' if change.substantive else 'cosmetic — not a redefinition' }}</span>
+      </p>
+      <div class="diff__pair">
+        {{ m.citation_block(change.before, 'before') }}
+        {{ m.citation_block(change.after, 'after') }}
+      </div>
+      {% if change.rationale %}<p class="diff__why">{{ change.rationale }}</p>{% endif %}
+    </div>
+    {% endfor %}
+    {% else %}
+    <h3 class="case__h">Definition changes</h3>
+    <p class="case__none">None recorded. Cosmetic rewording, rounding and unit changes are
+    not redefinitions and are not listed here.</p>
+    {% endif %}
+
+    {{ m.citation_block(selected.last_appearance, 'Last appearance anywhere in the filed corpus') }}
+
+    <h3 class="case__h">Cause of death</h3>
+    {% if selected.cause_of_death and selected.cause_of_death.label %}
+    <p class="cause">
+      <span class="badge {{ 'benign' if selected.cause_of_death.benign else 'unlabelled' }}">{{ selected.cause_of_death.label|state_label }}</span>
+      {{ selected.cause_of_death.detail }}
+    </p>
+    <p class="cause__note">A discontinuation is not proof of intent. Benign causes are
+    labelled by hand and the primary result is published both with and without them.</p>
+    {% else %}
+    <p class="case__none">{{ PENDING }} — no cause has been adjudicated for this metric.</p>
+    {% endif %}
+
+    <h3 class="case__h">The ruling</h3>
+    {% if selected.adjudication %}
+    <dl class="ruling">
+      <div><dt>adjudicator</dt><dd>{{ selected.adjudication.initials|plain }}</dd></div>
+      <div><dt>date</dt><dd>{{ selected.adjudication.date|plain }}</dd></div>
+      <div><dt>ledger row</dt><dd><code>{{ selected.adjudication.row|plain }}</code></dd></div>
+    </dl>
+    <p class="ruling__why">{{ selected.adjudication.rationale|plain }}</p>
+    {% else %}
+    <p class="case__none">{{ PENDING }}</p>
+    {% endif %}
+
+    <p class="case__back"><a href="/cohort#ledger">Back to the ledger</a></p>
+  </div>
+</section>
+{% endif %}
+
+{# --------------------------------------------------------------- the rows #}
+<section class="band">
+  <div class="wrap">
+    <h2 class="band__h">Adjudicated metrics</h2>
+    {% if rows %}
+    <div class="scroller">
+      <table class="table table--ledger">
+        <thead>
+          <tr>
+            <th scope="col">metric</th>
+            <th scope="col">issuer</th>
+            <th scope="col">arm</th>
+            <th scope="col">sector</th>
+            <th scope="col">state</th>
+            <th scope="col">last seen</th>
+            <th scope="col">ruled by</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+          <tr{% if selected and selected.id == row.id %} class="is-selected"{% endif %}>
+            <th scope="row"><a class="ledger__link" href="/cohort?sector={{ filters.sector|urlencode }}&amp;arm={{ filters.arm|urlencode }}&amp;state={{ filters.state|urlencode }}&amp;metric={{ row.id|urlencode }}#life">{{ row.name }}</a></th>
+            <td>{{ row.issuer }}{% if row.ticker %} <span class="muted">{{ row.ticker }}</span>{% endif %}</td>
+            <td>{{ row.arm|default('', true)|lower }}</td>
+            <td>{{ row.sector }}</td>
+            <td><span class="swatch {{ row.state|state_class }}"></span>{{ row.state|state_label }}</td>
+            <td class="n">{{ row.last_appearance.filed|default('—', true) }}</td>
+            <td>{{ row.adjudication.initials|default('—', true) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% elif ledger_available %}
+    <p class="case__none">No metric matches those filters. <a href="/cohort#ledger">Clear them</a>.</p>
+    {% else %}
+    {{ m.absent('Every included metric appears here with its life history once the adjudication ledger is committed. Nothing is shown in its place.', 'data/derived/metrics.json') }}
+    {% endif %}
+  </div>
+</section>
+
+{# ------------------------------------------------------- the frozen cohort #}
+<section class="band band--alt">
+  <div class="wrap">
+    <h2 class="band__h">The cohort, as frozen</h2>
+    <p class="band__sub">Committed before any metric was extracted. Companies later found
+    to fail C1–C3 are removed with the reason recorded; no company is ever removed for
+    its result.</p>
+    {% if cohort_rows %}
+    <div class="scroller">
+      <table class="table">
+        <thead>
+          <tr>
+            {% for column in cohort_rows[0].keys() %}<th scope="col">{{ column|replace('_', ' ') }}</th>{% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in cohort_rows %}
+          <tr>{% for value in row.values() %}<td>{{ value }}</td>{% endfor %}</tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    {{ m.absent('The frozen company list is committed before extraction begins.', 'data/cohort/cohort_frozen.csv') }}
+    {% endif %}
+    {{ m.provenance_strip(sources) }}
+  </div>
+</section>
+{% endblock %}

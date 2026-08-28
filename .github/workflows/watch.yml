@@ -117,8 +117,12 @@ jobs:
              not silently truncated). Diff against the filings already recorded
              in data/manifest/sources.json and report only what is new.
              Both functions exist today: pipeline/filings.py, pipeline/edgar.py.
-             TODO: no runnable entry point wraps them. There is no module in
-             pipeline/ that this step can call. Write one, then name it here.
+             TODO: no runnable entry point wraps them for a repeat read. The one
+             entry point that does exist, `python -m pipeline.build_cohort`, is
+             the one-shot freeze and must NOT be run by this job: re-running it
+             after the freeze would let the cohort drift, which is precisely
+             what METHOD.md section 3 exists to prevent. A separate watch entry
+             point has still to be written. Name it here when it is.
 
           2. RE-EVALUATE OPEN KILL CRITERIA (METHOD.md section 9)
              Every live position carries three dated, machine-checkable kill

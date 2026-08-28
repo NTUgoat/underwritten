@@ -1,0 +1,164 @@
+{# ------------------------------------------------------------------------
+   Reusable marks. The citation chip is the load-bearing one: METHOD.md 8.3
+   says every numeral in published prose resolves to an accession number, so
+   a numeral that cannot be resolved is not printed at all.
+   ------------------------------------------------------------------------ #}
+
+{%- macro pending(label='') -%}
+<span class="pending" title="Not yet adjudicated. No figure is shown in its place.">{{ PENDING }}{% if label %} <span class="pending__what">{{ label }}</span>{% endif %}</span>
+{%- endmacro -%}
+
+
+{#- The citation chip.
+    c: a CITATION dict - value, quote, form, filed, accession, cik, url?, page?
+    An incomplete citation degrades to the pending marker. It never degrades to
+    a bare number, because a bare number is exactly what this project refuses. -#}
+{%- macro cite(c) -%}
+{%- if citation_is_complete(c) -%}
+<span class="cite"><a class="cite__value" href="{{ sec_url(c) }}" rel="noopener nofollow"
+  >{{ c.value }}<span class="cite__mark" aria-hidden="true"></span><span class="u-sr">, source on sec.gov</span></a><span class="cite__card" role="note"><span class="cite__quote">{{ c.quote }}</span><span class="cite__meta"><span class="cite__form">{{ c.form|default('form not recorded', true) }}</span><span class="cite__sep">/</span><span>filed {{ c.filed|default('date not recorded', true) }}</span>{% if c.page %}<span class="cite__sep">/</span><span>p. {{ c.page }}</span>{% endif %}</span><span class="cite__acc">{{ c.accession|default('', true) }}</span><span class="cite__go">Open the filing on sec.gov</span></span></span>
+{%- else -%}
+{{ pending() }}
+{%- endif -%}
+{%- endmacro -%}
+
+
+{#- Prose carrying its own citations. A segment is {"text": ...} or
+    {"figure": CITATION} or {"em": ...}. -#}
+{%- macro prose(segments) -%}
+{%- if segments -%}
+{%- for s in segments -%}
+{%- if s.figure %}{{ cite(s.figure) }}{% elif s.em %}<em>{{ s.em }}</em>{% elif s.term %}<span class="term">{{ s.term }}</span>{% else %}{{ s.text }}{% endif -%}
+{%- endfor -%}
+{%- else -%}
+{{ pending() }}
+{%- endif -%}
+{%- endmacro -%}
+
+
+{#- One scoreboard cell. `cell` is {"fy":..., "state":..., "n":..., "note":...} -#}
+{%- macro tick(cell) -%}
+{%- set state = cell.state|default('NONE', true) -%}
+<span class="tick {{ state|state_class }}"
+      title="{{ cell.fy|default('', true) }} — {{ state|state_label }}{% if cell.n %} ({{ cell.n }} metric{{ '' if cell.n == 1 else 's' }}){% endif %}{% if cell.note %} — {{ cell.note }}{% endif %}"><span class="u-sr">{{ state|state_label }}</span></span>
+{%- endmacro -%}
+
+
+{#- The scoreboard grid: issuers down, fiscal years across, keepers above movers.
+    The one dense graphic in the publication, used on the finding and the ledger. -#}
+{%- macro scoreboard_grid(board) -%}
+{% set groups = [
+  ('KEEPER', 'Keepers', 'no metric discontinued, none substantively redefined'),
+  ('MOVER', 'Movers', 'at least one discontinued or substantively redefined')] %}
+<div class="scroller scroller--grid">
+  <table class="grid">
+    <caption class="u-sr">Metric state by issuer and fiscal year</caption>
+    <thead>
+      <tr>
+        <th scope="col" class="grid__name">issuer</th>
+        <th scope="col" class="grid__arm">arm</th>
+        {% for fy in board.fiscal_years %}<th scope="col" class="grid__fy">{{ fy|replace('FY', '') }}</th>{% endfor %}
+      </tr>
+    </thead>
+    {% for key, label, blurb in groups %}
+    {% set members = board.issuers | selectattr('group', 'equalto', key) | list %}
+    {% if members %}
+    <tbody class="grid__group">
+      <tr class="grid__banner">
+        <th scope="colgroup" colspan="{{ 2 + board.fiscal_years|length }}">
+          <span class="grid__banner-label">{{ label }}</span>
+          <span class="grid__banner-n">{{ members|length }}</span>
+          <span class="grid__banner-blurb">{{ blurb }}</span>
+        </th>
+      </tr>
+      {% for issuer in members %}
+      <tr>
+        <th scope="row" class="grid__name">
+          <span class="grid__issuer">{{ issuer.name }}</span>
+          {% if issuer.ticker %}<span class="grid__ticker">{{ issuer.ticker }}</span>{% endif %}
+        </th>
+        <td class="grid__arm">{{ issuer.arm|default('', true)|lower }}</td>
+        {% for fy in board.fiscal_years %}
+        {% set cell = (issuer.cells | selectattr('fy', 'equalto', fy) | list | first) or {'fy': fy, 'state': 'NONE'} %}
+        <td class="grid__cell">{{ tick(cell) }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+    {% endif %}
+    {% endfor %}
+  </table>
+</div>
+{%- endmacro -%}
+
+
+{#- The legend for the grid. Always true, even when the grid has no data. -#}
+{%- macro legend() -%}
+<ul class="legend">
+  {% for state in CELL_STATES %}
+  <li class="legend__item"><span class="tick {{ state|state_class }}"></span>
+    <span class="legend__label">{{ state|state_label }}</span>
+    <span class="legend__def">{{ CELL_LEGEND[state] }}</span></li>
+  {% endfor %}
+</ul>
+{%- endmacro -%}
+
+
+{#- One citation rendered in full, as a block: the verbatim sentence and its
+    document. Used in the metric life histories, where the sentence is the point. -#}
+{%- macro citation_block(c, label) -%}
+<figure class="quote">
+  <figcaption class="quote__label">{{ label }}</figcaption>
+  {% if c and (c.quote or c.accession) %}
+  <blockquote class="quote__text">{{ c.quote|default(PENDING, true) }}</blockquote>
+  <p class="quote__meta">
+    <span class="quote__form">{{ c.form|default('form not recorded', true) }}</span>
+    <span class="quote__sep">/</span>
+    <span>filed {{ c.filed|default('date not recorded', true) }}</span>
+    {% if c.page %}<span class="quote__sep">/</span><span>p. {{ c.page }}</span>{% endif %}
+    {% if c.char_offset is not none and c.char_offset != '' %}<span class="quote__sep">/</span><span>offset {{ c.char_offset }}</span>{% endif %}
+  </p>
+  <p class="quote__acc">
+    {% if sec_url(c) %}<a href="{{ sec_url(c) }}" rel="noopener nofollow">{{ c.accession|default('open on sec.gov', true) }}</a>
+    {% else %}{{ c.accession|default(PENDING, true) }}{% endif %}
+  </p>
+  {% else %}
+  <p class="quote__absent">{{ PENDING }}</p>
+  {% endif %}
+</figure>
+{%- endmacro -%}
+
+
+{#- A labelled absence. Used wherever a whole section has no data yet. -#}
+{%- macro absent(what, path='') -%}
+<div class="absent">
+  <p class="absent__mark">{{ PENDING }}</p>
+  <p class="absent__what">{{ what }}</p>
+  {% if path %}<p class="absent__path">expects <code>{{ path }}</code></p>{% endif %}
+</div>
+{%- endmacro -%}
+
+
+{#- A statistic with its interval. Never renders a point estimate alone. -#}
+{%- macro interval(value, low, high, places=1) -%}
+<span class="stat">
+  <span class="stat__point">{{ value|pct(places) }}</span>
+  {% if low is not none and high is not none %}
+  <span class="stat__ci">95% CI {{ low|pct(places) }} – {{ high|pct(places) }}</span>
+  {% else %}
+  <span class="stat__ci">{{ PENDING }} interval</span>
+  {% endif %}
+</span>
+{%- endmacro -%}
+
+
+{#- The source strip that closes every page. -#}
+{%- macro provenance_strip(sources) -%}
+<p class="strip">
+  <span class="strip__label">Rendered from</span>
+  {% for s in sources %}
+  <span class="strip__item"><code>{{ s.path }}</code> <span class="strip__status s-{{ s.status|replace(' ', '-') }}">{{ s.status }}</span></span>
+  {% endfor %}
+  <span class="strip__item"><a href="/provenance">SHA-256 manifest</a></span>
+</p>
+{%- endmacro -%}

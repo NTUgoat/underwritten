@@ -1,22 +1,117 @@
 cik,name,arm,failed,detail
-16868,CANADIAN NATIONAL RAILWAY CO  (CNI)  (CIK 0000016868),DESPAC,C1c,no 8-K Item 2.01 on or after the registration statement - business combination did not complete
-36029,FIRST FINANCIAL BANKSHARES INC  (FFIN)  (CIK 0000036029),DESPAC,C3,0 annual reports after listing (need 3)
-37808,FNB CORP/PA/  (FNB)  (CIK 0000037808),DESPAC,C1c,no 8-K Item 2.01 on or after the registration statement - business combination did not complete
-47307,CRAWFORD UNITED Corp  (CRAWA)  (CIK 0000047307),IPO,C1b,"80 periodic reports predate the registration statement (earliest 10-Q 1995-05-15) - already public, not a listing"
-72741,EVERSOURCE ENERGY  (ES)  (CIK 0000072741),DESPAC,C1c,no 8-K Item 2.01 on or after the registration statement - business combination did not complete
-94845,LEVI STRAUSS & CO  (LEVI)  (CIK 0000094845),IPO,C1b,"75 periodic reports predate the registration statement (earliest 10-Q 2000-07-07) - already public, not a listing"
-108312,"Woodward, Inc.  (WWD)  (CIK 0000108312)",DESPAC,C1c,no 8-K Item 2.01 on or after the registration statement - business combination did not complete
-205695,NATIONWIDE LIFE INSURANCE CO  (CIK 0000205695),IPO,C1b,"56 periodic reports predate the registration statement (earliest 10-K 1995-03-29) - already public, not a listing"
-712534,"FIRST MERCHANTS CORP  (FRME, FRMEP)  (CIK 0000712534)",DESPAC,C1c,no 8-K Item 2.01 on or after the registration statement - business combination did not complete
-712771,"ConnectOne Bancorp, Inc.  (CNOB, CNOBP)  (CIK 0000712771)",DESPAC,C3,1 annual reports after listing (need 3)
-719220,S&T BANCORP INC  (STBA)  (CIK 0000719220),DESPAC,C1c,no 8-K Item 2.01 on or after the registration statement - business combination did not complete
-719739,SVB FINANCIAL GROUP  (SIVBQ)  (CIK 0000719739),DESPAC,C3,0 annual reports after listing (need 3)
-723188,"COMMUNITY BANK SYSTEM, INC.  (CBU)  (CIK 0000723188)",DESPAC,C1c,no 8-K Item 2.01 on or after the registration statement - business combination did not complete
-736772,"CNB FINANCIAL CORP/PA  (CCNE, CCNEP)  (CIK 0000736772)",DESPAC,C3,1 annual reports after listing (need 3)
-759944,"CITIZENS FINANCIAL GROUP INC/RI  (CFG, CFG-PE, CFG-PH)  (CIK 0000759944)",DESPAC,C1c,no 8-K Item 2.01 on or after the registration statement - business combination did not complete
-803649,"Equity Commonwealth  (EQC, EQC-PD)  (CIK 0000803649)",DESPAC,C1c,no 8-K Item 2.01 on or after the registration statement - business combination did not complete
-820318,II-VI INC  (COHR)  (CIK 0000820318),DESPAC,C1c,no 8-K Item 2.01 on or after the registration statement - business combination did not complete
-835357,MONY LIFE INSURANCE CO OF AMERICA  (CIK 0000835357),IPO,C1b,"53 periodic reports predate the registration statement (earliest 10-Q 1998-12-29) - already public, not a listing"
-886982,"GOLDMAN SACHS GROUP INC  (GS, GSCE, GS-PA, GS-PC, GS-PD)  (CIK 0000886982)",DESPAC,C1c,no 8-K Item 2.01 on or after the registration statement - business combination did not complete
-901832,"ASTRAZENECA PLC  (AZN, AZNCF)  (CIK 0000901832)",DESPAC,C1c,no 8-K Item 2.01 on or after the registration statement - business combination did not complete
-913341,C & F FINANCIAL CORP  (CFFI)  (CIK 0000913341),DESPAC,C1c,no 8-K Item 2.01 on or after the registration statement - business combination did not complete
+47307,CRAWFORD UNITED Corp  (CRAWA)  (CIK 0000047307),IPO,C0,"26.3 years of EDGAR history before the registration statement (earliest filing 1995-05-15, 10-Q) - not a new listing"
+94845,LEVI STRAUSS & CO  (LEVI)  (CIK 0000094845),IPO,C0,"18.8 years of EDGAR history before the registration statement (earliest filing 2000-05-04, S-4) - not a new listing"
+205695,NATIONWIDE LIFE INSURANCE CO  (CIK 0000205695),IPO,C0,"25.0 years of EDGAR history before the registration statement (earliest filing 1995-03-29, 10-K) - not a new listing"
+835357,MONY LIFE INSURANCE CO OF AMERICA  (CIK 0000835357),IPO,C0,"20.5 years of EDGAR history before the registration statement (earliest filing 1998-09-29, S-1) - not a new listing"
+884713,COTT CORP /CN/  (PRMW)  (CIK 0000884713),DESPAC,C0,"25.0 years of EDGAR history before the registration statement (earliest filing 1995-02-09, SC 13G/A) - not a new listing"
+931148,GRAFTECH INTERNATIONAL LTD  (EAF)  (CIK 0000931148),IPO,C0,"22.9 years of EDGAR history before the registration statement (earliest filing 1996-04-10, SC 13G) - not a new listing"
+1015383,"AMMO, INC.  (POWW, POWWP)  (CIK 0001015383)",IPO,C0,"22.7 years of EDGAR history before the registration statement (earliest filing 1997-06-16, SB-2) - not a new listing"
+1021096,"Troika Media Group, Inc.  (CIK 0001021096)",IPO,C0,"20.2 years of EDGAR history before the registration statement (earliest filing 1999-05-28, 10SB12G) - not a new listing"
+1070050,"AppTech Corp.  (APCX, APCXW)  (CIK 0001070050)",IPO,C0,"21.4 years of EDGAR history before the registration statement (earliest filing 1999-10-06, 10SB12G) - not a new listing"
+1111559,TRADESTATION GROUP INC  (CIK 0001111559),DESPAC,C0,"21.7 years of EDGAR history before the registration statement (earliest filing 2000-04-17, S-4) - not a new listing"
+1127203,NATIONWIDE LIFE INS CO  (CIK 0001127203),IPO,C0,"19.4 years of EDGAR history before the registration statement (earliest filing 2000-11-01, S-1) - not a new listing"
+1164098,TRANSAMERICA LIFE INSURANCE CO  (CIK 0001164098),IPO,C0,"19.6 years of EDGAR history before the registration statement (earliest filing 2002-05-06, APP WD) - not a new listing"
+1166272,"GENETIC TECHNOLOGIES LTD  (GENE, GNTLF)  (CIK 0001166272)",IPO,C0,"18.0 years of EDGAR history before the registration statement (earliest filing 2001-12-05, 12G3-2B) - not a new listing"
+1169055,Noble Finance Co  (CIK 0001169055),IPO,C0,"19.1 years of EDGAR history before the registration statement (earliest filing 2002-03-13, S-4) - not a new listing"
+1191070,BIONOMICS LIMITED/FI  (BNOX)  (CIK 0001191070),IPO,C0,"19.2 years of EDGAR history before the registration statement (earliest filing 2002-09-11, 12G3-2B) - not a new listing"
+1265107,MONITRONICS INTERNATIONAL INC  (CIK 0001265107),IPO,C0,"16.1 years of EDGAR history before the registration statement (earliest filing 2003-10-28, S-4) - not a new listing"
+1286139,LEGALZOOM COM INC  (LZ)  (CIK 0001286139),IPO,C0,"17.2 years of EDGAR history before the registration statement (earliest filing 2004-04-02, REGDEX) - not a new listing"
+1312109,Silvergate Capital Corp  (SICP)  (CIK 0001312109),IPO,C0,"14.3 years of EDGAR history before the registration statement (earliest filing 2004-12-14, REGDEX) - not a new listing"
+1314196,"OLB GROUP, INC.  (OLB)  (CIK 0001314196)",IPO,C0,"13.8 years of EDGAR history before the registration statement (earliest filing 2006-01-06, 1-A) - not a new listing"
+1315098,Roblox Corp  (RBLX)  (CIK 0001315098),IPO,C0,"15.8 years of EDGAR history before the registration statement (earliest filing 2005-01-19, REGDEX) - not a new listing"
+1318641,CLEVELAND BIOLABS INC  (STAB)  (CIK 0001318641),DESPAC,C0,"16.3 years of EDGAR history before the registration statement (earliest filing 2005-02-18, REGDEX) - not a new listing"
+1355839,"PALTALK, INC.  (PALT)  (CIK 0001355839)",IPO,C0,"15.2 years of EDGAR history before the registration statement (earliest filing 2006-03-14, SB-2) - not a new listing"
+1380106,"RAPID MICRO BIOSYSTEMS, INC.  (RPID)  (CIK 0001380106)",IPO,C0,"14.7 years of EDGAR history before the registration statement (earliest filing 2006-10-23, REGDEX) - not a new listing"
+1388410,"PARALLAX HEALTH SCIENCES, INC.  (CIK 0001388410)",IPO,C0,"12.3 years of EDGAR history before the registration statement (earliest filing 2007-03-05, SB-2) - not a new listing"
+1396536,"DUOS TECHNOLOGIES GROUP, INC.  (DUOT)  (CIK 0001396536)",IPO,C0,"14.0 years of EDGAR history before the registration statement (earliest filing 2007-04-27, SB-2) - not a new listing"
+1408057,"iCoreConnect Inc.  (ICNP, ICCRW)  (CIK 0001408057)",IPO,C0,"13.9 years of EDGAR history before the registration statement (earliest filing 2007-08-13, 10SB12G) - not a new listing"
+1412408,"Phreesia, Inc.  (PHR)  (CIK 0001412408)",IPO,C0,"11.8 years of EDGAR history before the registration statement (earliest filing 2007-09-11, REGDEX) - not a new listing"
+1412558,"Evotec SE  (EVO, EVOTF)  (CIK 0001412558)",IPO,C0,"14.1 years of EDGAR history before the registration statement (earliest filing 2007-09-19, 425) - not a new listing"
+1422930,"PUBMATIC, INC.  (PUBM)  (CIK 0001422930)",IPO,C0,"12.9 years of EDGAR history before the registration statement (earliest filing 2008-01-02, REGDEX) - not a new listing"
+1425565,"Real Goods Solar, Inc.  (CIK 0001425565)",IPO,C0,"11.2 years of EDGAR history before the registration statement (earliest filing 2008-02-07, S-1) - not a new listing"
+1440024,"Roadrunner Transportation Systems, Inc.  (CIK 0001440024)",IPO,C0,"10.5 years of EDGAR history before the registration statement (earliest filing 2008-07-24, S-1) - not a new listing"
+1447362,CASTLE BIOSCIENCES INC  (CSTL)  (CIK 0001447362),IPO,C0,"10.7 years of EDGAR history before the registration statement (earliest filing 2008-10-02, REGDEX) - not a new listing"
+1450704,"Vivakor, Inc.  (VIVK)  (CIK 0001450704)",IPO,C0,"12.0 years of EDGAR history before the registration statement (earliest filing 2008-11-17, REGDEX) - not a new listing"
+1452965,MINERVA SURGICAL INC  (CIK 0001452965),IPO,C0,"12.8 years of EDGAR history before the registration statement (earliest filing 2008-12-19, REGDEX) - not a new listing"
+1454938,Outbrain Inc.  (OB)  (CIK 0001454938),IPO,C0,"12.4 years of EDGAR history before the registration statement (earliest filing 2009-02-02, D) - not a new listing"
+1463208,"Transportation & Logistics Systems, Inc.  (TLSS)  (CIK 0001463208)",IPO,C0,"10.4 years of EDGAR history before the registration statement (earliest filing 2009-05-28, S-1) - not a new listing"
+1474627,Lianluo Smart Ltd  (NEGG)  (CIK 0001474627),IPO,C0,"11.0 years of EDGAR history before the registration statement (earliest filing 2009-11-12, S-1) - not a new listing"
+1477815,"Sweetgreen, Inc.  (SG)  (CIK 0001477815)",IPO,C0,"11.9 years of EDGAR history before the registration statement (earliest filing 2009-12-02, D) - not a new listing"
+1482981,"Vita Coco Company, Inc.  (COCO)  (CIK 0001482981)",IPO,C0,"11.7 years of EDGAR history before the registration statement (earliest filing 2010-02-03, D) - not a new listing"
+1484612,"Outset Medical, Inc.  (OM)  (CIK 0001484612)",IPO,C0,"10.5 years of EDGAR history before the registration statement (earliest filing 2010-02-26, D) - not a new listing"
+1484769,"FaceBank Group, Inc.  (FUBO)  (CIK 0001484769)",IPO,C0,"10.5 years of EDGAR history before the registration statement (earliest filing 2010-02-25, D) - not a new listing"
+1484778,ThredUp Inc.  (TDUP)  (CIK 0001484778),IPO,C0,"11.4 years of EDGAR history before the registration statement (earliest filing 2010-02-24, D) - not a new listing"
+1492074,Abcam plc  (CIK 0001492074),IPO,C0,"10.4 years of EDGAR history before the registration statement (earliest filing 2010-05-17, F-6EF) - not a new listing"
+1493318,eToro Group Ltd.  (CIK 0001493318),DESPAC,C0,"11.2 years of EDGAR history before the registration statement (earliest filing 2010-06-09, D) - not a new listing"
+1496963,"Squarespace, Inc.  (SQSP)  (CIK 0001496963)",IPO,C0,"10.7 years of EDGAR history before the registration statement (earliest filing 2010-07-19, D) - not a new listing"
+1498233,"Growth Capital Acquisition Corp.  (CPTN, CPTNW)  (CIK 0001498233)",DESPAC,C0,"11.1 years of EDGAR history before the registration statement (earliest filing 2010-08-11, 10-12G) - not a new listing"
+1499717,"Staffing 360 Solutions, Inc.  (STAF)  (CIK 0001499717)",IPO,C0,"10.4 years of EDGAR history before the registration statement (earliest filing 2010-09-02, S-1) - not a new listing"
+1499780,GLOBUS MARITIME LTD  (GLBS)  (CIK 0001499780),IPO,C0,"9.5 years of EDGAR history before the registration statement (earliest filing 2010-11-22, F-1) - not a new listing"
+1499961,"Net Element, Inc.  (MULN)  (CIK 0001499961)",DESPAC,C0,"10.7 years of EDGAR history before the registration statement (earliest filing 2010-09-03, F-1) - not a new listing"
+1504776,Warby Parker Inc.  (WRBY)  (CIK 0001504776),IPO,C0,"10.8 years of EDGAR history before the registration statement (earliest filing 2010-11-03, D) - not a new listing"
+1506042,Navios South American Logistics Inc.  (CIK 0001506042),IPO,C0,"9.1 years of EDGAR history before the registration statement (earliest filing 2012-01-31, F-4) - not a new listing"
+1512499,"LINDBLAD EXPEDITIONS HOLDINGS, INC.  (LIND)  (CIK 0001512499)",DESPAC,C0,"8.3 years of EDGAR history before the registration statement (earliest filing 2011-02-15, S-1) - not a new listing"
+1517006,Sunshine Silver Mining & Refining Corp  (GATO)  (CIK 0001517006),IPO,C0,"9.5 years of EDGAR history before the registration statement (earliest filing 2011-03-30, D) - not a new listing"
+1519472,"SolarMax Technology, Inc.  (SMXT)  (CIK 0001519472)",IPO,C0,"8.7 years of EDGAR history before the registration statement (earliest filing 2011-05-05, D) - not a new listing"
+1530979,"Honest Company, Inc.  (HNST)  (CIK 0001530979)",IPO,C0,"9.6 years of EDGAR history before the registration statement (earliest filing 2011-09-26, D) - not a new listing"
+1531152,"BJ's Wholesale Club Holdings, Inc.  (BJ)  (CIK 0001531152)",IPO,C0,"7.3 years of EDGAR history before the registration statement (earliest filing 2011-10-11, D) - not a new listing"
+1533523,We Co.  (CIK 0001533523),IPO,C0,"7.8 years of EDGAR history before the registration statement (earliest filing 2011-10-27, D) - not a new listing"
+1534969,"SERA PROGNOSTICS, INC.  (SERA)  (CIK 0001534969)",IPO,C0,"9.6 years of EDGAR history before the registration statement (earliest filing 2011-11-21, D) - not a new listing"
+1542022,"Samba TV, Inc.  (CIK 0001542022)",IPO,C0,"9.8 years of EDGAR history before the registration statement (earliest filing 2012-02-10, D) - not a new listing"
+1543151,"Uber Technologies, Inc  (UBER)  (CIK 0001543151)",IPO,C0,"7.1 years of EDGAR history before the registration statement (earliest filing 2012-02-27, D) - not a new listing"
+1551306,"Progyny, Inc.  (PGNY)  (CIK 0001551306)",IPO,C0,"7.3 years of EDGAR history before the registration statement (earliest filing 2012-06-04, D) - not a new listing"
+1555279,908 Devices Inc.  (MASS)  (CIK 0001555279),IPO,C0,"8.2 years of EDGAR history before the registration statement (earliest filing 2012-09-04, D) - not a new listing"
+1556739,"Thryv Holdings, Inc.  (THRY)  (CIK 0001556739)",IPO,C0,"7.7 years of EDGAR history before the registration statement (earliest filing 2012-12-07, S-4) - not a new listing"
+1558569,iSpecimen Inc.  (ISPC)  (CIK 0001558569),IPO,C0,"8.2 years of EDGAR history before the registration statement (earliest filing 2012-09-25, D) - not a new listing"
+1562088,"Duolingo, Inc.  (DUOL)  (CIK 0001562088)",IPO,C0,"8.6 years of EDGAR history before the registration statement (earliest filing 2012-11-13, D) - not a new listing"
+1563190,"Compass, Inc.  (COMP)  (CIK 0001563190)",IPO,C0,"8.2 years of EDGAR history before the registration statement (earliest filing 2012-12-05, D) - not a new listing"
+1571934,"NEUROTROPE BIOSCIENCE, INC.  (SNPX)  (CIK 0001571934)",IPO,C0,"7.6 years of EDGAR history before the registration statement (earliest filing 2013-03-13, D) - not a new listing"
+1580063,"PROGENITY, INC.  (BIOR)  (CIK 0001580063)",IPO,C0,"6.9 years of EDGAR history before the registration statement (earliest filing 2013-06-27, D) - not a new listing"
+1580560,Flywire Corp  (FLYW)  (CIK 0001580560),IPO,C0,"7.8 years of EDGAR history before the registration statement (earliest filing 2013-07-08, D) - not a new listing"
+1591587,"AssetMark Financial Holdings, Inc.  (AMK)  (CIK 0001591587)",IPO,C0,"5.6 years of EDGAR history before the registration statement (earliest filing 2013-11-14, 13F-NT) - not a new listing"
+1596961,"RumbleON, Inc.  (RMBL)  (CIK 0001596961)",IPO,C0,"6.4 years of EDGAR history before the registration statement (earliest filing 2014-01-24, S-1) - not a new listing"
+1598674,Casper Sleep Inc.  (CIK 0001598674),IPO,C0,"5.9 years of EDGAR history before the registration statement (earliest filing 2014-01-30, D) - not a new listing"
+1601669,Watford Holdings Ltd.  (CIK 0001601669),IPO,C3,2 annual reports after listing (need 3)
+1604868,GrowGeneration Corp.  (GRWG)  (CIK 0001604868),IPO,C0,"6.2 years of EDGAR history before the registration statement (earliest filing 2014-04-11, D) - not a new listing"
+1606698,Alpine 4 Technologies Ltd.  (ALPP)  (CIK 0001606698),IPO,C0,"5.8 years of EDGAR history before the registration statement (earliest filing 2014-05-08, 10-12G) - not a new listing"
+1617553,"ZIPRECRUITER, INC.  (ZIP)  (CIK 0001617553)",IPO,C0,"6.7 years of EDGAR history before the registration statement (earliest filing 2014-08-26, D) - not a new listing"
+1622667,"AEON Biopharma, Inc.  (CIK 0001622667)",IPO,C0,"6.7 years of EDGAR history before the registration statement (earliest filing 2015-01-22, D) - not a new listing"
+1628369,Cushman & Wakefield plc  (CWK)  (CIK 0001628369),IPO,C1b,"3 periodic reports predate the registration statement (earliest 10-Q 2018-09-06) - already public, not a listing"
+1634447,"PECK Co HOLDINGS, INC.  (ISUNQ)  (CIK 0001634447)",DESPAC,C0,"5.6 years of EDGAR history before the registration statement (earliest filing 2015-03-13, DRS) - not a new listing"
+1635088,Roivant Sciences Ltd.  (ROIV)  (CIK 0001635088),DESPAC,C0,"6.2 years of EDGAR history before the registration statement (earliest filing 2015-03-16, SC 13D) - not a new listing"
+1639225,"Livongo Health, Inc.  (CIK 0001639225)",IPO,C3,1 annual reports after listing (need 3)
+1640043,"Pyxis Tankers Inc.  (PXS, PXSAP, PXSAW)  (CIK 0001640043)",IPO,C0,"5.3 years of EDGAR history before the registration statement (earliest filing 2015-04-23, F-4) - not a new listing"
+1643269,"Sumo Logic, Inc.  (CIK 0001643269)",IPO,C0,"5.2 years of EDGAR history before the registration statement (earliest filing 2015-06-01, D) - not a new listing"
+1647170,"Tapinator, Inc.  (CIK 0001647170)",IPO,C1b,"4 periodic reports predate the registration statement (earliest 10-Q 2018-11-13) - already public, not a listing"
+1647639,"Upstart Holdings, Inc.  (UPST)  (CIK 0001647639)",IPO,C0,"5.3 years of EDGAR history before the registration statement (earliest filing 2015-07-16, D) - not a new listing"
+1653482,Gitlab Inc.  (GTLB)  (CIK 0001653482),IPO,C0,"6.0 years of EDGAR history before the registration statement (earliest filing 2015-09-24, D) - not a new listing"
+1653909,"Allbirds, Inc.  (BIRD)  (CIK 0001653909)",IPO,C0,"5.5 years of EDGAR history before the registration statement (earliest filing 2016-03-11, D) - not a new listing"
+1658551,"Amylyx Pharmaceuticals, Inc.  (AMLX)  (CIK 0001658551)",IPO,C0,"6.1 years of EDGAR history before the registration statement (earliest filing 2015-11-17, D) - not a new listing"
+1661053,"Hancock Jaffe Laboratories, Inc.  (NVNO, NVNBW)  (CIK 0001661053)",IPO,C1b,"3 periodic reports predate the registration statement (earliest 10-Q 2018-08-10) - already public, not a listing"
+1666054,Authentic Brands Group Inc.  (CIK 0001666054),IPO,C3,0 annual reports after listing (need 3)
+1667011,"Arteris, Inc.  (AIP)  (CIK 0001667011)",IPO,C0,"5.6 years of EDGAR history before the registration statement (earliest filing 2016-02-19, D) - not a new listing"
+1668438,Integrated Media Technology Ltd  (IMTE)  (CIK 0001668438),IPO,C1b,"3 periodic reports predate the registration statement (earliest 20-F 2018-04-02) - already public, not a listing"
+1673481,"Trident Acquisitions Corp.  (LTRY, LTRYW)  (CIK 0001673481)",DESPAC,C0,"5.2 years of EDGAR history before the registration statement (earliest filing 2016-05-03, DRS) - not a new listing"
+1674440,Slinger Bag Inc.  (YYAI)  (CIK 0001674440),IPO,C1b,"17 periodic reports predate the registration statement (earliest 10-K 2017-08-03) - already public, not a listing"
+1685428,LumiraDx Ltd  (CIK 0001685428),DESPAC,C1c,no 8-K Item 2.01 on or after the registration statement - business combination did not complete
+1689258,5.11 ABR CORP.  (CIK 0001689258),IPO,C0,"5.0 years of EDGAR history before the registration statement (earliest filing 2016-11-04, D) - not a new listing"
+1697805,Bison Capital Acquisition Corp.  (CIK 0001697805),DESPAC,C3,1 annual reports after listing (need 3)
+1707910,"Reborn Coffee, Inc.  (REBN)  (CIK 0001707910)",IPO,C1b,"3 periodic reports predate the registration statement (earliest 10-K 2017-11-30) - already public, not a listing"
+1708176,"Hall of Fame Resort & Entertainment Co  (HOFV, HOFVW)  (CIK 0001708176)",IPO,C1b,"11 periodic reports predate the registration statement (earliest 10-K 2018-03-30) - already public, not a listing"
+1715611,BODY & MIND INC.  (BMMJ)  (CIK 0001715611),IPO,C1b,"7 periodic reports predate the registration statement (earliest 10-Q 2018-10-29) - already public, not a listing"
+1723580,"BurgerFi International, Inc.  (BFI, BFIIW)  (CIK 0001723580)",IPO,C1b,"12 periodic reports predate the registration statement (earliest 10-Q 2018-05-15) - already public, not a listing"
+1725206,Union Acquisition Corp.  (CIK 0001725206),DESPAC,C2,SIC 6770 (blank check) - no completed combination
+1728688,"i3 Verticals, Inc.  (IIIV)  (CIK 0001728688)",IPO,C1b,"4 periodic reports predate the registration statement (earliest 10-Q 2018-08-13) - already public, not a listing"
+1731176,Tottenham Acquisition I Ltd  (CIK 0001731176),DESPAC,C1c,no 8-K Item 2.01 on or after the registration statement - business combination did not complete
+1734551,"ArcherDX, Inc.  (CIK 0001734551)",IPO,C3,0 annual reports after listing (need 3)
+1737189,"Redaptive, Inc.  (CIK 0001737189)",IPO,C3,0 annual reports after listing (need 3)
+1737422,New Frontier Health Corp  (CIK 0001737422),IPO,C1b,"6 periodic reports predate the registration statement (earliest 10-Q 2018-08-13) - already public, not a listing"
+1741231,"Tattooed Chef, Inc.  (TTCFQ)  (CIK 0001741231)",IPO,C1b,"9 periodic reports predate the registration statement (earliest 10-Q 2018-09-06) - already public, not a listing"
+1741530,"360 Finance, Inc.  (QFIN)  (CIK 0001741530)",IPO,C1b,"1 periodic reports predate the registration statement (earliest 20-F 2019-04-26) - already public, not a listing"
+1743725,"GRID DYNAMICS HOLDINGS, INC.  (GDYN)  (CIK 0001743725)",IPO,C1b,"7 periodic reports predate the registration statement (earliest 10-Q 2018-11-16) - already public, not a listing"
+1747661,"Color Star Technology Co., Ltd.  (ADD)  (CIK 0001747661)",IPO,C1b,"2 periodic reports predate the registration statement (earliest 20-F 2019-11-15) - already public, not a listing"
+1748621,Alberton Acquisition Corp  (CIK 0001748621),DESPAC,C1c,no 8-K Item 2.01 on or after the registration statement - business combination did not complete
+1751143,"ATLAS TECHNICAL CONSULTANTS, INC.  (CIK 0001751143)",DESPAC,C1c,"combination completed 2023-04-19, beyond the window end plus 12 months (2022-12-31)"
+1752108,Reebonz Holding Ltd  (CIK 0001752108),IPO,C3,1 annual reports after listing (need 3)
+1752234,YX Asset Recovery Ltd  (CIK 0001752234),IPO,C3,0 annual reports after listing (need 3)
+1753268,Ruhnn Holding Ltd  (CIK 0001753268),IPO,C3,2 annual reports after listing (need 3)

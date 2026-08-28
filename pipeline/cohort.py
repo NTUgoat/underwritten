@@ -29,7 +29,13 @@ IPO_METRIC_PHRASES = (
     '"Key Operating Metrics"',
     '"Key Performance Indicators"',
 )
-DESPAC_PROJECTION_PHRASE = '"Certain Unaudited Prospective Financial Information"'
+# A de-SPAC locator must identify a SPAC, not a merger. "Certain Unaudited
+# Prospective Financial Information" is the standard caption for management
+# projections in ANY merger proxy - it matched AMD/Xilinx, Bristol Myers/Celgene
+# and S&P Global/IHS Markit. "blank check company" is how a SPAC describes
+# itself in its own registration statement. The projection table is verified at
+# document level in the §7.5 stage, not used to select the cohort.
+DESPAC_SPAC_PHRASE = '"blank check company"'
 
 IPO_FORMS = "S-1"
 IPO_FORMS_FOREIGN = "F-1"
@@ -125,7 +131,7 @@ def enumerate_candidates(client: EdgarClient, *, page_size: int = 100) -> list[C
         for phrase in IPO_METRIC_PHRASES
         for forms, arm in ((IPO_FORMS, "IPO"), (IPO_FORMS_FOREIGN, "IPO"))
     ] + [
-        (DESPAC_PROJECTION_PHRASE, forms, "DESPAC")
+        (DESPAC_SPAC_PHRASE, forms, "DESPAC")
         for forms in (DESPAC_FORMS, DESPAC_FORMS_FOREIGN)
     ]
 
@@ -150,9 +156,7 @@ def enumerate_candidates(client: EdgarClient, *, page_size: int = 100) -> list[C
                 if candidate is None:
                     continue
                 existing = by_cik.get(candidate.cik)
-                if existing is None or (
-                    candidate.listing_filing_date < existing.listing_filing_date
-                ):
+                if existing is None or _prefer(candidate, existing):
                     by_cik[candidate.cik] = candidate
 
             offset += page_size
@@ -161,6 +165,30 @@ def enumerate_candidates(client: EdgarClient, *, page_size: int = 100) -> list[C
                 break
 
     return sorted(by_cik.values(), key=lambda c: c.cik)
+
+
+def _prefer(new: Candidate, existing: Candidate) -> bool:
+    """Which of two matches for the same CIK describes the actual listing.
+
+    A SPAC files its own IPO registration statement years before the S-4 that
+    registers the combination, and both can match a locator. Taking the earlier
+    document makes the SHELL's IPO the listing: Celularity (CIK 1752828) was
+    labelled IPO with a 2019-04-26 listing, when that is the GX Acquisition
+    shell's own S-1 and Celularity actually listed on completion, 2021-07-22.
+
+    So the de-SPAC reading wins whenever it exists, carrying its own
+    registration date. Within one arm, the earliest match wins, since an issuer
+    amends a registration statement several times and the first is closest to
+    the listing.
+
+    Note this is NOT "has an 8-K Item 2.01". Operating companies file Item 2.01
+    for any material acquisition - Super League (CIK 1621672) is a genuine 2019
+    IPO with three of them. The arm is decided by which registration statement
+    the issuer filed, not by its later acquisition activity.
+    """
+    if new.arm == existing.arm:
+        return new.listing_filing_date < existing.listing_filing_date
+    return new.arm == "DESPAC"
 
 
 def _listing_window_contains(when: date) -> bool:
@@ -198,6 +226,29 @@ def assess(
 
     if not index:
         return reject("C5", "empty filing index")
+
+    # C0 - the issuer must actually be newly listed, in either arm.
+    #
+    # This is the catch-all that the arm-specific tests below cannot provide.
+    # C1b protects the IPO arm only, so without C0 a long-public company reached
+    # the de-SPAC arm unchallenged: AMD (first filing 1994), Bristol Myers
+    # Squibb (1994) and S&P Global (1994) all entered a cohort of "2019-2021
+    # listings" on the strength of ordinary M&A S-4s.
+    #
+    # It also matters because the walk order is CIK ascending, and CIK is issued
+    # sequentially - so the walk starts at the OLDEST registrants on EDGAR and
+    # would fill every slot with them before reaching a genuine 2019 listing.
+    # The ordering is still outcome-blind; it is age-correlated, which is
+    # precisely why the age rule has to be explicit rather than assumed.
+    earliest = index[0].filing_date
+    history_years = (candidate.listing_filing_date - earliest).days / 365.25
+    if history_years > config.MAX_PRE_LISTING_HISTORY_YEARS:
+        return reject(
+            "C0",
+            f"{history_years:.1f} years of EDGAR history before the registration "
+            f"statement (earliest filing {earliest}, {index[0].form}) - not a new "
+            f"listing",
+        )
 
     # The listing test is arm-specific, because the two arms have structurally
     # different filing histories and one rule cannot serve both.
@@ -252,6 +303,17 @@ def assess(
         # For a de-SPAC the operating company's listing IS the completion.
         listing_date = completions[0].filing_date
 
+        grace_end = date.fromisoformat(config.LISTING_WINDOW_END).replace(
+            year=date.fromisoformat(config.LISTING_WINDOW_END).year
+            + config.DESPAC_COMPLETION_GRACE_MONTHS // 12
+        )
+        if listing_date > grace_end:
+            return reject(
+                "C1c",
+                f"combination completed {listing_date}, beyond the window end "
+                f"plus {config.DESPAC_COMPLETION_GRACE_MONTHS} months ({grace_end})",
+            )
+
     # C2 - operating company, not a blank-check shell or a fund
     sic = str(submissions.get("sic") or "")
     entity_type = str(submissions.get("entityType") or "").lower()
@@ -266,10 +328,15 @@ def assess(
     # SPAC shell filed while it was still a shell are not reports about the
     # operating business and must not count toward C3.
     as_at = date.fromisoformat(config.AS_AT_DATE)
+    # Amendments must not count toward C3. Super League (CIK 1621672) files
+    # 7 10-Ks and 4 10-K/As; counting filings rather than periods would let an
+    # issuer satisfy "three annual reports" with two years and an amendment.
     annuals = [
         f
         for f in annual_reports(index)
-        if f.filing_date > listing_date and f.filing_date <= as_at
+        if f.filing_date > listing_date
+        and f.filing_date <= as_at
+        and not f.form.upper().endswith("/A")
     ]
     if len(annuals) < 3:
         return reject("C3", f"{len(annuals)} annual reports after listing (need 3)")
