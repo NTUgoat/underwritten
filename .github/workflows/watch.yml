@@ -1,0 +1,158 @@
+# The ongoing cadence (METHOD.md §9, §8.3, §8.5).
+#
+# The durability argument for this study is that it keeps reading after
+# publication: the cohort's CIKs are re-checked for new EDGAR filings, open kill
+# criteria are re-evaluated against those filings without the author's
+# involvement, and anything that changes is appended to a public changelog
+# rather than edited in silently.
+#
+# STATUS: the pipeline entry points this job will call DO NOT EXIST YET. Until
+# they do, the job installs the environment, imports the modules that do exist,
+# prints exactly what it will do, and exits 0. It does not fetch from EDGAR and
+# it does not write to the repository. Every TODO below names a real module or
+# says plainly that the module has still to be written.
+
+name: watch
+
+on:
+  schedule:
+    # Mondays, 06:17 UTC. Weekly is the right cadence for a filed-record study:
+    # EDGAR does not move faster than that in a way this watch would catch.
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  # TODO: raise to `contents: write` (or open a pull request instead) once the
+  # changelog-append step below is real. It is read-only while this job is a
+  # placeholder so a misfire cannot touch the repository.
+
+concurrency:
+  group: watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    name: Re-read the filed record
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      # SEC fair access (METHOD.md §10) requires a declared User-Agent carrying
+      # a real contact address. It is a repository secret, not a literal, so the
+      # author's address is not published in the workflow file - though it is
+      # sent to sec.gov on every request, which is the point of it.
+      # Set it at: Settings > Secrets and variables > Actions > New repository
+      # secret, name SEC_CONTACT, value e.g. "Jex Lin you@example.com".
+      SEC_CONTACT: ${{ secrets.SEC_CONTACT }}
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Verify SEC_CONTACT is configured
+        run: |
+          if [ -z "${SEC_CONTACT}" ]; then
+            echo "::error::SEC_CONTACT repository secret is not set."
+            echo "The SEC fair-access policy requires a User-Agent with a real"
+            echo "contact address. pipeline/edgar.py refuses to construct a"
+            echo "client without one. Set the secret before enabling this job."
+            exit 1
+          fi
+          case "${SEC_CONTACT}" in
+            *@*) echo "SEC_CONTACT is set and contains a contact address." ;;
+            *)   echo "::error::SEC_CONTACT does not contain an '@' address."; exit 1 ;;
+          esac
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv pip install --system -r pyproject.toml
+
+      - name: Import the pipeline
+        # Not decoration: this is the weekly proof that the study's code still
+        # installs and imports on a clean machine. It touches no network.
+        run: |
+          python -c "
+          from pipeline import cohort, config, edgar, filings, outcomes
+          print('as-at date         :', config.AS_AT_DATE)
+          print('listing window     :', config.LISTING_WINDOW_START, '..', config.LISTING_WINDOW_END)
+          print('target n / floor n :', config.COHORT_TARGET_N, '/', config.COHORT_FLOOR_N)
+          print('absence test       :', config.DISCONTINUATION_PERIODS, 'consecutive reporting periods')
+          print('corpus forms       :', ', '.join(config.CORPUS_FORMS))
+          print('modules imported   : cohort, config, edgar, filings, outcomes')
+          "
+
+      - name: Report the state of the frozen cohort
+        run: |
+          if [ -f data/cohort/cohort_frozen.csv ]; then
+            echo "Frozen cohort present. Rows (including header):"
+            wc -l < data/cohort/cohort_frozen.csv
+          else
+            echo "data/cohort/cohort_frozen.csv does not exist yet."
+            echo "The cohort has not been frozen, so there is nothing to watch."
+          fi
+
+      - name: PLACEHOLDER - what this job will do once the entry points exist
+        # Exits 0 by design. This step is a statement of intent, not a stub that
+        # pretends to work. Nothing below has been run against EDGAR.
+        run: |
+          cat <<'PLAN'
+          ============================================================
+          WEEKLY WATCH - NOT YET IMPLEMENTED. NOTHING WAS FETCHED.
+          ============================================================
+
+          1. RE-CHECK THE COHORT'S CIKs FOR NEW FILINGS
+             Read data/cohort/cohort_frozen.csv, and for each CIK call
+             pipeline.filings.complete_index(client, cik) to pull the full
+             submissions index (it follows the overflow files, so the corpus is
+             not silently truncated). Diff against the filings already recorded
+             in data/manifest/sources.json and report only what is new.
+             Both functions exist today: pipeline/filings.py, pipeline/edgar.py.
+             TODO: no runnable entry point wraps them. There is no module in
+             pipeline/ that this step can call. Write one, then name it here.
+
+          2. RE-EVALUATE OPEN KILL CRITERIA (METHOD.md section 9)
+             Every live position carries three dated, machine-checkable kill
+             criteria that are to be evaluated against incoming filings without
+             the author's involvement. A criterion that fires kills the position.
+             TODO: neither the positions store nor the evaluator exists. There is
+             no pipeline/positions.py and no pipeline/kill_criteria.py in this
+             repository. Do not invent them here; write them, then call them.
+
+          3. RE-CHECK ADVERSE FILING EVENTS (METHOD.md section 7.2, Amendment 1)
+             Classify any newly indexed filing with
+             pipeline.outcomes.classify(client, filings), which already applies
+             E1 (SECTOR_WIDE_WARRANT_RESTATEMENT) and E2
+             (MECHANICAL_DESPAC_DELISTING) as labels rather than deletions, and
+             pipeline.outcomes.summarise(events) for the counts.
+             Exists today: pipeline/outcomes.py.
+             TODO: as with (1), no scheduled entry point calls it.
+
+          4. RE-VERIFY CITED SPANS (METHOD.md section 8.3)
+             Re-fetch a random sample of cited documents and fail if a stored
+             verbatim span no longer matches its source, or if a SHA-256 in
+             data/manifest/sources.json no longer matches the retrieved bytes.
+             The hashing side already exists: pipeline.edgar.EdgarClient records
+             a SHA-256 on the same code path as every fetch.
+             TODO: the re-verification pass itself is unwritten.
+
+          5. APPEND TO THE PUBLIC CHANGELOG (METHOD.md section 8.5)
+             Anything found in 1-4 is appended - dated, with the accession number
+             that caused it - to the public changelog. Nothing is retroactively
+             edited; superseded views are struck through in place.
+             TODO: unwritten, and it needs `permissions: contents: write` above,
+             or a pull request, before it can commit anything.
+
+          This step exits 0 on purpose. It reports intent. When the entry points
+          exist, replace it - and delete this text rather than leaving it to rot
+          beside code that has overtaken it.
+          PLAN

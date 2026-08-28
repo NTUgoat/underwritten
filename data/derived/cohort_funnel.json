@@ -1,0 +1,27 @@
+{
+  "as_at": "2026-08-28",
+  "listing_window": [
+    "2019-01-01",
+    "2021-12-31"
+  ],
+  "target_n": 50,
+  "floor_n": 25,
+  "candidates_enumerated": 602,
+  "candidates_by_arm": {
+    "DESPAC": 177,
+    "IPO": 425
+  },
+  "accepted": 50,
+  "accepted_by_arm": {
+    "DESPAC": 49,
+    "IPO": 1
+  },
+  "rejected": 21,
+  "rejected_by_criterion": {
+    "C1c": 13,
+    "C3": 4,
+    "C1b": 4
+  },
+  "met_target": true,
+  "met_floor": true
+}

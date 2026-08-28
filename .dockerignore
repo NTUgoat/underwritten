@@ -1,0 +1,46 @@
+# Build context for the deployed site.
+#
+# The single most important line in this file is `data/raw/`. That directory is
+# the cached EDGAR corpus: large, gitignored, and fully reproducible from
+# data/manifest/sources.json. The deployed site serves precomputed artifacts
+# only, so the corpus has no business in the image and is excluded here as well
+# as in .gitignore. Dockerfile asserts its absence at build time.
+
+data/raw/
+*.duckdb.wal
+
+# Local Python environments and caches - never the container's.
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Version control and CI: not needed to serve a page.
+.git/
+.gitattributes
+.gitignore
+.github/
+
+# Secrets. Belt and braces; these are gitignored too.
+.env
+.env.local
+*.pem
+
+# Not served, not imported by the app.
+tests/
+docs/
+Dockerfile
+.dockerignore
+railway.json
+railway.toml
+
+# Scratch left by tooling.
+_wf.json
+ct.json
+tm.json
+Thumbs.db
+.DS_Store

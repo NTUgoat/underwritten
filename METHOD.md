@@ -67,6 +67,7 @@ Frozen before extraction. A company enters the cohort if **all** hold:
 | # | Criterion |
 |---|---|
 | C1 | Completed an IPO, direct listing, or de-SPAC business combination with an effective registration statement dated between **2019-01-01 and 2021-12-31** inclusive. |
+| C1b | **The registration statement is a listing document, not a follow-on offering.** An S-1 registers any offering, including secondary and resale offerings by long-public companies. Operationalised as: the issuer filed **no periodic report** (10-K, 20-F, 40-F, 10-Q) before the registration statement's filing date. The Form 8-A exchange-registration date is recorded alongside as corroboration. Added by amendment 28 August 2026, before data collection — see `CHANGELOG.md`. |
 | C2 | Is an **operating company** at listing. Blank-check shells that had not yet completed a business combination, closed-end funds, and pure holding vehicles are excluded. |
 | C3 | Filed at least **three subsequent annual reports** (10-K or 20-F) with a filing date after the listing date and on or before **2026-08-28**. |
 | C4 | The listing document contains at least one **company-defined operating metric** as adjudicated under §4. Companies passing C1–C3 but failing C4 are recorded as `NO_METRICS_DEFINED` and retained in the denominator for §7.1 only. |
