@@ -356,6 +356,26 @@ def register(app, templates) -> None:
             ),
         )
 
+    def _coverage_context() -> dict[str, Any]:
+        """Per-issuer corpus coverage, and every document that could not be read."""
+        dataset = data.corpus_coverage()
+        if not dataset.available or not isinstance(dataset.payload, dict):
+            return {"available": False, "issuers": [], "gaps": [], "documents_read": 0}
+        payload = dataset.payload
+        per_issuer = payload.get("per_issuer") or []
+        gaps = [
+            {**gap, "issuer": entry.get("name", ""), "cik": entry.get("cik")}
+            for entry in per_issuer
+            for gap in (entry.get("gaps") or [])
+        ]
+        return {
+            "available": True,
+            "issuers": per_issuer,
+            "gaps": gaps,
+            "documents_read": payload.get("documents_read", 0),
+            "documents_failed": payload.get("documents_failed", 0),
+        }
+
     @app.get("/provenance", response_class=HTMLResponse)
     def provenance(request: Request) -> HTMLResponse:
         dataset = data.manifest()
@@ -375,6 +395,7 @@ def register(app, templates) -> None:
                 # the page can name the stages present instead of publishing one
                 # stage's count as though it covered everything read.
                 stages=payload.get("stages") or [],
+                coverage=_coverage_context(),
                 manifest_errors=payload.get("errors") or [],
                 sources=_sources(dataset),
             ),

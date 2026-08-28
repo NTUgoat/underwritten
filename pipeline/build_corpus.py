@@ -100,6 +100,24 @@ def main() -> int:
         stats = corpus.coverage()
         stats["name"] = row["name"]
         stats["arm"] = row["arm"]
+        # Record WHICH documents could not be read, not just how many.
+        # METHOD.md §6 turns absence into DISCONTINUED, and a coverage gap is
+        # evidence against calling a metric absent - so a gap is a fact about
+        # the finding, and /provenance publishes it. A bare count ("6 failed")
+        # tells a reader something is missing but not what, which is the one
+        # thing they would need in order to disagree.
+        stats["gaps"] = [
+            {
+                "accession": failure.accession,
+                "form": failure.form,
+                "filed": failure.filing_date.isoformat(),
+                "document": failure.filename,
+                "url": failure.url,
+                "stage": failure.stage,
+                "error": failure.error[:200],
+            }
+            for failure in corpus.failures
+        ]
         coverage.append(stats)
 
         print(

@@ -63,9 +63,47 @@
   </div>
 </section>
 
-<section class="band band--alt">
-  <div class="wrap">
-    <header class="band__head">
+<section class="band">
+      <h2 class="band__h">Corpus coverage</h2>
+      {% if coverage.available %}
+      <p class="band__sub">
+        {{ coverage.documents_read|num }} documents read across {{ coverage.issuers|length }} issuers.
+        <strong>{{ coverage.gaps|length }}</strong> could not be read.
+      </p>
+      <p class="band__sub">
+        A gap is a fact about the finding, not about the infrastructure. METHOD.md §6
+        turns absence into <code>DISCONTINUED</code>, so a document that could not be
+        read inside the window where a metric looks absent is exactly the difference
+        between <code>DISCONTINUED</code> and <code>NOT_DETERMINABLE</code>. Every one
+        is listed here so a reader can check a verdict that depends on it.
+      </p>
+      {% if coverage.gaps %}
+      <div class="scroller">
+        <table class="table">
+          <thead><tr><th scope="col">issuer</th><th scope="col">form</th><th scope="col">filed</th><th scope="col">accession</th><th scope="col">stage</th><th scope="col">why</th></tr></thead>
+          <tbody>
+            {% for g in coverage.gaps %}
+            <tr>
+              <td>{{ g.issuer }}</td>
+              <td>{{ g.form }}</td>
+              <td class="n">{{ g.filed }}</td>
+              <td class="hash">{% if g.url %}<a href="{{ g.url }}" target="_blank" rel="noopener nofollow">{{ g.accession }}</a>{% else %}{{ g.accession }}{% endif %}</td>
+              <td class="muted">{{ g.stage }}</td>
+              <td class="muted">{{ g.error }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="band__sub">Every document in the corpus was read.</p>
+      {% endif %}
+      {% else %}
+      {{ m.absent('The corpus build has not written its coverage record yet. Until it does, this page cannot say which documents were read - so it does not say.', 'data/derived/corpus_coverage.json') }}
+      {% endif %}
+    </section>
+
+    <section class="band">
       <h2 class="band__h">Source manifest</h2>
       <p class="band__sub">
         {% if manifest_available %}

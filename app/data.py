@@ -378,6 +378,19 @@ def cohort_funnel() -> Dataset:
     return load_json("derived/cohort_funnel.json")
 
 
+def corpus_coverage() -> Dataset:
+    """What was read per issuer, and what could not be.
+
+    Published because a coverage gap is a fact about the FINDING, not about the
+    infrastructure. METHOD.md §6 turns absence into DISCONTINUED, so a document
+    that could not be read inside the window where a metric looks absent is
+    exactly the difference between DISCONTINUED and NOT_DETERMINABLE. A reader
+    who cannot see which documents are missing cannot disagree with a verdict
+    that depends on them.
+    """
+    return load_json("derived/corpus_coverage.json")
+
+
 def manifest() -> Dataset:
     """Every manifest in data/manifest/, merged and deduplicated by URL.
 
