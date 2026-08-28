@@ -42,6 +42,7 @@
            value="{{ draft.reviewer or default_reviewer }}"
            placeholder="initials" aria-describedby="adj-reviewer-why">
     <span id="adj-reviewer-why" class="u-sr">Written into every row this session commits, with today's date.</span>
+    <a class="adj-bar__done" href="/adjudicate/state{{ suffix }}">§5 pass</a>
     <a class="adj-bar__done" href="{{ done_url }}">summary</a>
   </div>
 </header>
@@ -174,7 +175,7 @@
         <fieldset class="adj-verdicts">
           <legend>your ruling</legend>
           {% for v in verdicts %}
-          <label class="adj-verdict adj-verdict--{{ v|lower }}" data-verdict="{{ v }}">
+          <label class="adj-verdict adj-verdict--{{ v|lower }}" data-verdict="{{ v }}" data-key="{{ verdict_key[v] }}">
             <input type="radio" name="verdict" value="{{ v }}" {% if draft.verdict == v %}checked{% endif %}>
             <span class="adj-verdict__key">{{ verdict_key[v] }}</span>
             <span class="adj-verdict__label">{{ verdict_label[v] }}</span>
@@ -228,6 +229,9 @@
 </main>
 
 <script id="adj-data" type="application/json">{
+  "pass": "inclusion",
+  "verdict_field": "verdict",
+  "commit_on_preset": true,
   "group_id": {{ group.gid|tojson }},
   "post_url": {{ post_url|tojson }},
   "next_url": {{ (next_url or done_url)|tojson }},

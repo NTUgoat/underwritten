@@ -1,0 +1,133 @@
+{#- The §5 summary: which terminal states have been assigned, what is left,
+    and where it was written. It reports; it never rules. As on the §4 summary
+    there is deliberately no control here that can dispose of the remaining
+    metrics together. -#}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>§5 terminal states — Underwritten</title>
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/static/underwritten.css">
+<link rel="stylesheet" href="/static/adjudicate.css">
+</head>
+<body class="page adj adj--state">
+
+<header class="adj-bar">
+  <div class="adj-bar__id">
+    <a class="adj-bar__name" href="/">Underwritten</a>
+    <span class="adj-bar__tool">§5 terminal state</span>
+    <span class="adj-bar__local">local tool · writes to disk</span>
+  </div>
+  <div class="adj-bar__progress">
+    <span class="adj-prog__count"><strong>{{ board.n_ruled }}</strong> / {{ board.total }} included metrics stated</span>
+    <span class="adj-prog__track" aria-hidden="true"><span class="adj-prog__fill" style="width: {{ ((board.n_ruled / board.total * 100) if board.total else 0)|round(1) }}%"></span></span>
+  </div>
+  <div class="adj-bar__who">
+    <a class="adj-bar__done" href="/adjudicate/state{{ suffix }}">resume</a>
+    <a class="adj-bar__done" href="/adjudicate/done{{ suffix }}">§4 pass</a>
+  </div>
+</header>
+
+<main class="adj-main adj-main--summary" id="main">
+
+{% if phase == 'nothing_included' %}
+<section class="adj-panel">
+  <h1 class="adj-panel__h">No metric has been included yet</h1>
+  <p class="adj-panel__lede">METHOD.md §5 assigns a terminal state to the metrics
+  §4 ruled <strong>INCLUDE</strong>, and none carries that ruling yet. This pass
+  has nothing to work on until the first one does — no state is assigned by
+  default and none is inferred from the filed record.</p>
+  <p>{{ board.n_awaiting_inclusion }} group(s) have not been ruled at §4 at all.
+  <a href="/adjudicate{{ suffix }}">Start the §4 pass</a>.</p>
+  <p class="adj-paths">ledger <code>{{ ledger_display }}</code></p>
+</section>
+
+{% else %}
+
+<section class="adj-panel">
+  <h1 class="adj-panel__h">{% if phase == 'complete' %}Every included metric has a terminal state{% else %}Terminal states in progress{% endif %}</h1>
+  <p class="adj-panel__lede">
+    {{ board.n_ruled }} of {{ board.total }} metrics ruled <strong>INCLUDE</strong>
+    at §4 carry a signed METHOD.md §5 terminal state. Each was written through to
+    every occurrence of that metric with the reviewer's initials, the date and a
+    rationale, beside — never over — the §4 ruling on the same row.
+  </p>
+
+  <ul class="tally">
+    {% for t in board.tally() %}
+    <li class="tally__item"><span class="tally__label">{{ t.state|lower|replace('_', ' ') }} — {{ t.label }}</span><span class="tally__n">{{ t.n }}</span></li>
+    {% endfor %}
+    <li class="tally__item"><span class="tally__label">no state yet</span><span class="tally__n">{{ n_unruled|default(0, true) }}</span></li>
+  </ul>
+
+  <p class="adj-panel__note">A <code>DISCONTINUED</code> here was refused unless the
+  METHOD.md §6 four-period absence test scored <code>ABSENCE_TEST_MET</code> for
+  that metric, and additionally required a confirmed rename check with a written
+  record of what was checked.</p>
+
+  <p class="adj-paths">
+    ledger <code>{{ ledger_display }}</code><br>
+    audit <code>{{ log_display }}</code>
+  </p>
+</section>
+
+{% if n_unruled|default(0, true) %}
+<section class="adj-panel">
+  <h2 class="adj-panel__h2">Still to state — {{ n_unruled }}</h2>
+  <p class="adj-panel__note">Listed so they can be finished, not so they can be
+  disposed of together. Each link opens the §6 evidence for that metric.</p>
+  <div class="scroller">
+    <table class="table">
+      <thead><tr><th scope="col">CIK</th><th scope="col">metric</th><th scope="col" class="n">occurrences</th><th scope="col" class="n">first</th><th scope="col" class="n">last</th></tr></thead>
+      <tbody>
+        {% for g in unruled|default([], true) %}
+        <tr>
+          <td class="hash">{{ g.cik }}</td>
+          <th scope="row"><a href="/adjudicate/state/{{ g.gid }}{{ suffix }}">{{ g.display_name }}</a></th>
+          <td class="n">{{ g.n }}</td>
+          <td class="n">{{ g.first_date or '—' }}</td>
+          <td class="n">{{ g.last_date or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+
+{% if recent|default([], true) %}
+<section class="adj-panel">
+  <h2 class="adj-panel__h2">Most recent terminal states in the ledger</h2>
+  <p class="adj-panel__note">Read back from <code>{{ ledger_display }}</code> as written.</p>
+  <div class="scroller">
+    <table class="table">
+      <thead><tr><th scope="col">metric</th><th scope="col">state</th><th scope="col">substantive</th><th scope="col">benign</th><th scope="col">reviewer</th><th scope="col" class="n">date</th><th scope="col">rationale</th></tr></thead>
+      <tbody>
+        {% for row in recent|default([], true) %}
+        <tr>
+          <th scope="row">{{ row.metric_name }}</th>
+          <td><span class="badge">{{ row.state }}</span></td>
+          <td>{{ row.substantive or '—' }}</td>
+          <td>{{ row.benign_label or '—' }}</td>
+          <td>{{ row.state_reviewer }}</td>
+          <td class="n">{{ row.state_review_date }}</td>
+          <td class="def">{{ row.state_rationale }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+
+{% endif %}
+
+</main>
+</body>
+</html>

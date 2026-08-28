@@ -45,6 +45,35 @@ warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
 OUTPUT = config.DERIVED / "absence_evidence.json"
 
 
+def _appearance(found) -> dict | None:
+    """Serialise one Appearance, or None.
+
+    Written out explicitly rather than through a `hasattr(..., "as_row")`
+    guard. That guard was here first, `Appearance` has no `as_row` - only
+    `AbsenceEvidence` does - and so every one of the 79 rows written silently
+    carried `first_appearance: null`. Nothing failed and nothing was logged.
+    Defensive coding that swallows the case it was guarding against is worse
+    than no guard, because it converts a crash into missing data.
+
+    These fields are what lets a reader re-check the claim by hand, which is
+    the whole point of recording them.
+    """
+    if found is None:
+        return None
+    return {
+        "accession": found.accession,
+        "form": found.form,
+        "filing_date": found.filing_date.isoformat(),
+        "document": found.document,
+        "doc_type": found.doc_type,
+        "url": found.url,
+        "char_offset": found.char_offset,
+        "context": found.context,
+        "match_mode": found.match_mode,
+        "matched_text": found.matched_text,
+    }
+
+
 def _cohort_rows() -> list[dict[str, str]]:
     path = config.COHORT / "cohort_frozen.csv"
     if not path.exists():
@@ -150,18 +179,8 @@ def main() -> int:
                     "n_appearances": result.n_appearances,
                     "n_documents_searched": result.n_documents_searched,
                     "n_documents_failed": result.n_documents_failed,
-                    "first_appearance": (
-                        result.first_appearance.as_row()
-                        if result.first_appearance
-                        and hasattr(result.first_appearance, "as_row")
-                        else None
-                    ),
-                    "last_appearance": (
-                        result.last_appearance.as_row()
-                        if result.last_appearance
-                        and hasattr(result.last_appearance, "as_row")
-                        else None
-                    ),
+                    "first_appearance": _appearance(result.first_appearance),
+                    "last_appearance": _appearance(result.last_appearance),
                 }
             )
 

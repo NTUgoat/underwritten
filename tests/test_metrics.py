@@ -1075,3 +1075,60 @@ def test_periods_partition_the_filings_exactly():
     assert all(p.accessions for p in periods)           # no empty period
     # A filing on a shared boundary date belongs to the earlier period.
     assert "b" in periods[0].accessions
+
+
+def test_write_candidates_preserves_unknown_columns(tmp_path):
+    """A §5 ruling must survive a re-run of the candidate locator.
+
+    `write_candidates` promises it "never destroys" a ruling, but it pinned its
+    writer to LEDGER_FIELDS and narrowed carried-forward rows to them. The §5
+    pass writes terminal states into the same ledger under columns this module
+    does not define, so a re-run would have silently deleted every one of them.
+    Unknown columns are data; a writer that does not understand a column has no
+    business dropping it.
+    """
+    import csv as _csv
+
+    from pipeline.metrics import LEDGER_FIELDS, write_candidates
+
+    path = tmp_path / "metrics.csv"
+    columns = [*LEDGER_FIELDS, "state", "renamed_to", "state_rationale"]
+    row = dict.fromkeys(columns, "")
+    row.update(
+        {
+            "candidate_id": "abc",
+            "cik": "1691421",
+            "metric_name": "In Force Premium",
+            "include": "yes",
+            "reviewer": "JL",
+            "review_date": "2026-09-01",
+            "rationale": "company-defined",
+            "state": "RENAMED",
+            "renamed_to": "Gross Written Premium",
+            "state_rationale": "traced in EX-99.1",
+        }
+    )
+    with path.open("w", newline="", encoding="utf-8") as handle:
+        writer = _csv.DictWriter(handle, fieldnames=columns)
+        writer.writeheader()
+        writer.writerow(row)
+
+    write_candidates([], path=path)
+
+    back = next(iter(_csv.DictReader(path.open(encoding="utf-8"))))
+    assert back["state"] == "RENAMED"
+    assert back["renamed_to"] == "Gross Written Premium"
+    assert back["state_rationale"] == "traced in EX-99.1"
+    assert back["include"] == "yes"
+
+
+def test_write_candidates_header_unchanged_for_a_plain_ledger(tmp_path):
+    """A file that never held §5 columns keeps exactly the declared header."""
+    import csv as _csv
+
+    from pipeline.metrics import LEDGER_FIELDS, write_candidates
+
+    path = tmp_path / "metrics_candidates.csv"
+    write_candidates([], path=path)
+    header = next(iter(_csv.reader(path.open(encoding="utf-8"))))
+    assert tuple(header) == tuple(LEDGER_FIELDS)

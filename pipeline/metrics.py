@@ -434,10 +434,16 @@ def write_candidates(
         rows.append(row)
         written_ids.add(candidate.candidate_id)
 
+    # Orphans are carried forward WHOLE, not narrowed to LEDGER_FIELDS.
+    #
+    # The §5 pass writes terminal states into the same ledger under columns this
+    # module does not know about (state, benign_label, renamed_to, and the rest).
+    # Narrowing a row to the columns declared here would silently delete every
+    # one of them - a human's reading work, destroyed by a function whose own
+    # docstring promises it "never destroys one". Unknown columns are data, and
+    # a writer that does not understand a column has no business dropping it.
     orphans = [
-        {field: (row.get(field) or "") for field in LEDGER_FIELDS}
-        for key, row in sorted(existing.items())
-        if key not in written_ids
+        dict(row) for key, row in sorted(existing.items()) if key not in written_ids
     ]
     if orphans:
         logger.warning(
@@ -452,8 +458,19 @@ def write_candidates(
     # truncated one, and METHOD.md §4 calls that ledger "the study".
     path.parent.mkdir(parents=True, exist_ok=True)
     staging = path.with_name(path.name + ".partial")
+    # The header is LEDGER_FIELDS plus any column already present in the file
+    # that this module does not define, in first-seen order. A file that only
+    # ever held candidate columns therefore keeps a header byte-identical to
+    # LEDGER_FIELDS; a file carrying §5 rulings keeps those columns too.
+    extra: list[str] = []
+    for row in (*rows, *orphans):
+        for field in row:
+            if field not in LEDGER_FIELDS and field not in extra:
+                extra.append(field)
+    fieldnames = [*LEDGER_FIELDS, *extra]
+
     with staging.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(LEDGER_FIELDS))
+        writer = csv.DictWriter(handle, fieldnames=fieldnames, restval="")
         writer.writeheader()
         writer.writerows(rows)
         writer.writerows(orphans)

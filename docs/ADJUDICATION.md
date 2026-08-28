@@ -50,6 +50,32 @@ routes — the public site cannot reach it, which is checked by a test rather th
 Nothing is armed on load, and a commit requires a verdict, your initials, and a non-empty
 rationale — so an accidental keypress cannot write a row.
 
+### The second pass: §5 terminal states
+
+Once §4 is done, `/adjudicate/state` walks the metrics you INCLUDED and asks for a
+terminal state. Same ledger, same initials, same atomic writes.
+
+| Key | State |
+|---|---|
+| `a` | ALIVE |
+| `e` | REDEFINED — you must then set substantive or cosmetic explicitly |
+| `m` | RENAMED — you must give the new name, so §6 can be re-run over the alias |
+| `o` | ABSORBED |
+| `d` | DISCONTINUED — guarded, see below |
+| `n` | NOT_DETERMINABLE |
+
+Presets on `1`–`9` **do not commit** here, unlike §4: a §5 ruling usually needs a date too.
+
+**The DISCONTINUED guard.** §6 makes the four-period absence test a *necessary* condition,
+so the tool refuses `DISCONTINUED` outright when the test is not met, naming the trailing
+absent count against the four required. When it *is* met you must still tick that you
+checked for a rename and write one line saying what you checked — because Airbnb's
+"Nights and Experiences Booked" meets the test and was merely renamed. The status is read
+from the evidence file inside the handler, never from the page, so it cannot be posted around.
+
+**Benign causes** (§7.4) are recorded as labels on DISCONTINUED and REDEFINED, not folded
+into the rationale, because the primary is re-run with them removed and published both ways.
+
 ### The machine's proposal
 
 Each group carries a proposed ruling with the rule it fired on, rendered dashed and

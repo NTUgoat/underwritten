@@ -271,8 +271,30 @@
       "n_appearances": 330,
       "n_documents_searched": 197,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001558370-19-010157",
+        "form": "8-K",
+        "filing_date": "2019-11-06",
+        "document": "ex-99d1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/775215/000155837019010157/ex-99d1.htm",
+        "char_offset": 11131,
+        "context": "llinois through 64 branches. As of September 30, 2019, HBT had total assets of $3.2 billion, total loans of $2.2 billion, and total deposits of $2.7 billion. HBT is a longstanding Central Illinois company, with banking roots that can be traced back nearly 100 years. Non-GAAP Financial Measures Some of the financial measures included in this press release are not measures of",
+        "match_mode": "strict",
+        "matched_text": "Central Illinois"
+      },
+      "last_appearance": {
+        "accession": "0000775215-26-000076",
+        "form": "8-K",
+        "filing_date": "2026-08-10",
+        "document": "hbt-20260810ex992.htm",
+        "doc_type": "EX-99.2",
+        "url": "https://www.sec.gov/Archives/edgar/data/775215/000077521526000076/hbt-20260810ex992.htm",
+        "char_offset": 7746,
+        "context": "using the crossover method \u2022 Creates significant value for both HBT and TYFG stockholders Low Risk Transaction \u2022 Partners two highly compatible franchises with deep roots in north-central Illinois \u2022 Similar conservative credit cultures and diversified loan portfolios \u2022 Strong pro forma capital ratios \u2022 HBT completed a rigorous due diligence process with 70% of total outstan",
+        "match_mode": "strict",
+        "matched_text": "central Illinois"
+      }
     },
     {
       "cik": 775215,
@@ -319,8 +341,30 @@
       "n_appearances": 25,
       "n_documents_searched": 197,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001628280-24-034168",
+        "form": "10-Q",
+        "filing_date": "2024-08-01",
+        "document": "hbt-20240630.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/775215/000162828024034168/hbt-20240630.htm",
+        "char_offset": 272142,
+        "context": "it pricing changes are primarily driven by changes in the Federal Funds rate, with the relationship between deposit rates and Federal Funds rate defined as deposit beta. We define cumulative deposit beta as the change in our quarterly cost of deposits divided by the change in the upper level of the stated Federal Funds rate range since the fourth quarter of 2021, the start of the",
+        "match_mode": "strict",
+        "matched_text": "cumulative deposit beta"
+      },
+      "last_appearance": {
+        "accession": "0000775215-26-000069",
+        "form": "10-Q",
+        "filing_date": "2026-08-07",
+        "document": "hbt-20260630.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/775215/000077521526000069/hbt-20260630.htm",
+        "char_offset": 260313,
+        "context": "2021 through the second quarter of 2024, our cumulative deposit beta was 23.6%. Since the start of the current falling rate cycle, which began with the third quarter of 2024, our cumulative deposit beta has been 8.9%. Asset Prepayments We include prepayment assumptions for both our loan and securities portfolios, based on historical experience. Generally, mortgage portfolio prepa",
+        "match_mode": "strict",
+        "matched_text": "cumulative deposit beta"
+      }
     },
     {
       "cik": 775215,
@@ -367,8 +411,30 @@
       "n_appearances": 280,
       "n_documents_searched": 197,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001558370-19-011150",
+        "form": "10-Q",
+        "filing_date": "2019-11-20",
+        "document": "hbt-20190930x10q.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/775215/000155837019011150/hbt-20190930x10q.htm",
+        "char_offset": 196933,
+        "context": "t change at the same speed, to the same extent or on the same basis. We monitor the impact of changes in interest rates on our net interest income and economic value of equity, or EVE, using rate shock analysis. Net interest income simulations measure the short-term earnings exposure from changes in market rates of interest in a rigorous and explicit fashion. O",
+        "match_mode": "strict",
+        "matched_text": "EVE"
+      },
+      "last_appearance": {
+        "accession": "0000775215-26-000069",
+        "form": "10-Q",
+        "filing_date": "2026-08-07",
+        "document": "hbt-20260630.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/775215/000077521526000069/hbt-20260630.htm",
+        "char_offset": 262444,
+        "context": "is reflected uniformly across the yield curve regardless of the duration to maturity or the repricing characteristics of specific assets and liabilities. Accordingly, although the EVE and net interest income table provides an indication of our sensitivity to interest rate changes at a particular point in time, such measurements are not intended to and do not pr",
+        "match_mode": "strict",
+        "matched_text": "EVE"
+      }
     },
     {
       "cik": 775215,
@@ -415,8 +481,30 @@
       "n_appearances": 1494,
       "n_documents_searched": 197,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001558370-19-010157",
+        "form": "8-K",
+        "filing_date": "2019-11-06",
+        "document": "f8-k.htm",
+        "doc_type": "8-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/775215/000155837019010157/f8-k.htm",
+        "char_offset": 526,
+        "context": "ter) Delaware 001\u201139085 37\u20111117216 (State or other jurisdiction of incorporation) (Commission File Number) (IRS Employer Identification Number) 401 North Hershey Road Bloomington, Illinois 61704 (Address of principal executive offices) (Zip Code) (888) 897\u20112276 (Registrant\u2019s telephone number, including area code) Check the appropriate box below if the Form 8\u2011K filin",
+        "match_mode": "strict",
+        "matched_text": "Illinois"
+      },
+      "last_appearance": {
+        "accession": "0000775215-26-000076",
+        "form": "8-K",
+        "filing_date": "2026-08-10",
+        "document": "hbt-20260810ex992.htm",
+        "doc_type": "EX-99.2",
+        "url": "https://www.sec.gov/Archives/edgar/data/775215/000077521526000076/hbt-20260810ex992.htm",
+        "char_offset": 13153,
+        "context": ".8% total risk-based capital ratio \u25aa 9.5% tier 1 leverage ratio 10 2026 Track record of successfully integrating acquisitions BankPlus Morton, IL $231mm deposits 2007 2012 Bank of Illinois Normal, IL FDIC-assisted $176mm deposits Western Springs National Bank Western Springs, IL FDIC-assisted $184mm deposits 2011 Citizens First National Bank Princeton, IL FDIC-assis",
+        "match_mode": "strict",
+        "matched_text": "Illinois"
+      }
     },
     {
       "cik": 775215,
@@ -463,8 +551,30 @@
       "n_appearances": 28,
       "n_documents_searched": 197,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001558370-20-006965",
+        "form": "8-K",
+        "filing_date": "2020-05-26",
+        "document": "tmb-20200526xex99d1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/775215/000155837020006965/tmb-20200526xex99d1.htm",
+        "char_offset": 7526,
+        "context": "/ loans3 0.85% 0.54% 0.54% 0.51% NPAs / Loans + OREO 1.81% 1.18% 1.11% 0.93% Originated NPAs / Loans + OREO 1.17% 0.61% 0.59% 0.56% CET1 (%) 12.1% 12.7% 12.2% 12.4% Balance sheet Key performance i ndicators Credit & capital Loan composition Note: Financial data as of and for the three months ended March 31, 2020 unless otherwise indicated; 1 Gross loans includes loans before allowanc",
+        "match_mode": "split_tolerant",
+        "matched_text": "Key performance i ndicators"
+      },
+      "last_appearance": {
+        "accession": "0000775215-26-000063",
+        "form": "8-K",
+        "filing_date": "2026-07-27",
+        "document": "hbt-20260630ex992.htm",
+        "doc_type": "EX-99.2",
+        "url": "https://www.sec.gov/Archives/edgar/data/775215/000077521526000063/hbt-20260630ex992.htm",
+        "char_offset": 10039,
+        "context": "18 4,359 5,758 Core deposits (%)1 93.8 % 95.3 % 95.4 % 93.5 % Loans-to-deposits 77.3 % 80.3 % 79.3 % 82.5 % CET1 (%) 12.1 % 13.2 % 14.4 % 12.6 % TCE / TA1 8.2 % 9.4 % 10.8 % 9.7 % K ey P er fo rm an ce In di ca to rs Adjusted ROAA1 1.59 % 1.50 % 1.58 % 1.66 %* Adjusted ROATCE1 20.9 % 17.2 % 15.8 % 17.1 %* NIM (FTE)1 4.15 % 4.01 % 4.17 % 4.32 %* Yield on loans 6.04 % 6.36 % 6.34 % 6.33 %* Cost",
+        "match_mode": "split_tolerant",
+        "matched_text": "K ey P er fo rm an ce In di ca to rs"
+      }
     },
     {
       "cik": 775215,
@@ -511,8 +621,30 @@
       "n_appearances": 185,
       "n_documents_searched": 197,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001558370-19-010157",
+        "form": "8-K",
+        "filing_date": "2019-11-06",
+        "document": "ex-99d1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/775215/000155837019010157/ex-99d1.htm",
+        "char_offset": 24222,
+        "context": "ets (6) $ 910,289 $ 905,643 $ 862,014 Ratio of interest-earning assets to interest-bearing liabilities 1.42 1.41 1.39 Cost of deposits 0.29% 0.30% 0.23% (1) See \"Reconciliation of Non-GAAP Financial Information\" below for reconciliation of non-GAAP measure to their most comparable GAAP measures. (2) Annualized measure. (3) On a C Corp tax-equivalent basis assuming a federal income tax ra",
+        "match_mode": "strict",
+        "matched_text": "Non-GAAP Financial Information"
+      },
+      "last_appearance": {
+        "accession": "0000775215-26-000069",
+        "form": "10-Q",
+        "filing_date": "2026-08-07",
+        "document": "hbt-20260630.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/775215/000077521526000069/hbt-20260630.htm",
+        "char_offset": 243181,
+        "context": "on an individual loan basis. The probability of default, loss given default, exposure at default, and prepayment assumptions are key factors in this analysis. 81 Table of Contents NON-GAAP FINANCIAL INFORMATION This Quarterly Report on Form 10-Q contains certain financial information determined by methods other than those in accordance with GAAP. Management believes that it is a standard",
+        "match_mode": "strict",
+        "matched_text": "NON-GAAP FINANCIAL INFORMATION"
+      }
     },
     {
       "cik": 775215,
@@ -559,8 +691,30 @@
       "n_appearances": 1406,
       "n_documents_searched": 197,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001558370-19-010157",
+        "form": "8-K",
+        "filing_date": "2019-11-06",
+        "document": "ex-99d1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/775215/000155837019010157/ex-99d1.htm",
+        "char_offset": 772,
+        "context": "ROAA (1) of 1.79%; adjusted C Corp equivalent ROAE (1) of 16.45%; and adjusted C Corp equivalent ROATCE (1) of 17.90% \u00b7 Initial public offering priced on October 10, 2019 (1) See \u201cNon-GAAP Financial Measures\u201d and \u201cReconciliation of Non-GAAP Financial Measures\u201d below for a discussion of non-GAAP financial measures and reconciliations to GAAP financial measures. Bloomington, IL, Novembe",
+        "match_mode": "strict",
+        "matched_text": "Non-GAAP Financial Measures"
+      },
+      "last_appearance": {
+        "accession": "0000775215-26-000069",
+        "form": "10-Q",
+        "filing_date": "2026-08-07",
+        "document": "hbt-20260630.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/775215/000077521526000069/hbt-20260630.htm",
+        "char_offset": 256677,
+        "context": "d return on average tangible common equity * 18.13 16.02 17.07 16.18 _________________________________________________ * Annualized measure. 87 Table of Contents Reconciliation of Non-GAAP Financial Measure \u2014 Core Deposits (dollars in thousands) June 30, 2026 December 31, 2025 Core Deposits Total deposits $ 5,757,986 $ 4,359,263 Less: time deposits of $250,000 or more 376,569 201,365",
+        "match_mode": "strict",
+        "matched_text": "Non-GAAP Financial Measure"
+      }
     },
     {
       "cik": 775215,
@@ -607,8 +761,30 @@
       "n_appearances": 1,
       "n_documents_searched": 197,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001558370-19-010157",
+        "form": "8-K",
+        "filing_date": "2019-11-06",
+        "document": "ex-99d1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/775215/000155837019010157/ex-99d1.htm",
+        "char_offset": 34243,
+        "context": "Corp equivalent return on average assets (2) (3) 1.64% 1.38% 1.74% 1.14% 1.64% C Corp equivalent return on average stockholders' equity (2) (3) 15.05% 13.14% 16.17% 10.91% 15.93% NON-GAAP INFORMATION Adjusted C Corp equivalent net income (1) $ 14,343 $ 14,308 $ 14,359 $ 10,874 $ 13,132 Adjusted C Corp equivalent earnings per share - Basic and diluted (1) (4) 0.80 0.79 0.80 0.6",
+        "match_mode": "strict",
+        "matched_text": "NON-GAAP INFORMATION"
+      },
+      "last_appearance": {
+        "accession": "0001558370-19-010157",
+        "form": "8-K",
+        "filing_date": "2019-11-06",
+        "document": "ex-99d1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/775215/000155837019010157/ex-99d1.htm",
+        "char_offset": 34243,
+        "context": "Corp equivalent return on average assets (2) (3) 1.64% 1.38% 1.74% 1.14% 1.64% C Corp equivalent return on average stockholders' equity (2) (3) 15.05% 13.14% 16.17% 10.91% 15.93% NON-GAAP INFORMATION Adjusted C Corp equivalent net income (1) $ 14,343 $ 14,308 $ 14,359 $ 10,874 $ 13,132 Adjusted C Corp equivalent earnings per share - Basic and diluted (1) (4) 0.80 0.79 0.80 0.6",
+        "match_mode": "strict",
+        "matched_text": "NON-GAAP INFORMATION"
+      }
     },
     {
       "cik": 775215,
@@ -655,8 +831,30 @@
       "n_appearances": 227,
       "n_documents_searched": 197,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001558370-19-010157",
+        "form": "8-K",
+        "filing_date": "2019-11-06",
+        "document": "ex-99d1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/775215/000155837019010157/ex-99d1.htm",
+        "char_offset": 24282,
+        "context": "ing assets to interest-bearing liabilities 1.42 1.41 1.39 Cost of deposits 0.29% 0.30% 0.23% (1) See \"Reconciliation of Non-GAAP Financial Information\" below for reconciliation of non-GAAP measure to their most comparable GAAP measures. (2) Annualized measure. (3) On a C Corp tax-equivalent basis assuming a federal income tax rate of 21% and a state income tax rate of 9.5%.",
+        "match_mode": "strict",
+        "matched_text": "non-GAAP measure"
+      },
+      "last_appearance": {
+        "accession": "0000775215-26-000069",
+        "form": "10-Q",
+        "filing_date": "2026-08-07",
+        "document": "hbt-20260630.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/775215/000077521526000069/hbt-20260630.htm",
+        "char_offset": 210579,
+        "context": "common equity to tangible assets (1) 9.69 10.82 _________________________________________________ NM Not meaningful. (1) See \"Non-GAAP Financial Information\" for reconciliation of non-GAAP measures to their most closely comparable GAAP measures. 69 Table of Contents Notable changes in our consolidated balance sheet include the following: \u2022 The CNB merger added $1.81 billion",
+        "match_mode": "strict",
+        "matched_text": "non-GAAP measures"
+      }
     },
     {
       "cik": 775215,
@@ -703,8 +901,30 @@
       "n_appearances": 59,
       "n_documents_searched": 197,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001558370-20-006965",
+        "form": "8-K",
+        "filing_date": "2020-05-26",
+        "document": "tmb-20200526xex99d1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/775215/000155837020006965/tmb-20200526xex99d1.htm",
+        "char_offset": 8158,
+        "context": "epresent loans initially originated by the Company and acquired loans that were refinanced using the Company\u2019s underwriting criteria; metrics derived from originated loan data are non-GAAP metrics; for a reconciliation with GAAP metrics, see \u201cNon-GAAP reconciliations\u201d; 4 Metric based on adjusted net income, which is a non-GAAP metric; for reconciliation with GAAP metric, se",
+        "match_mode": "strict",
+        "matched_text": "non-GAAP metrics"
+      },
+      "last_appearance": {
+        "accession": "0000775215-26-000063",
+        "form": "8-K",
+        "filing_date": "2026-07-27",
+        "document": "hbt-20260630ex992.htm",
+        "doc_type": "EX-99.2",
+        "url": "https://www.sec.gov/Archives/edgar/data/775215/000077521526000063/hbt-20260630ex992.htm",
+        "char_offset": 28814,
+        "context": "Corp in 2018, although the transaction was accounted for as a change of reporting entity due to its common control with Company; 3 Metrics based on adjusted net income, which is a non-GAAP metric; for reconciliation with GAAP metrics, see \u201cNon-GAAP reconciliations\u201d in Appendix; 4 Metrics presented on tax-equivalent basis; for reconciliation with GAAP metric, see \u201cNon-GAAP",
+        "match_mode": "strict",
+        "matched_text": "non-GAAP metric"
+      }
     },
     {
       "cik": 1621672,
@@ -753,8 +973,30 @@
       "n_appearances": 4,
       "n_documents_searched": 252,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001437749-25-010233",
+        "form": "10-K",
+        "filing_date": "2025-03-31",
+        "document": "slgg20241231_10k.htm",
+        "doc_type": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1621672/000143774925010233/slgg20241231_10k.htm",
+        "char_offset": 430606,
+        "context": "cal Accounting Matters (\u201cCAMs\u201d) as a component of their audit opinion commencing with the audit of our consolidated financial statements for Fiscal Year 2024. 67 Table of Contents A CAM is defined as any matter arising from the audit of the consolidated financial statements that was communicated or required to be communicated to the audit committee, as a componen",
+        "match_mode": "strict",
+        "matched_text": "A CAM"
+      },
+      "last_appearance": {
+        "accession": "0001437749-26-010734",
+        "form": "10-K",
+        "filing_date": "2026-03-31",
+        "document": "slgg20251231_10k.htm",
+        "doc_type": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1621672/000143774926010734/slgg20251231_10k.htm",
+        "char_offset": 440872,
+        "context": "Matters (\u201cCAMs\u201d) as a component of their audit opinion commencing with the audit of the Company\u2019s financial statements for the year ended December 31, 2024. F-10 Table of Contents A CAM is defined as any matter arising from the audit of the financial statements that was communicated or required to be communicated to the audit committee, as a component of typical",
+        "match_mode": "strict",
+        "matched_text": "A CAM"
+      }
     },
     {
       "cik": 1621672,
@@ -803,8 +1045,30 @@
       "n_appearances": 2,
       "n_documents_searched": 252,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001437749-25-010233",
+        "form": "10-K",
+        "filing_date": "2025-03-31",
+        "document": "slgg20241231_10k.htm",
+        "doc_type": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1621672/000143774925010233/slgg20241231_10k.htm",
+        "char_offset": 430597,
+        "context": "of Critical Accounting Matters (\u201cCAMs\u201d) as a component of their audit opinion commencing with the audit of our consolidated financial statements for Fiscal Year 2024. 67 Table of Contents A CAM is defined as any matter arising from the audit of the consolidated financial statements that was communicated or required to be communicated to the audit committee, as a componen",
+        "match_mode": "strict",
+        "matched_text": "Contents A CAM"
+      },
+      "last_appearance": {
+        "accession": "0001437749-26-010734",
+        "form": "10-K",
+        "filing_date": "2026-03-31",
+        "document": "slgg20251231_10k.htm",
+        "doc_type": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1621672/000143774926010734/slgg20251231_10k.htm",
+        "char_offset": 440863,
+        "context": "al Audit Matters (\u201cCAMs\u201d) as a component of their audit opinion commencing with the audit of the Company\u2019s financial statements for the year ended December 31, 2024. F-10 Table of Contents A CAM is defined as any matter arising from the audit of the financial statements that was communicated or required to be communicated to the audit committee, as a component of typical",
+        "match_mode": "strict",
+        "matched_text": "Contents A CAM"
+      }
     },
     {
       "cik": 1621672,
@@ -853,8 +1117,30 @@
       "n_appearances": 71,
       "n_documents_searched": 252,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001654954-19-005931",
+        "form": "8-K",
+        "filing_date": "2019-05-14",
+        "document": "ex99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1621672/000165495419005931/ex99-1.htm",
+        "char_offset": 9153,
+        "context": "lation or as a substitute for, or superior to, the financial information prepared and presented in accordance with GAAP. -3- We use proforma net loss, proforma earnings per share (EPS) and other non-GAAP financial measures for internal financial and operational decision-making purposes and to evaluate period-to-period comparisons of the performance and results",
+        "match_mode": "strict",
+        "matched_text": "EPS"
+      },
+      "last_appearance": {
+        "accession": "0001437749-25-035238",
+        "form": "10-Q",
+        "filing_date": "2025-11-14",
+        "document": "slgg20250930_10q.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1621672/000143774925035238/slgg20250930_10q.htm",
+        "char_offset": 164099,
+        "context": "stockholders - diluted $ ( 4,141,000 ) $ ( 5,326,000 ) $ ( 3,570,000 ) $ ( 14,637,000 ) -18- Table of Contents The following table sets forth the computation of basic and diluted EPS for the three and nine months ended September 30: Three Months Nine Months Ended September 30, Ended September 30, 2025 2024 2025 2024 Basic Earnings (Loss) Per Common Share: Net",
+        "match_mode": "strict",
+        "matched_text": "EPS"
+      }
     },
     {
       "cik": 1621672,
@@ -903,8 +1189,30 @@
       "n_appearances": 20,
       "n_documents_searched": 252,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001654954-19-005931",
+        "form": "8-K",
+        "filing_date": "2019-05-14",
+        "document": "ex99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1621672/000165495419005931/ex99-1.htm",
+        "char_offset": 10000,
+        "context": "omparisons to our historical performance and liquidity. We believe these non-GAAP financial measures are useful to investors as they allow for greater transparency with respect to key metrics used by management in its financial and operational decision making and are used by our institutional investors and the analyst community to help them analyze the performance and",
+        "match_mode": "strict",
+        "matched_text": "key metrics"
+      },
+      "last_appearance": {
+        "accession": "0001437749-26-010734",
+        "form": "10-K",
+        "filing_date": "2026-03-31",
+        "document": "slgg20251231_10k.htm",
+        "doc_type": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1621672/000143774926010734/slgg20251231_10k.htm",
+        "char_offset": 245496,
+        "context": "ive ads that match the gameplay a consumer is already enjoying and are available in more than 25 popular mobile game formats. Native matching leads to higher ad performance across key metrics, with return on ad spend as high as 13x compared to standard playable ads. A brand\u2019s video creative can also run in sync with the playable unit, ensuring consumers both watch and",
+        "match_mode": "strict",
+        "matched_text": "key metrics"
+      }
     },
     {
       "cik": 1621672,
@@ -953,8 +1261,30 @@
       "n_appearances": 51,
       "n_documents_searched": 252,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001654954-19-005931",
+        "form": "8-K",
+        "filing_date": "2019-05-14",
+        "document": "ex99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1621672/000165495419005931/ex99-1.htm",
+        "char_offset": 1757,
+        "context": "ined, esports has becoming one of the fastest-growing and most exciting market spaces for both players and fans. \u201cTo date in 2019, we were able to show progress against all of our key performance indicators, including increasing the number of games on our platform, expanding our network of active venues, growing our base of registered users, and seeing significant increases in the nu",
+        "match_mode": "strict",
+        "matched_text": "key performance indicators"
+      },
+      "last_appearance": {
+        "accession": "0001437749-25-010233",
+        "form": "10-K",
+        "filing_date": "2025-03-31",
+        "document": "slgg20241231_10k.htm",
+        "doc_type": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1621672/000143774925010233/slgg20241231_10k.htm",
+        "char_offset": 165945,
+        "context": "wing product-market fit currently reaches over 100 million monthly unique players in Roblox, Minecraft and Fortnite and generates over one billion monthly impressions. We view our key performance Indicators (\u201cKPIs\u201d) as a critical measure of our user engagement, and adding, maintaining, and engaging users has been and will continue to be necessary to our continued growth. Our KPI grow",
+        "match_mode": "strict",
+        "matched_text": "key performance Indicators"
+      }
     },
     {
       "cik": 1621672,
@@ -1003,8 +1333,30 @@
       "n_appearances": 45,
       "n_documents_searched": 252,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001654954-19-005931",
+        "form": "8-K",
+        "filing_date": "2019-05-14",
+        "document": "ex99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1621672/000165495419005931/ex99-1.htm",
+        "char_offset": 8903,
+        "context": "s or includes amounts that are not normally excluded or included in the most directly comparable measure calculated and presented in accordance with GAAP. The presentation of this non-GAAP financial information is not intended to be considered in isolation or as a substitute for, or superior to, the financial information prepared and presented in accordance with GAAP. -3- We use proforma",
+        "match_mode": "strict",
+        "matched_text": "non-GAAP financial information"
+      },
+      "last_appearance": {
+        "accession": "0001437749-26-028647",
+        "form": "8-K",
+        "filing_date": "2026-08-20",
+        "document": "ex_1006626.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1621672/000143774926028647/ex_1006626.htm",
+        "char_offset": 14254,
+        "context": "\u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b TOTAL COMPREHENSIVE LOSS \u200b $ (4,421,000 ) \u200b $ (2,783,000 ) \u200b $ (8,521,000 ) \u200b $ (7,013,000 ) SUPER LEAGUE ENTERPRISE, INC. RECONCILIATION OF GAAP TO NON-GAAP FINANCIAL INFORMATION FOR THE THREE AND SIX MONTHS ENDED JUNE 30, 2026 AND 2025 (In U.S. dollars, rounded to the nearest thousands, except share and per share data) (UNAUDITED) \u200b \u200b Three Months Ended \u200b",
+        "match_mode": "strict",
+        "matched_text": "NON-GAAP FINANCIAL INFORMATION"
+      }
     },
     {
       "cik": 1621672,
@@ -1053,8 +1405,30 @@
       "n_appearances": 126,
       "n_documents_searched": 252,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001654954-19-005931",
+        "form": "8-K",
+        "filing_date": "2019-05-14",
+        "document": "ex99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1621672/000165495419005931/ex99-1.htm",
+        "char_offset": 7999,
+        "context": "hird parties, product mix sold by the Company and other factors described in the Company\u2019s most recent public filing with the Securities and Exchange Commission. Information About Non-GAAP Financial Measures As used herein, \u201cGAAP\u201d refers to accounting principles generally accepted in the United States of America. To supplement our condensed financial statements included in our Quarter",
+        "match_mode": "strict",
+        "matched_text": "Non-GAAP Financial Measures"
+      },
+      "last_appearance": {
+        "accession": "0001437749-23-032196",
+        "form": "8-K",
+        "filing_date": "2023-11-15",
+        "document": "ex_597664.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1621672/000143774923032196/ex_597664.htm",
+        "char_offset": 6788,
+        "context": "oss, a financial measure that is considered a non-GAAP financial measure as defined in Rule 101 of Regulation G promulgated by the Securities and Exchange Commission. Generally, a non-GAAP financial measure is a numerical measure of a company\u2019s historical or future performance, financial position, or cash flows that either excludes or includes amounts that are not normally excluded o",
+        "match_mode": "strict",
+        "matched_text": "non-GAAP financial measure"
+      }
     },
     {
       "cik": 1621672,
@@ -1103,8 +1477,30 @@
       "n_appearances": 29,
       "n_documents_searched": 252,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001654954-21-002739",
+        "form": "8-K",
+        "filing_date": "2021-03-15",
+        "document": "ex99-2.htm",
+        "doc_type": "EX-99",
+        "url": "https://www.sec.gov/Archives/edgar/data/1621672/000165495421002739/ex99-2.htm",
+        "char_offset": 21661,
+        "context": "s $4.7 million or $0.31 per share compared to a net loss of $4.7 million or $0.55 per share in the comparable prior year quarter. Excluding noncash stock compensation charges, our pro forma net loss for the fourth quarter of 2020 was $4.3 million or $0.28 per share compared to $3.7 million or $0.44 per share in the comparable prior year quarter. The weighted average number of",
+        "match_mode": "strict",
+        "matched_text": "pro forma net loss"
+      },
+      "last_appearance": {
+        "accession": "0001437749-23-032196",
+        "form": "8-K",
+        "filing_date": "2023-11-15",
+        "document": "ex_597664.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1621672/000143774923032196/ex_597664.htm",
+        "char_offset": 6593,
+        "context": "ents included in our annual and quarterly reports filed with the SEC, which financial statements are prepared and presented in accordance with GAAP, this earnings release includes pro forma net loss, a financial measure that is considered a non-GAAP financial measure as defined in Rule 101 of Regulation G promulgated by the Securities and Exchange Commission. Generally, a non",
+        "match_mode": "strict",
+        "matched_text": "pro forma net loss"
+      }
     },
     {
       "cik": 1621672,
@@ -1153,8 +1549,30 @@
       "n_appearances": 9,
       "n_documents_searched": 252,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001654954-19-005931",
+        "form": "8-K",
+        "filing_date": "2019-05-14",
+        "document": "ex99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1621672/000165495419005931/ex99-1.htm",
+        "char_offset": 10664,
+        "context": "ccelerated amortization of debt discount charges and charges related to convertible debt related beneficial conversion features), and non-cash prepaid in-kind advertising charges. Proforma EPS is defined as Proforma net income divided by the weighted average outstanding shares, on a fully diluted basis, calculated in accordance with GAAP, for the respective reporting pe",
+        "match_mode": "strict",
+        "matched_text": "Proforma EPS"
+      },
+      "last_appearance": {
+        "accession": "0001851734-21-000090",
+        "form": "8-K",
+        "filing_date": "2021-11-15",
+        "document": "ex_308133.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1621672/000185173421000090/ex_308133.htm",
+        "char_offset": 14395,
+        "context": "s calculated in accordance with GAAP, but excluding non-cash stock compensation charges, non-cash amortization of non-cash intangible assets, and non-recurring, non-cash credits.. Proforma EPS is defined as Proforma net income divided by the weighted average outstanding shares, on a fully diluted basis, calculated in accordance with GAAP, for the respective reporting pe",
+        "match_mode": "strict",
+        "matched_text": "Proforma EPS"
+      }
     },
     {
       "cik": 1621672,
@@ -1203,8 +1621,30 @@
       "n_appearances": 85,
       "n_documents_searched": 252,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001654954-19-005931",
+        "form": "8-K",
+        "filing_date": "2019-05-14",
+        "document": "ex99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1621672/000165495419005931/ex99-1.htm",
+        "char_offset": 4340,
+        "context": "to the automatic conversion of our 9% convertible notes into equity and related recognition of the beneficial conversion feature as interest expense, upon the closing of our IPO. Proforma net loss for the first quarter of 2019 was $3.4 million compared to $2.9 million in the comparable prior year quarter. As noted above, the change was primarily due to an increase in headco",
+        "match_mode": "strict",
+        "matched_text": "Proforma net loss"
+      },
+      "last_appearance": {
+        "accession": "0001437749-26-028647",
+        "form": "8-K",
+        "filing_date": "2026-08-20",
+        "document": "ex_1006626.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1621672/000143774926028647/ex_1006626.htm",
+        "char_offset": 15084,
+        "context": ",000 \u200b \u200b \u200b 1,080,000 \u200b Change in fair value of warrant liability \u200b \u200b - \u200b \u200b \u200b (144,000 ) \u200b \u200b (4,000 ) \u200b \u200b (861,000 ) Other \u200b \u200b 600,000 \u200b \u200b \u200b (185,000 ) \u200b \u200b 600,000 \u200b \u200b \u200b (302,000 ) Proforma net loss \u200b $ (1,836,000 ) \u200b $ (2,097,000 ) \u200b $ (4,234,000 ) \u200b $ (6,337,000 ) \u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b Pro forma non-GAAP net earnings (loss) per common share \u2014 basic and diluted \u200b",
+        "match_mode": "strict",
+        "matched_text": "Proforma net loss"
+      }
     },
     {
       "cik": 1651944,
@@ -1251,8 +1691,30 @@
       "n_appearances": 107,
       "n_documents_searched": 148,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001144204-17-034892",
+        "form": "8-K",
+        "filing_date": "2017-06-29",
+        "document": "v470018_ex99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000114420417034892/v470018_ex99-1.htm",
+        "char_offset": 25733,
+        "context": "468,750 shares subject to forfeiture by the Sponsor to the extent that the underwriters\u2019 over-allotment was not exercised in full or in part, so that the initial shareholder would collectively own 20% of the Company\u2019s issued and outstanding shares after the Initial Public Offering (excluding the sale of the Private Units). As a result of the underwriters\u2019 election to ex",
+        "match_mode": "strict",
+        "matched_text": "collectively"
+      },
+      "last_appearance": {
+        "accession": "0001651944-24-000060",
+        "form": "8-K",
+        "filing_date": "2024-06-18",
+        "document": "dmtk-20240612.htm",
+        "doc_type": "8-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000165194424000060/dmtk-20240612.htm",
+        "char_offset": 5122,
+        "context": "Commercial Officer, and Ray Akhavan, the Company\u2019s General Counsel (collectively, the \u201cRecipients\u201d), pursuant to which each Recipient will receive a one-time cash retention award (collectively, the \u201cRetention Awards\u201d) in the amounts of $510,000, $349,350, $200,000 and $330,650 (each less applicable withholdings), respectively, subject to certain pro rata repayment requi",
+        "match_mode": "strict",
+        "matched_text": "collectively"
+      }
     },
     {
       "cik": 1651944,
@@ -1299,8 +1761,30 @@
       "n_appearances": 5,
       "n_documents_searched": 148,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001564590-21-055781",
+        "form": "10-Q",
+        "filing_date": "2021-11-09",
+        "document": "dmtk-10q_20210930.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000156459021055781/dmtk-10q_20210930.htm",
+        "char_offset": 94290,
+        "context": "tion of ASC 842, required management judgment including the development of a synthetic credit rating and cost of debt as we currently do not carry any debt. The Company calculates its incremental borrowing rates for specific lease terms, used to discount future lease payments, as a function of the U.S. Treasury rate and an indicative Moody\u2019s rating for operating leases. ( u ) Accounting Pronouncements Issued But Not Yet Effective In December 2019, the",
+        "match_mode": "strict",
+        "matched_text": "its incremental borrowing rates for specific lease terms, used to discount future lease payments"
+      },
+      "last_appearance": {
+        "accession": "0001651944-22-000054",
+        "form": "10-Q",
+        "filing_date": "2022-11-03",
+        "document": "dmtk-20220930.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000165194422000054/dmtk-20220930.htm",
+        "char_offset": 92079,
+        "context": "ee would have to pay to borrow on a collateralized basis over a similar term and at an amount equal to the lease payments in a similar economic environment. The Company calculates its incremental borrowing rates for specific lease terms, used to discount future lease payments, as a function of the U.S. Treasury rate and an indicative Moody\u2019s rating for operating leases. In connection with the original lease agreement, in lieu of a cash security deposit",
+        "match_mode": "strict",
+        "matched_text": "its incremental borrowing rates for specific lease terms, used to discount future lease payments"
+      }
     },
     {
       "cik": 1651944,
@@ -1347,8 +1831,30 @@
       "n_appearances": 1,
       "n_documents_searched": 148,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001651944-22-000024",
+        "form": "8-K",
+        "filing_date": "2022-08-08",
+        "document": "dmtk-2022q2earnings8xkxexx.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000165194422000024/dmtk-2022q2earnings8xkxexx.htm",
+        "char_offset": 489,
+        "context": "non-invasive skin genomics platform, today reported its second-quarter 2022 financial results and updated its full-year 2022 outlook. \u201cWe continued to set records for many of our key operating and financial metrics in the first half of 2022 despite numerous headwinds,\u201d said John Dobak, M.D., CEO, DermTech. \u201cOur sales and marketing team continues to be very effective in driving commercial tra",
+        "match_mode": "strict",
+        "matched_text": "key operating and financial metrics"
+      },
+      "last_appearance": {
+        "accession": "0001651944-22-000024",
+        "form": "8-K",
+        "filing_date": "2022-08-08",
+        "document": "dmtk-2022q2earnings8xkxexx.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000165194422000024/dmtk-2022q2earnings8xkxexx.htm",
+        "char_offset": 489,
+        "context": "non-invasive skin genomics platform, today reported its second-quarter 2022 financial results and updated its full-year 2022 outlook. \u201cWe continued to set records for many of our key operating and financial metrics in the first half of 2022 despite numerous headwinds,\u201d said John Dobak, M.D., CEO, DermTech. \u201cOur sales and marketing team continues to be very effective in driving commercial tra",
+        "match_mode": "strict",
+        "matched_text": "key operating and financial metrics"
+      }
     },
     {
       "cik": 1651944,
@@ -1395,8 +1901,30 @@
       "n_appearances": 1,
       "n_documents_searched": 148,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001564590-22-017427",
+        "form": "8-K",
+        "filing_date": "2022-05-03",
+        "document": "dmtk-ex991_45.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000156459022017427/dmtk-ex991_45.htm",
+        "char_offset": 543,
+        "context": "e skin genomics platform, today reported its first-quarter 2022 financial results and affirmed its full-year 2022 outlook. \u201cWe kicked off the year on a record pace for many of our key operating metrics and affirmed our full-year 2022 outlook,\u201d said John Dobak, M.D., CEO, DermTech. \u201cWe also added a payor contract during the first quarter bringing our total covered U.S. lives to a",
+        "match_mode": "strict",
+        "matched_text": "key operating metrics"
+      },
+      "last_appearance": {
+        "accession": "0001564590-22-017427",
+        "form": "8-K",
+        "filing_date": "2022-05-03",
+        "document": "dmtk-ex991_45.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000156459022017427/dmtk-ex991_45.htm",
+        "char_offset": 543,
+        "context": "e skin genomics platform, today reported its first-quarter 2022 financial results and affirmed its full-year 2022 outlook. \u201cWe kicked off the year on a record pace for many of our key operating metrics and affirmed our full-year 2022 outlook,\u201d said John Dobak, M.D., CEO, DermTech. \u201cWe also added a payor contract during the first quarter bringing our total covered U.S. lives to a",
+        "match_mode": "strict",
+        "matched_text": "key operating metrics"
+      }
     },
     {
       "cik": 1651944,
@@ -1443,8 +1971,30 @@
       "n_appearances": 3,
       "n_documents_searched": 148,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001651944-23-000089",
+        "form": "8-K",
+        "filing_date": "2023-11-02",
+        "document": "dmtk-2023q3earnings8xkxexx.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000165194423000089/dmtk-2023q3earnings8xkxexx.htm",
+        "char_offset": 792,
+        "context": "of prioritizing reimbursed tests and growing revenue and are seeing faster progress than we expected,\u201d said Bret Christensen, CEO, DermTech. \u201cWe significantly improved many of our key performance indicators in the third quarter. We grew ASP and test revenue on a year-over-year and sequential basis. In addition, we expanded our Medicare proportion of billable samples from 23 percent t",
+        "match_mode": "strict",
+        "matched_text": "key performance indicators"
+      },
+      "last_appearance": {
+        "accession": "0001651944-24-000012",
+        "form": "8-K",
+        "filing_date": "2024-02-29",
+        "document": "dmtk-2023q4earnings8xkxexx.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000165194424000012/dmtk-2023q4earnings8xkxexx.htm",
+        "char_offset": 634,
+        "context": "ecision dermatology enabled by a non-invasive skin genomics technology, today reported its fourth-quarter 2023 financial results. \u201cWe reported sustained improvement in many of our key performance indicators during the second half of last year and will continue emphasizing average selling price (ASP) and revenue growth in 2024,\u201d said Bret Christensen, CEO, DermTech. \u201cWe\u2019ve aligned our",
+        "match_mode": "strict",
+        "matched_text": "key performance indicators"
+      }
     },
     {
       "cik": 1651944,
@@ -1491,8 +2041,30 @@
       "n_appearances": 5,
       "n_documents_searched": 148,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001564590-20-009838",
+        "form": "10-K",
+        "filing_date": "2020-03-11",
+        "document": "dmtk-10k_20191231.htm",
+        "doc_type": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000156459020009838/dmtk-10k_20191231.htm",
+        "char_offset": 47938,
+        "context": "99% Probability of Missed Mel 17% 1% Number Needed to Biopsy 25 2.7 Number Needed to Excise 5.2 1.6 Cost per Lesion Tested $ 947 $ 760 Table 2. Data summarized above compares the key performance metrics of the PLA versus the current pathway (visual assessment and surgical biopsy/histopathology) for managing pigmented skin lesions. This low NPV for the current pathway is accompani",
+        "match_mode": "strict",
+        "matched_text": "key performance metrics"
+      },
+      "last_appearance": {
+        "accession": "0001651944-24-000014",
+        "form": "10-K",
+        "filing_date": "2024-02-29",
+        "document": "dmtk-20231231.htm",
+        "doc_type": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000165194424000014/dmtk-20231231.htm",
+        "char_offset": 71917,
+        "context": "ty of Mel Diagnosis 4% 18.7% Number Needed to Biopsy 25 2.7 Number Needed to Excise 5.2 1.6 Cost per Lesion Tested $1,196 - $1,396 $760 Table 2. Data summarized above compares the key performance metrics of the DMT versus the current pathway (visual assessment and surgical biopsy/histopathology) for managing pigmented skin lesions. 12 This low NPV for the current pathway is accomp",
+        "match_mode": "strict",
+        "matched_text": "key performance metrics"
+      }
     },
     {
       "cik": 1651944,
@@ -1539,8 +2111,30 @@
       "n_appearances": 1,
       "n_documents_searched": 148,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001144204-18-041818",
+        "form": "8-K",
+        "filing_date": "2018-08-03",
+        "document": "tv499994_ex99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000114420418041818/tv499994_ex99-1.htm",
+        "char_offset": 10981,
+        "context": "nor Medall undertakes any obligation to update any forward-looking statements contained herein to reflect events or circumstances which arise after the date of this press release. Non-GAAP Financial Information This press release includes the presentation of adjusted EBITDA, which is a supplemental measure of performance that is neither required by, nor presented in accordance with, gene",
+        "match_mode": "strict",
+        "matched_text": "Non-GAAP Financial Information"
+      },
+      "last_appearance": {
+        "accession": "0001144204-18-041818",
+        "form": "8-K",
+        "filing_date": "2018-08-03",
+        "document": "tv499994_ex99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000114420418041818/tv499994_ex99-1.htm",
+        "char_offset": 10981,
+        "context": "nor Medall undertakes any obligation to update any forward-looking statements contained herein to reflect events or circumstances which arise after the date of this press release. Non-GAAP Financial Information This press release includes the presentation of adjusted EBITDA, which is a supplemental measure of performance that is neither required by, nor presented in accordance with, gene",
+        "match_mode": "strict",
+        "matched_text": "Non-GAAP Financial Information"
+      }
     },
     {
       "cik": 1651944,
@@ -1587,8 +2181,30 @@
       "n_appearances": 5,
       "n_documents_searched": 148,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001144204-18-041818",
+        "form": "8-K",
+        "filing_date": "2018-08-03",
+        "document": "tv499994_ex99-2.htm",
+        "doc_type": "EX-99.2",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000114420418041818/tv499994_ex99-2.htm",
+        "char_offset": 9110,
+        "context": "aintained by the SEC at http : //www . sec . gov . Copies of the documents filed with the SEC by CNAC are available free of charge and archived on www . constellationalpha . com . Non - GAAP Financial Measures Some of the financial information and data contained in this Presentation is unaudited and does not conform to the SEC\u2019s Regulation S - X . Accordingly, such information and data",
+        "match_mode": "strict",
+        "matched_text": "Non - GAAP Financial Measures"
+      },
+      "last_appearance": {
+        "accession": "0001144204-18-041818",
+        "form": "8-K",
+        "filing_date": "2018-08-03",
+        "document": "tv499994_ex99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000114420418041818/tv499994_ex99-1.htm",
+        "char_offset": 11285,
+        "context": "ure of performance that is neither required by, nor presented in accordance with, generally accepted accounting principles or international financial reporting standards (\u201cIFRS\u201d). Non-GAAP financial measures do not have a standardized meaning, and the definition of adjusted EBITDA used by Medall may be different from other, similarly named non-GAAP measures used by Medall\u2019s peers oper",
+        "match_mode": "strict",
+        "matched_text": "Non-GAAP financial measures"
+      }
     },
     {
       "cik": 1651944,
@@ -1635,8 +2251,30 @@
       "n_appearances": 1,
       "n_documents_searched": 148,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001144204-18-041818",
+        "form": "8-K",
+        "filing_date": "2018-08-03",
+        "document": "tv499994_ex99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000114420418041818/tv499994_ex99-1.htm",
+        "char_offset": 11447,
+        "context": "andards (\u201cIFRS\u201d). Non-GAAP financial measures do not have a standardized meaning, and the definition of adjusted EBITDA used by Medall may be different from other, similarly named non-GAAP measures used by Medall\u2019s peers operating in the diagnostics industry. For a definition of adjusted EBITDA used by Medall and a reconciliation of adjusted EBITDA to the closest GAAP measur",
+        "match_mode": "strict",
+        "matched_text": "non-GAAP measures"
+      },
+      "last_appearance": {
+        "accession": "0001144204-18-041818",
+        "form": "8-K",
+        "filing_date": "2018-08-03",
+        "document": "tv499994_ex99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000114420418041818/tv499994_ex99-1.htm",
+        "char_offset": 11447,
+        "context": "andards (\u201cIFRS\u201d). Non-GAAP financial measures do not have a standardized meaning, and the definition of adjusted EBITDA used by Medall may be different from other, similarly named non-GAAP measures used by Medall\u2019s peers operating in the diagnostics industry. For a definition of adjusted EBITDA used by Medall and a reconciliation of adjusted EBITDA to the closest GAAP measur",
+        "match_mode": "strict",
+        "matched_text": "non-GAAP measures"
+      }
     },
     {
       "cik": 1651944,
@@ -1683,8 +2321,30 @@
       "n_appearances": 2,
       "n_documents_searched": 148,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001564590-22-017427",
+        "form": "8-K",
+        "filing_date": "2022-05-03",
+        "document": "dmtk-ex991_45.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000156459022017427/dmtk-ex991_45.htm",
+        "char_offset": 547,
+        "context": "in genomics platform, today reported its first-quarter 2022 financial results and affirmed its full-year 2022 outlook. \u201cWe kicked off the year on a record pace for many of our key operating metrics and affirmed our full-year 2022 outlook,\u201d said John Dobak, M.D., CEO, DermTech. \u201cWe also added a payor contract during the first quarter bringing our total covered U.S. lives to a",
+        "match_mode": "strict",
+        "matched_text": "operating metrics"
+      },
+      "last_appearance": {
+        "accession": "0001651944-24-000005",
+        "form": "8-K",
+        "filing_date": "2024-01-31",
+        "document": "pressreleasejanuary312024.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000165194424000005/pressreleasejanuary312024.htm",
+        "char_offset": 1803,
+        "context": "efficiencies in 2024,\u201d said Bret Christensen, CEO, DermTech. \u201cGrowing revenue remains our primary objective and we began to see meaningful improvement in many of our top-line and operating metrics during the third quarter of 2023. Our realigned commercial tactics and focus on reimbursed tests has yielded improvement in nearly all of our key performance indicators. We must c",
+        "match_mode": "strict",
+        "matched_text": "operating metrics"
+      }
     },
     {
       "cik": 1651944,
@@ -1731,8 +2391,30 @@
       "n_appearances": 3,
       "n_documents_searched": 148,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001193125-20-057797",
+        "form": "8-K",
+        "filing_date": "2020-03-02",
+        "document": "d873792d8k.htm",
+        "doc_type": "8-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000119312520057797/d873792d8k.htm",
+        "char_offset": 5400,
+        "context": "holder would beneficially own in excess of 9.99% of the total number of shares of Company common stock outstanding immediately after giving effect to such conversion. We refer to the conversion limitation described in clause (ii) of the preceding sentence as the Beneficial Ownership Limitation. A holder of Series B-2 Shares may reset the Beneficial Ownership Limitation to a higher or lower number upon providing written notice to th",
+        "match_mode": "strict",
+        "matched_text": "the conversion limitation described in clause (ii) of the preceding sentence"
+      },
+      "last_appearance": {
+        "accession": "0001564590-20-036881",
+        "form": "10-Q",
+        "filing_date": "2020-08-05",
+        "document": "dmtk-10q_20200630.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000156459020036881/dmtk-10q_20200630.htm",
+        "char_offset": 62312,
+        "context": "uld beneficially own in excess of 9.99% of the total number of shares of Company common stock outstanding immediately after giving effect to such conversion. The Company refers to the conversion limitation described in clause (ii) of the preceding sentence as the Beneficial Ownership Limitation. A holder of Series B-2 Shares may reset the Beneficial Ownership Limitation to a higher or lower number upon providing written notice to th",
+        "match_mode": "strict",
+        "matched_text": "the conversion limitation described in clause (ii) of the preceding sentence"
+      }
     },
     {
       "cik": 1651944,
@@ -1779,8 +2461,30 @@
       "n_appearances": 2,
       "n_documents_searched": 148,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001564590-21-040918",
+        "form": "10-Q",
+        "filing_date": "2021-08-04",
+        "document": "dmtk-10q_20210630.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000156459021040918/dmtk-10q_20210630.htm",
+        "char_offset": 133398,
+        "context": "e combined tests elevate the sensitivity from 91% to 97% and maintain a negative predictive value of >99%, resulting in a less than 1% probability of missing melanoma. We refer to the PLA and the PLA plus collectively as the DermTech Melanoma Test. By combining RNA gene expression and DNA mutation analyses, the DermTech Melanoma Test provides a highly accurate non-invasive genomic test for enha",
+        "match_mode": "strict",
+        "matched_text": "the PLA and the PLA plus collectively"
+      },
+      "last_appearance": {
+        "accession": "0001564590-21-055781",
+        "form": "10-Q",
+        "filing_date": "2021-11-09",
+        "document": "dmtk-10q_20210930.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000156459021055781/dmtk-10q_20210930.htm",
+        "char_offset": 146161,
+        "context": "e combined tests elevate the sensitivity from 91% to 97% and maintain a negative predictive value of >99%, resulting in a less than 1% probability of missing melanoma. We refer to the PLA and the PLA plus collectively as the DermTech Melanoma Test. By combining RNA gene expression and DNA mutation analyses, the DermTech Melanoma Test provides a highly accurate non-invasive genomic test for enha",
+        "match_mode": "strict",
+        "matched_text": "the PLA and the PLA plus collectively"
+      }
     },
     {
       "cik": 1651944,
@@ -1827,8 +2531,30 @@
       "n_appearances": 1,
       "n_documents_searched": 148,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001564590-21-000481",
+        "form": "8-K",
+        "filing_date": "2021-01-07",
+        "document": "dmtk-8k_20210107.htm",
+        "doc_type": "8-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000156459021000481/dmtk-8k_20210107.htm",
+        "char_offset": 2310,
+        "context": "or the Underwriting Agreement, with Cowen and Company, LLC and William Blair & Company, L.L.C. as representatives, or the Representatives, of the several underwriters. We refer to the several underwriters collectively with the Representatives, as the Underwriters. Pursuant to the Underwriting Agreement, the Company agreed to issue and sell up to 4,237,288 shares of its common stock, or the Shares, including up to 635,5",
+        "match_mode": "strict",
+        "matched_text": "the several underwriters collectively with the Representatives"
+      },
+      "last_appearance": {
+        "accession": "0001564590-21-000481",
+        "form": "8-K",
+        "filing_date": "2021-01-07",
+        "document": "dmtk-8k_20210107.htm",
+        "doc_type": "8-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000156459021000481/dmtk-8k_20210107.htm",
+        "char_offset": 2310,
+        "context": "or the Underwriting Agreement, with Cowen and Company, LLC and William Blair & Company, L.L.C. as representatives, or the Representatives, of the several underwriters. We refer to the several underwriters collectively with the Representatives, as the Underwriters. Pursuant to the Underwriting Agreement, the Company agreed to issue and sell up to 4,237,288 shares of its common stock, or the Shares, including up to 635,5",
+        "match_mode": "strict",
+        "matched_text": "the several underwriters collectively with the Representatives"
+      }
     },
     {
       "cik": 1651944,
@@ -1875,8 +2601,30 @@
       "n_appearances": 1,
       "n_documents_searched": 148,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001564590-21-000481",
+        "form": "8-K",
+        "filing_date": "2021-01-07",
+        "document": "dmtk-8k_20210107.htm",
+        "doc_type": "8-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000156459021000481/dmtk-8k_20210107.htm",
+        "char_offset": 2713,
+        "context": "cluding up to 635,593 shares, or the Optional Shares, that may be purchased by the Underwriters pursuant to a 30-day option granted to the Underwriters by the Company. We refer to the transactions contemplated by Underwriting Agreement as the Offering. All Shares will be offered and sold in the Offering at the public offering price of $29.50 per share and will be purchased by the Underwriters from the Company at",
+        "match_mode": "strict",
+        "matched_text": "the transactions contemplated by Underwriting Agreement"
+      },
+      "last_appearance": {
+        "accession": "0001564590-21-000481",
+        "form": "8-K",
+        "filing_date": "2021-01-07",
+        "document": "dmtk-8k_20210107.htm",
+        "doc_type": "8-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000156459021000481/dmtk-8k_20210107.htm",
+        "char_offset": 2713,
+        "context": "cluding up to 635,593 shares, or the Optional Shares, that may be purchased by the Underwriters pursuant to a 30-day option granted to the Underwriters by the Company. We refer to the transactions contemplated by Underwriting Agreement as the Offering. All Shares will be offered and sold in the Offering at the public offering price of $29.50 per share and will be purchased by the Underwriters from the Company at",
+        "match_mode": "strict",
+        "matched_text": "the transactions contemplated by Underwriting Agreement"
+      }
     },
     {
       "cik": 1651944,
@@ -1923,8 +2671,30 @@
       "n_appearances": 37,
       "n_documents_searched": 148,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001144204-17-034892",
+        "form": "8-K",
+        "filing_date": "2017-06-29",
+        "document": "v470018_ex99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000114420417034892/v470018_ex99-1.htm",
+        "char_offset": 14321,
+        "context": "atisfy any indemnification obligations that arise. Moreover, the Sponsor will not be liable to the Company\u2019s public shareholders if it should fail to satisfy its obligations under this agreement and instead will only be liable to the Company. The Company will seek to reduce the possibility that the Sponsor will have to indemnify the Trust Account due to claims of creditor",
+        "match_mode": "strict",
+        "matched_text": "this agreement"
+      },
+      "last_appearance": {
+        "accession": "0001651944-24-000047",
+        "form": "10-Q",
+        "filing_date": "2024-05-15",
+        "document": "dmtk-20240331.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000165194424000047/dmtk-20240331.htm",
+        "char_offset": 25509,
+        "context": "r, dated as of May 29, 2019, by and among the Company, DT Merger Sub, Inc., a wholly owned subsidiary of the Company (\u201cMerger Sub\u201d), and DermTech Operations. The Company refers to this agreement, as amended by that certain First Amendment to Agreement and Plan of Merger dated as of August 1, 2019, as the Merger Agreement. Pursuant to the Merger Agreement, Merger Sub merge",
+        "match_mode": "strict",
+        "matched_text": "this agreement"
+      }
     },
     {
       "cik": 1651944,
@@ -1971,8 +2741,30 @@
       "n_appearances": 38,
       "n_documents_searched": 148,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001144204-19-014365",
+        "form": "8-K",
+        "filing_date": "2019-03-15",
+        "document": "tv516414_ex99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000114420419014365/tv516414_ex99-1.htm",
+        "char_offset": 1651,
+        "context": "ings for payors. We are excited to bring this potential opportunity to our shareholders.\u201d Dr. John Dobak, Chief Executive Officer of DermTech, said, \u201cWe look forward to completing this transaction, which will allow us to scale up commercialization of our skin cancer products, support the development of new products and expand our collaborations with pharmaceutical partners.",
+        "match_mode": "strict",
+        "matched_text": "this transaction"
+      },
+      "last_appearance": {
+        "accession": "0001651944-24-000047",
+        "form": "10-Q",
+        "filing_date": "2024-05-15",
+        "document": "dmtk-20240331.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000165194424000047/dmtk-20240331.htm",
+        "char_offset": 25842,
+        "context": "to the Merger Agreement, Merger Sub merged with and into DermTech Operations, with DermTech Operations surviving as a wholly-owned subsidiary of the Company. The Company refers to this transaction as the Business Combination. In connection with and two days prior to the completion of the Business Combination, the Company domesticated from the British Virgin Islands to Delaw",
+        "match_mode": "strict",
+        "matched_text": "this transaction"
+      }
     },
     {
       "cik": 1651944,
@@ -2019,8 +2811,30 @@
       "n_appearances": 2,
       "n_documents_searched": 148,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001144204-18-036605",
+        "form": "10-K",
+        "filing_date": "2018-06-29",
+        "document": "tv496828_10k.htm",
+        "doc_type": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000114420418036605/tv496828_10k.htm",
+        "char_offset": 10449,
+        "context": "all of the assets of, entering into contractual arrangements with, or engaging in any other similar business combination with one or more businesses or entities, which we refer to throughout this Annual Report on Form 10-K as our initial business combination. Although we are not limited to a particular industry or geographic region, we intend to focus on healthcare services and manufacturing busines",
+        "match_mode": "strict",
+        "matched_text": "throughout this Annual Report on Form 10-K"
+      },
+      "last_appearance": {
+        "accession": "0001193125-19-173682",
+        "form": "10-K",
+        "filing_date": "2019-06-14",
+        "document": "d760850d10k.htm",
+        "doc_type": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1651944/000119312519173682/d760850d10k.htm",
+        "char_offset": 15978,
+        "context": "all of the assets of, entering into contractual arrangements with, or engaging in any other similar business combination with one or more businesses or entities, which we refer to throughout this Annual Report on Form 10-K as our initial business combination. On March 15, 2019, we issued a press release announcing that we have executed a non-binding Letter of Intent to merge with DermTech, Inc. (\u0093De",
+        "match_mode": "strict",
+        "matched_text": "throughout this Annual Report on Form 10-K"
+      }
     },
     {
       "cik": 1653558,
@@ -2079,8 +2893,30 @@
       "n_appearances": 1,
       "n_documents_searched": 271,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001628280-19-005240",
+        "form": "10-K/A",
+        "filing_date": "2019-04-30",
+        "document": "a10-ka.htm",
+        "doc_type": "10-K/A",
+        "url": "https://www.sec.gov/Archives/edgar/data/1653558/000162828019005240/a10-ka.htm",
+        "char_offset": 42478,
+        "context": "ith the change in Mr. John Priore's position with us, Mr. John Priore entered into an amendment to the John Priore Employment Agreement, dated November 13, 2018 (which we refer to as the \"Priore Amendment\") as well as a new Director Agreement with the Company, dated December 1, 2018 (which we refer to as the \"John Priore Director Agreement\"). Pursuant to the John Priore Director Agre",
+        "match_mode": "strict",
+        "matched_text": "as the \"Priore Amendment\")"
+      },
+      "last_appearance": {
+        "accession": "0001628280-19-005240",
+        "form": "10-K/A",
+        "filing_date": "2019-04-30",
+        "document": "a10-ka.htm",
+        "doc_type": "10-K/A",
+        "url": "https://www.sec.gov/Archives/edgar/data/1653558/000162828019005240/a10-ka.htm",
+        "char_offset": 42478,
+        "context": "ith the change in Mr. John Priore's position with us, Mr. John Priore entered into an amendment to the John Priore Employment Agreement, dated November 13, 2018 (which we refer to as the \"Priore Amendment\") as well as a new Director Agreement with the Company, dated December 1, 2018 (which we refer to as the \"John Priore Director Agreement\"). Pursuant to the John Priore Director Agre",
+        "match_mode": "strict",
+        "matched_text": "as the \"Priore Amendment\")"
+      }
     },
     {
       "cik": 1653558,
@@ -2139,8 +2975,30 @@
       "n_appearances": 14,
       "n_documents_searched": 271,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001653558-20-000174",
+        "form": "8-K",
+        "filing_date": "2020-11-13",
+        "document": "exhibit991-9302020.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1653558/000165355820000174/exhibit991-9302020.htm",
+        "char_offset": 2275,
+        "context": "ns included in Item 2 of our Form 10-Q for the quarter ended September 30, 2020. \u201cOur strong results this quarter demonstrate continued resilience during this pandemic, and by all key metrics, validate the differentiation of our platform,\u201d said Tom Priore, Chairman and CEO. \u201cThe execution of the transaction with MRI Software this quarter not only reduced debt by over $",
+        "match_mode": "strict",
+        "matched_text": "key metrics"
+      },
+      "last_appearance": {
+        "accession": "0001653558-26-000127",
+        "form": "8-K",
+        "filing_date": "2026-08-06",
+        "document": "q22026_prthsupplementals.htm",
+        "doc_type": "EX-99.2",
+        "url": "https://www.sec.gov/Archives/edgar/data/1653558/000165355826000127/q22026_prthsupplementals.htm",
+        "char_offset": 6075,
+        "context": "229 B: 170 R: 166 G: 166 B: 166 R: 117 G: 209 B: 208 R: 131 G: 201 B: 126 R: 37 G: 37 B: 37 3 Key 2nd Quarter 2026 Highlights Q2 2026 RESULTS MAINTAINING FY 2026 GUIDANCE Q2 2026 KEY METRICS REVENUE +9% ADJ GROSS PROFIT1 +8% ADJ EBITDA1 +6% ADJ EPS (diluted) $0.29 $1.8B Account Balances 1.8M Customer Accounts $151B Total Payments Volume2 1 Adjusted Gross Profit, Adjus",
+        "match_mode": "strict",
+        "matched_text": "KEY METRICS"
+      }
     },
     {
       "cik": 1653558,
@@ -2199,8 +3057,30 @@
       "n_appearances": 3,
       "n_documents_searched": 271,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001104659-25-003618",
+        "form": "8-K",
+        "filing_date": "2025-01-15",
+        "document": "tm253248d2_8k.htm",
+        "doc_type": "8-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1653558/000110465925003618/tm253248d2_8k.htm",
+        "char_offset": 6279,
+        "context": "gly, Ernst & Young LLP does not express an opinion or any other form of assurance with respect thereto. The following are the Company\u2019s estimated preliminary financial results and key operating metrics for the three months ended December 31, 2024: ($ in millions) Three Months Ended December 31, 2024 Range Low (Estimated) High (Estimated) Revenue $ 225.2 $ 227.2 Adjusted Gross Pr",
+        "match_mode": "strict",
+        "matched_text": "key operating metrics"
+      },
+      "last_appearance": {
+        "accession": "0001104659-25-003618",
+        "form": "8-K",
+        "filing_date": "2025-01-15",
+        "document": "tm253248d2_ex99-2.htm",
+        "doc_type": "EX-99.2",
+        "url": "https://www.sec.gov/Archives/edgar/data/1653558/000110465925003618/tm253248d2_ex99-2.htm",
+        "char_offset": 31663,
+        "context": "resented hereunder. These ranges reflect our management\u2019s best estimate of the impact of events during the full year 2025. Based on our estimated preliminary financial results and key operating metrics for the three months ended December 31, 2024 along with our estimated preliminary forecasted results for the year, our preliminary outlook for the full year 2025 is as follows: 23",
+        "match_mode": "strict",
+        "matched_text": "key operating metrics"
+      }
     },
     {
       "cik": 1653558,
@@ -2259,8 +3139,30 @@
       "n_appearances": 3,
       "n_documents_searched": 271,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001653558-21-000130",
+        "form": "8-K",
+        "filing_date": "2021-10-28",
+        "document": "agpmeetings-102821_final.htm",
+        "doc_type": "EX-99.2",
+        "url": "https://www.sec.gov/Archives/edgar/data/1653558/000165355821000130/agpmeetings-102821_final.htm",
+        "char_offset": 14512,
+        "context": "DA \u25a0 Revenue CAGR2: 16% \u25a0 Adj. EBITDA CAGR2: 35% \u25a0 Adj. EBITDA as % of Gross Profit: 65% \u25a0 Gross Profit Margin: 38% \u25a0 Free Cash Flow Yield4 ~45% \u25a0 Recurring Net Revenue: ~94% PRTH KEY PERFORMANCE METRICS 3 (2) 3-year CAGR (3) Performance Metrics based on 2021 Pro Forma (4) Free cash flow is Adjusted EBITDA less cash interest, cash dividends, estimated cash taxes, and scheduled deb",
+        "match_mode": "strict",
+        "matched_text": "KEY PERFORMANCE METRICS"
+      },
+      "last_appearance": {
+        "accession": "0001653558-22-000063",
+        "form": "8-K",
+        "filing_date": "2022-05-11",
+        "document": "q122finalearningscallsup.htm",
+        "doc_type": "EX-99.2",
+        "url": "https://www.sec.gov/Archives/edgar/data/1653558/000165355822000063/q122finalearningscallsup.htm",
+        "char_offset": 20591,
+        "context": "venue CAGR2: 18% \u25a0 Adj. EBITDA CAGR2: 31% \u25a0 Adj. EBITDA as % of Gross Profit: 62% \u25a0 Gross Profit Margin: 30.1% \u25a0 Free Cash Flow Conversion4 ~55% \u25a0 Recurring Net Revenue: ~94% PRTH KEY PERFORMANCE METRICS 3 (2) 2-year CAGR (3) Performance Metrics based on GAAP 2021, 2020 and 2019 (4) Free cash flow as a percentage of Adjusted EBITDA. Free cash flow is Adjusted EBITDA less cash inte",
+        "match_mode": "strict",
+        "matched_text": "KEY PERFORMANCE METRICS"
+      }
     },
     {
       "cik": 1653558,
@@ -2319,8 +3221,30 @@
       "n_appearances": 4,
       "n_documents_searched": 271,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001653558-21-000031",
+        "form": "8-K",
+        "filing_date": "2021-03-08",
+        "document": "prthfinxerapressrelease-fi.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1653558/000165355821000031/prthfinxerapressrelease-fi.htm",
+        "char_offset": 6187,
+        "context": "Kramer Levin Naftalis & Frankel LLP served as its legal counsel. Cowen served as sole placement agent in connection with the preferred equity investment by Ares Management. Use of Non-GAAP Financial Information Priority supplements its consolidated financial statements presented on a GAAP basis with certain non-GAAP financial information, including adjusted EBITDA, free cash flow and net",
+        "match_mode": "strict",
+        "matched_text": "Non-GAAP Financial Information"
+      },
+      "last_appearance": {
+        "accession": "0001653558-21-000114",
+        "form": "8-K",
+        "filing_date": "2021-09-21",
+        "document": "a2021-09x17_priorityxtec.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1653558/000165355821000114/a2021-09x17_priorityxtec.htm",
+        "char_offset": 3210,
+        "context": "$65 million Net leverage ratio below 4.25x Use of Non-GAAP Financial Information Priority supplements its consolidated financial statements presented on a GAAP basis with certain non-GAAP financial information, including adjusted EBITDA, free cash flow and net leverage ratio, to provide investors with greater insight, increase transparency and allow for a more comprehensive understandin",
+        "match_mode": "strict",
+        "matched_text": "non-GAAP financial information"
+      }
     },
     {
       "cik": 1653558,
@@ -2379,8 +3303,30 @@
       "n_appearances": 348,
       "n_documents_searched": 271,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001615774-18-008100",
+        "form": "8-K/A",
+        "filing_date": "2018-08-14",
+        "document": "s112019_ex99-4.htm",
+        "doc_type": "EX-99.4",
+        "url": "https://www.sec.gov/Archives/edgar/data/1653558/000161577418008100/s112019_ex99-4.htm",
+        "char_offset": 28614,
+        "context": "GAAP and should be considered in addition to, and not as a substitute or superior to, the other measures of financial performance prepared in accordance with GAAP. Using only the non-GAAP financial measures, particularly Adjusted EBITDA or Earnout Adjusted EBITDA, to analyze our performance would have material limitations because their calculations are based on subjective determinati",
+        "match_mode": "strict",
+        "matched_text": "non-GAAP financial measures"
+      },
+      "last_appearance": {
+        "accession": "0001653558-26-000130",
+        "form": "10-Q",
+        "filing_date": "2026-08-06",
+        "document": "prth-20260630.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1653558/000165355826000130/prth-20260630.htm",
+        "char_offset": 123810,
+        "context": "nd amortization) and operating expenses that are directly related those revenues. Operating overhead and shared costs are managed centrally and included in corporate segment. This non-GAAP financial measure helps to illustrate the underlying financial and business trends relating to results of operations of the Company and therefore used as a measure of segment profit or loss for the",
+        "match_mode": "strict",
+        "matched_text": "non-GAAP financial measure"
+      }
     },
     {
       "cik": 1653558,
@@ -2439,8 +3385,30 @@
       "n_appearances": 691,
       "n_documents_searched": 271,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001144204-18-011053",
+        "form": "8-K",
+        "filing_date": "2018-02-27",
+        "document": "tv487195_ex99-2.htm",
+        "doc_type": "EX-99.2",
+        "url": "https://www.sec.gov/Archives/edgar/data/1653558/000114420418011053/tv487195_ex99-2.htm",
+        "char_offset": 183,
+        "context": "99.2 3 tv487195_ex99-2.htm EXHIBIT 99.2 Exhibit 99.2 Technology Holdings Investor Presentation February 2018 Disclaimer Important Notice Regarding Forward - Looking Statements and Non - GAAP Measures This presentation contains certain \u201cforward - looking statements\u201d within the meaning of the Securities Act of 1933 and the Securit ies Exchange Act of 1934, both as amended by the",
+        "match_mode": "strict",
+        "matched_text": "Non - GAAP Measures"
+      },
+      "last_appearance": {
+        "accession": "0001653558-26-000127",
+        "form": "8-K",
+        "filing_date": "2026-08-06",
+        "document": "q22026_prthsupplementals.htm",
+        "doc_type": "EX-99.2",
+        "url": "https://www.sec.gov/Archives/edgar/data/1653558/000165355826000127/q22026_prthsupplementals.htm",
+        "char_offset": 16781,
+        "context": "ts may not add mathematically due to rounding 1Adjusted Gross Profit, Adjusted Gross Profit margin, Adjusted EBITDA and Adjusted EBITDA margin referred to in this presentation are non-GAAP measures. See slide 2 for further details. (in Millions) (in Millions) Three Months Ended June 30, 2026 Three Months Ended June 30, 2025 Merchant Solutions Payables Treasury Solutions Elim",
+        "match_mode": "strict",
+        "matched_text": "non-GAAP measures"
+      }
     },
     {
       "cik": 1654126,
@@ -2465,8 +3433,30 @@
       "n_appearances": 65,
       "n_documents_searched": 267,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0000950103-21-004319",
+        "form": "6-K",
+        "filing_date": "2021-03-22",
+        "document": "dp148148_ex9901.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000095010321004319/dp148148_ex9901.htm",
+        "char_offset": 15058,
+        "context": "similarly titled measures reported by other companies, due to differences in the way these measures are calculated. Adjusted EBITDA is a non-IFRS financial measure which we define as net income (loss) adjusted to exclude financial expenses (income), net, income taxes, depreciation and amortization in order to reach EBITDA, and further adjusted to exclude impairment of assets, non-cash c",
+        "match_mode": "strict",
+        "matched_text": "as net income (loss) adjusted"
+      },
+      "last_appearance": {
+        "accession": "0001178913-26-004191",
+        "form": "6-K",
+        "filing_date": "2026-08-19",
+        "document": "exhibit_99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326004191/exhibit_99-1.htm",
+        "char_offset": 21384,
+        "context": "ses related to legal contingencies and acquisition related expenses (compensation costs and professional fees). Adjusted Net Income is a non-IFRS financial measure which we define as net income (loss) adjusted, as applicable, to exclude impairment of assets (or the reversal of which), capital gains (losses) beyond the ordinary course of business, expenses related to legal contingencies",
+        "match_mode": "strict",
+        "matched_text": "as net income (loss) adjusted"
+      }
     },
     {
       "cik": 1654126,
@@ -2491,8 +3481,30 @@
       "n_appearances": 1,
       "n_documents_searched": 267,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001178913-26-001558",
+        "form": "6-K",
+        "filing_date": "2026-03-19",
+        "document": "exhibit_99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326001558/exhibit_99-1.htm",
+        "char_offset": 112114,
+        "context": "e if the merger is completed? A: As a result of the merger, each ZIM ordinary share issued and outstanding immediately prior to the effective time of the merger (which we refer to as the \u201ceffective time\u201d) (other than any excluded shares, as defined in the section entitled \u201c The Merger Agreement\u2014Merger Consideration \u201d) will be converted into the right to receive $35.00 in cash, without interest and less any applic",
+        "match_mode": "strict",
+        "matched_text": "as the \u201ceffective time\u201d) (other than any excluded shares"
+      },
+      "last_appearance": {
+        "accession": "0001178913-26-001558",
+        "form": "6-K",
+        "filing_date": "2026-03-19",
+        "document": "exhibit_99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326001558/exhibit_99-1.htm",
+        "char_offset": 112114,
+        "context": "e if the merger is completed? A: As a result of the merger, each ZIM ordinary share issued and outstanding immediately prior to the effective time of the merger (which we refer to as the \u201ceffective time\u201d) (other than any excluded shares, as defined in the section entitled \u201c The Merger Agreement\u2014Merger Consideration \u201d) will be converted into the right to receive $35.00 in cash, without interest and less any applic",
+        "match_mode": "strict",
+        "matched_text": "as the \u201ceffective time\u201d) (other than any excluded shares"
+      }
     },
     {
       "cik": 1654126,
@@ -2517,8 +3529,30 @@
       "n_appearances": 1,
       "n_documents_searched": 267,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001178913-26-001558",
+        "form": "6-K",
+        "filing_date": "2026-03-19",
+        "document": "exhibit_99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326001558/exhibit_99-1.htm",
+        "char_offset": 101107,
+        "context": "the merger agreement and the transactions, and other important matters. We encourage you to submit a proxy to have your ordinary shares, of no par value, of ZIM (which we refer to as \u201cZIM ordinary shares\u201d) voted as soon as possible. Q: When and where will the ZIM special general meeting take place? A: The ZIM special general meeting will be held at 4:00 p.m., Israel time, on Thursday, Apr",
+        "match_mode": "strict",
+        "matched_text": "as \u201cZIM ordinary shares\u201d) voted"
+      },
+      "last_appearance": {
+        "accession": "0001178913-26-001558",
+        "form": "6-K",
+        "filing_date": "2026-03-19",
+        "document": "exhibit_99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326001558/exhibit_99-1.htm",
+        "char_offset": 101107,
+        "context": "the merger agreement and the transactions, and other important matters. We encourage you to submit a proxy to have your ordinary shares, of no par value, of ZIM (which we refer to as \u201cZIM ordinary shares\u201d) voted as soon as possible. Q: When and where will the ZIM special general meeting take place? A: The ZIM special general meeting will be held at 4:00 p.m., Israel time, on Thursday, Apr",
+        "match_mode": "strict",
+        "matched_text": "as \u201cZIM ordinary shares\u201d) voted"
+      }
     },
     {
       "cik": 1654126,
@@ -2543,8 +3577,30 @@
       "n_appearances": 151,
       "n_documents_searched": 267,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0000950103-21-004319",
+        "form": "6-K",
+        "filing_date": "2021-03-22",
+        "document": "dp148148_ex9901.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000095010321004319/dp148148_ex9901.htm",
+        "char_offset": 1921,
+        "context": "in 2021. 2 See disclosure regarding \u201cUse of Non-IFRS Financial Measures\u201d below. - 1 - CONFIDENTIAL \u00b7 ZIM carried 2,841 thousand TEUs in 2020, a year-over-year increase of 1% \u00b7 The average freight rate per TEU in 2020 was $1,229, a year-over-year increase of 22% \u00b7 Net leverage ratio 3 of 1.2x at December 31, 2020 \u00b7 Subsequent to year end, completed IPO, raising $204 million in net proce",
+        "match_mode": "strict",
+        "matched_text": "average freight rate per TEU"
+      },
+      "last_appearance": {
+        "accession": "0001178913-26-004191",
+        "form": "6-K",
+        "filing_date": "2026-08-19",
+        "document": "exhibit_99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326004191/exhibit_99-1.htm",
+        "char_offset": 6287,
+        "context": "the decrease in freight rates as well as carried volume. ZIM carried 1,788 thousand TEUs in the first half of 2026, compared to 1,839 thousand TEUs in the first half of 2025. The average freight rate per TEU was $1,455 for the first half of 2026, compared to $1,632 for the first half of 2025. Operating income (EBIT) for the first half of 2026 was $126 million, compared to $613 million",
+        "match_mode": "strict",
+        "matched_text": "average freight rate per TEU"
+      }
     },
     {
       "cik": 1654126,
@@ -2569,8 +3625,30 @@
       "n_appearances": 1,
       "n_documents_searched": 267,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001178913-26-001558",
+        "form": "6-K",
+        "filing_date": "2026-03-19",
+        "document": "exhibit_99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326001558/exhibit_99-1.htm",
+        "char_offset": 399991,
+        "context": "n principle, letter of intent, term sheet, merger agreement, acquisition agreement, option agreement or other similar instrument providing for an acquisition proposal. We refer to each action set forth in clauses (d), (e), (f) or (g) above as a \u201cchange of recommendation.\u201d In addition, under the merger agreement, ZIM was required to, promptly after the execution and delivery of the merger agreement, cease and cause t",
+        "match_mode": "strict",
+        "matched_text": "each action set forth in clauses (d), (e), (f) or (g) above"
+      },
+      "last_appearance": {
+        "accession": "0001178913-26-001558",
+        "form": "6-K",
+        "filing_date": "2026-03-19",
+        "document": "exhibit_99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326001558/exhibit_99-1.htm",
+        "char_offset": 399991,
+        "context": "n principle, letter of intent, term sheet, merger agreement, acquisition agreement, option agreement or other similar instrument providing for an acquisition proposal. We refer to each action set forth in clauses (d), (e), (f) or (g) above as a \u201cchange of recommendation.\u201d In addition, under the merger agreement, ZIM was required to, promptly after the execution and delivery of the merger agreement, cease and cause t",
+        "match_mode": "strict",
+        "matched_text": "each action set forth in clauses (d), (e), (f) or (g) above"
+      }
     },
     {
       "cik": 1654126,
@@ -2595,8 +3673,30 @@
       "n_appearances": 4,
       "n_documents_searched": 267,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001178913-26-001558",
+        "form": "6-K",
+        "filing_date": "2026-03-19",
+        "document": "exhibit_99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326001558/exhibit_99-1.htm",
+        "char_offset": 6020,
+        "context": "nt, Merger Sub or a person or entity described in clause (a) above, or (c) a relative (as defined below) of, or an entity controlled by Parent, Merger Sub or any of the foregoing (each of (a), (b) and (c) above is referred to as a \u201cParent affiliate\u201d). In order for your vote to count in respect of the merger proposal, you must affirm in your proxy card or voting instruction form that you",
+        "match_mode": "strict",
+        "matched_text": "each of (a), (b) and (c) above"
+      },
+      "last_appearance": {
+        "accession": "0001178913-26-001558",
+        "form": "6-K",
+        "filing_date": "2026-03-19",
+        "document": "exhibit_99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326001558/exhibit_99-1.htm",
+        "char_offset": 105425,
+        "context": "of Parent, Merger Sub or a person or entity described in clause (a) above, or (c) a relative of, or an entity controlled by Parent, Merger Sub or any of the foregoing (we refer to each of (a), (b) and (c) above as a \u201cParent affiliate\u201d). As a result, votes on the merger proposal by a Parent affiliate will not count towards the tally for the merger approval. Q: If my ZIM ordinary shares ar",
+        "match_mode": "strict",
+        "matched_text": "each of (a), (b) and (c) above"
+      }
     },
     {
       "cik": 1654126,
@@ -2621,8 +3721,30 @@
       "n_appearances": 194,
       "n_documents_searched": 267,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001104659-21-039375",
+        "form": "20-F",
+        "filing_date": "2021-03-22",
+        "document": "tm217869d3_20f.htm",
+        "doc_type": "20-F",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000110465921039375/tm217869d3_20f.htm",
+        "char_offset": 8161,
+        "context": "1 INTRODUCTION AND USE OF CERTAIN TERMS We have prepared this Annual Report using a number of conventions, which you should consider when reading the information contained herein. In this Annual Report, the \u201cCompany,\u201d \u201cwe,\u201d \u201cus\u201d and \u201cour\u201d shall refer to ZIM Integrated Shipping Services Ltd., or ZIM. The following are definitions of certain terms that are commonly used in the shi",
+        "match_mode": "strict",
+        "matched_text": "In this Annual Report"
+      },
+      "last_appearance": {
+        "accession": "0001178913-26-000784",
+        "form": "20-F",
+        "filing_date": "2026-03-09",
+        "document": "zk2634463.htm",
+        "doc_type": "20-F",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326000784/zk2634463.htm",
+        "char_offset": 641531,
+        "context": ", putting in place appropriate mitigation measures and maintaining cybersecurity programs. For more information about these risks, please see \u201cRisk factors \u2013 General risk factors\u201d in this annual report on Form 20-F. 123 PART III ITEM 17. Financial statements We have responded to Item 18 in lieu of this item. ITEM 18. Financial statements Financial Statements are filed as part of",
+        "match_mode": "strict",
+        "matched_text": "in this annual report"
+      }
     },
     {
       "cik": 1654126,
@@ -2647,8 +3769,30 @@
       "n_appearances": 19,
       "n_documents_searched": 267,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001104659-21-039375",
+        "form": "20-F",
+        "filing_date": "2021-03-22",
+        "document": "tm217869d3_20f.htm",
+        "doc_type": "20-F",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000110465921039375/tm217869d3_20f.htm",
+        "char_offset": 232152,
+        "context": "rvice.\u201d Data analysis . Moreover, we have a dedicated team of 25 business intelligence analysts who monitor and analyze an average of 7 terabytes of data per month relating to our key performance indicators, which helps, among others, our sales force target more profitable customers. We also analyze operating expenses by calculating the standard cost of each activity that affects our",
+        "match_mode": "strict",
+        "matched_text": "key performance indicators"
+      },
+      "last_appearance": {
+        "accession": "0001178913-26-003195",
+        "form": "6-K",
+        "filing_date": "2026-06-15",
+        "document": "exhibit_99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326003195/exhibit_99-1.htm",
+        "char_offset": 30799,
+        "context": "and to reimbursement of business and travel expenses. Annual Bonus The Employee may be entitled to an annual bonus of up to 18 Monthly Salaries, subject to achievement of certain key performance indicators to be annually approved by the Compensation Committee and Board of Directors (the \" Annual Bonus \"). Notwithstanding the foregoing, the maximum number of Monthly Salaries the Empl",
+        "match_mode": "strict",
+        "matched_text": "key performance indicators"
+      }
     },
     {
       "cik": 1654126,
@@ -2673,8 +3817,30 @@
       "n_appearances": 5,
       "n_documents_searched": 267,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001178913-24-001799",
+        "form": "6-K",
+        "filing_date": "2024-05-21",
+        "document": "exhibit_99-2.htm",
+        "doc_type": "EX-99.2",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891324001799/exhibit_99-2.htm",
+        "char_offset": 13649,
+        "context": "sued not yet adopted (cont\u2019d) In addition, entities will be required to include in their Financial Statements certain management-defined performance measures (often referred to as Non-GAAP measures). The standard is effective retrospectively for annual periods beginning on or after January 1, 2027, with early adoption permitted. The Group is currently in a preliminary stage",
+        "match_mode": "strict",
+        "matched_text": "Non-GAAP measures"
+      },
+      "last_appearance": {
+        "accession": "0001178913-26-000784",
+        "form": "20-F",
+        "filing_date": "2026-03-09",
+        "document": "zk2634463.htm",
+        "doc_type": "20-F",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326000784/zk2634463.htm",
+        "char_offset": 677826,
+        "context": "usiness activities as specified by each entity, and (ii) disclosing in a single note to the financial statements, the Management-defined performance measures (often referred to as Non-GAAP measures). In addition, the pronouncement provides enhanced guidance regarding aggregation of information in the financial statements. The standard is effective retrospectively for annual",
+        "match_mode": "strict",
+        "matched_text": "Non-GAAP measures"
+      }
     },
     {
       "cik": 1654126,
@@ -2699,8 +3865,30 @@
       "n_appearances": 3,
       "n_documents_searched": 267,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001178913-26-000483",
+        "form": "6-K",
+        "filing_date": "2026-02-17",
+        "document": "exhibit_99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326000483/exhibit_99-1.htm",
+        "char_offset": 275852,
+        "context": "ably be expected to occur); (g) the failure of the Company and the Company Subsidiaries to meet internal, published or analysts\u2019 expectations or projections, performance measures, operating statistics, budgets, guidance, estimates, or revenue, earnings or other financial or operating metric predictions (provided that an Effect underlying or that contributed to such failure may,",
+        "match_mode": "strict",
+        "matched_text": "operating statistics"
+      },
+      "last_appearance": {
+        "accession": "0001178913-26-001558",
+        "form": "6-K",
+        "filing_date": "2026-03-19",
+        "document": "exhibit_99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326001558/exhibit_99-1.htm",
+        "char_offset": 759749,
+        "context": "ably be expected to occur); (g) the failure of the Company and the Company Subsidiaries to meet internal, published or analysts\u2019 expectations or projections, performance measures, operating statistics, budgets, guidance, estimates, or revenue, earnings or other financial or operating metric predictions (provided that an Effect underlying or that contributed to such failure may,",
+        "match_mode": "strict",
+        "matched_text": "operating statistics"
+      }
     },
     {
       "cik": 1654126,
@@ -2725,8 +3913,30 @@
       "n_appearances": 26,
       "n_documents_searched": 267,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001104659-21-039375",
+        "form": "20-F",
+        "filing_date": "2021-03-22",
+        "document": "tm217869d3_20f.htm",
+        "doc_type": "20-F",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000110465921039375/tm217869d3_20f.htm",
+        "char_offset": 219207,
+        "context": "medium-sized enterprises. We intend to continue to strengthen our relationships with our key customers and to increase our direct sales to small- and medium-sized enterprises, or SMEs, which we define as customers that ship up to 100 TEUs annually. For the twelve months ended December 31, 2020 and 2019, SMEs represented 11% in both periods, of aggregate carried",
+        "match_mode": "strict",
+        "matched_text": "SMEs"
+      },
+      "last_appearance": {
+        "accession": "0001178913-26-000784",
+        "form": "20-F",
+        "filing_date": "2026-03-09",
+        "document": "zk2634463.htm",
+        "doc_type": "20-F",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326000784/zk2634463.htm",
+        "char_offset": 318498,
+        "context": "mall- and medium-sized enterprises, or SMEs, which we define as customers that ship up to 200 TEUs annually. Under this definition, for the years ended December 31, 2025 and 2024, SMEs represented approximately 16% of our aggregate carried volume worldwide. We believe this large and growing segment of the cargo shipping market represents a significant growth opp",
+        "match_mode": "strict",
+        "matched_text": "SMEs"
+      }
     },
     {
       "cik": 1654126,
@@ -2751,8 +3961,30 @@
       "n_appearances": 10,
       "n_documents_searched": 267,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001104659-21-039375",
+        "form": "20-F",
+        "filing_date": "2021-03-22",
+        "document": "tm217869d3_20f.htm",
+        "doc_type": "20-F",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000110465921039375/tm217869d3_20f.htm",
+        "char_offset": 415478,
+        "context": "not have a personal interest in such appointment, which are voted against such appointment, does not exceed two percent of the aggregate voting rights in the company. We refer to such majority as \u201cSpecial Majority for Compensation\u201d. Under special circumstances, the Board of Directors may approve the compensation policy despite the objection of the shareholders provided",
+        "match_mode": "strict",
+        "matched_text": "such majority"
+      },
+      "last_appearance": {
+        "accession": "0001178913-26-000784",
+        "form": "20-F",
+        "filing_date": "2026-03-09",
+        "document": "zk2634463.htm",
+        "doc_type": "20-F",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326000784/zk2634463.htm",
+        "char_offset": 519543,
+        "context": "not have a personal interest in such appointment, which are voted against such appointment, does not exceed two percent of the aggregate voting rights in the company. We refer to such majority as \u201cSpecial Majority for Compensation\u201d. Under special circumstances, the Board of Directors may approve the compensation policy despite the objection of the shareholders provided",
+        "match_mode": "strict",
+        "matched_text": "such majority"
+      }
     },
     {
       "cik": 1654126,
@@ -2777,8 +4009,30 @@
       "n_appearances": 6,
       "n_documents_searched": 267,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001104659-21-039375",
+        "form": "20-F",
+        "filing_date": "2021-03-22",
+        "document": "tm217869d3_20f.htm",
+        "doc_type": "20-F",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000110465921039375/tm217869d3_20f.htm",
+        "char_offset": 303772,
+        "context": "during which our vessels call may increase the cost of stevedoring services and in turn may lead to an increase in cargo handling expenses. For each service we operate, we measure the utilization of a vessel on the dominant leg, as well as on the counter-dominant leg by dividing the number of TEUs carried on a vessel by that vessel\u2019s capacity. For example, some of our major trade routes, such as the Paci",
+        "match_mode": "strict",
+        "matched_text": "the utilization of a vessel on the dominant leg"
+      },
+      "last_appearance": {
+        "accession": "0001178913-26-000784",
+        "form": "20-F",
+        "filing_date": "2026-03-09",
+        "document": "zk2634463.htm",
+        "doc_type": "20-F",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326000784/zk2634463.htm",
+        "char_offset": 420588,
+        "context": "during which our vessels call may increase the cost of stevedoring services and in turn may lead to an increase in cargo handling expenses. For each service we operate, we measure the utilization of a vessel on the dominant leg, as well as on the counter-dominant leg by dividing the number of TEUs carried on a vessel by that vessel\u2019s capacity. For example, some of our major trade routes, such as the Paci",
+        "match_mode": "strict",
+        "matched_text": "the utilization of a vessel on the dominant leg"
+      }
     },
     {
       "cik": 1654126,
@@ -2803,8 +4057,30 @@
       "n_appearances": 6,
       "n_documents_searched": 267,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001104659-21-039375",
+        "form": "20-F",
+        "filing_date": "2021-03-22",
+        "document": "tm217869d3_20f.htm",
+        "doc_type": "20-F",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000110465921039375/tm217869d3_20f.htm",
+        "char_offset": 58630,
+        "context": "ial condition and results of operations. Our TEUs carried can vary depending on the balance of trade flows between different world regions. For each service we operate, we measure the utilization of a vessel on the \u201cstrong,\u201d or dominant, leg, as well as on the \u201cweak,\u201d or counter-dominant, leg by dividing the actual number of TEUs carried on a vessel by the vessel\u2019s effective capacity. Utilization per voyage is general",
+        "match_mode": "strict",
+        "matched_text": "the utilization of a vessel on the \u201cstrong,\u201d or dominant, leg"
+      },
+      "last_appearance": {
+        "accession": "0001178913-26-000784",
+        "form": "20-F",
+        "filing_date": "2026-03-09",
+        "document": "zk2634463.htm",
+        "doc_type": "20-F",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326000784/zk2634463.htm",
+        "char_offset": 122044,
+        "context": "ial condition and results of operations. Our TEUs carried can vary depending on the balance of trade flows between different world regions. For each service we operate, we measure the utilization of a vessel on the \u201cstrong,\u201d or dominant, leg, as well as on the \u201cweak,\u201d or counter-dominant, leg by dividing the actual number of TEUs carried on a vessel by the vessel\u2019s effective capacity. Utilization per voyage is general",
+        "match_mode": "strict",
+        "matched_text": "the utilization of a vessel on the \u201cstrong,\u201d or dominant, leg"
+      }
     },
     {
       "cik": 1654126,
@@ -2829,8 +4105,30 @@
       "n_appearances": 17,
       "n_documents_searched": 267,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001178913-22-002058",
+        "form": "6-K",
+        "filing_date": "2022-05-18",
+        "document": "exhibit_99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891322002058/exhibit_99-1.htm",
+        "char_offset": 17226,
+        "context": "non-IFRS financial measure which we define as face value of short- and long-term debt, minus cash and cash equivalents, bank deposits and other investment instruments. We refer to this measure as net cash when cash and cash equivalents, bank deposits and other investment instruments exceed the face value of short- and long-term debt. Net leverage ratio is a non-IFRS fin",
+        "match_mode": "strict",
+        "matched_text": "this measure"
+      },
+      "last_appearance": {
+        "accession": "0001178913-26-002824",
+        "form": "6-K",
+        "filing_date": "2026-05-20",
+        "document": "exhibit_99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326002824/exhibit_99-1.htm",
+        "char_offset": 19238,
+        "context": "non-IFRS financial measure which we define as face value of short- and long-term debt, minus cash and cash equivalents, bank deposits and other investment instruments. We refer to this measure as net cash when cash and cash equivalents, bank deposits and other investment instruments exceed the face value of short- and long-term debt. Net leverage ratio is a non-IFRS fin",
+        "match_mode": "strict",
+        "matched_text": "this measure"
+      }
     },
     {
       "cik": 1654126,
@@ -2855,8 +4153,30 @@
       "n_appearances": 1,
       "n_documents_searched": 267,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001178913-26-001558",
+        "form": "6-K",
+        "filing_date": "2026-03-19",
+        "document": "exhibit_99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326001558/exhibit_99-1.htm",
+        "char_offset": 100248,
+        "context": "r\u201d), and the separate existence of Merger Sub will cease. ZIM will become a wholly owned subsidiary of Parent and will continue as the surviving company in the merger (we refer to ZIM after completion of the merger as the \u201csurviving company\u201d). The merger agreement, which governs the terms of the merger, is attached to this proxy statement as Annex A . The merger agreement and the transaction",
+        "match_mode": "strict",
+        "matched_text": "ZIM after completion of the merger"
+      },
+      "last_appearance": {
+        "accession": "0001178913-26-001558",
+        "form": "6-K",
+        "filing_date": "2026-03-19",
+        "document": "exhibit_99-1.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326001558/exhibit_99-1.htm",
+        "char_offset": 100248,
+        "context": "r\u201d), and the separate existence of Merger Sub will cease. ZIM will become a wholly owned subsidiary of Parent and will continue as the surviving company in the merger (we refer to ZIM after completion of the merger as the \u201csurviving company\u201d). The merger agreement, which governs the terms of the merger, is attached to this proxy statement as Annex A . The merger agreement and the transaction",
+        "match_mode": "strict",
+        "matched_text": "ZIM after completion of the merger"
+      }
     },
     {
       "cik": 1676238,
@@ -2894,8 +4214,30 @@
       "n_appearances": 200,
       "n_documents_searched": 77,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001193125-21-362420",
+        "form": "8-K",
+        "filing_date": "2021-12-20",
+        "document": "d262464dex991.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000119312521362420/d262464dex991.htm",
+        "char_offset": 9633,
+        "context": "results, including this press release, and not to rely on any single financial measure to evaluate Braze\u0092s business. Definition of Other Business Metrics Customer : Braze defines a customer, as of period end, as the separate and distinct, ultimate parent-level entity that has an active subscription with Braze to use its products. A single organization could have mult",
+        "match_mode": "strict",
+        "matched_text": "a customer"
+      },
+      "last_appearance": {
+        "accession": "0001676238-26-000027",
+        "form": "10-Q",
+        "filing_date": "2026-05-28",
+        "document": "brze-20260430.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000167623826000027/brze-20260430.htm",
+        "char_offset": 205411,
+        "context": "ninsured or under-insured could result in unanticipated costs, and our business, financial condition and results of operations may be adversely affected. Further, any dispute with a customer with respect to such obligations could have adverse effects on our relationship with that customer, other existing customers and new customers, which could adversely affect our bu",
+        "match_mode": "strict",
+        "matched_text": "a customer"
+      }
     },
     {
       "cik": 1676238,
@@ -2933,8 +4275,30 @@
       "n_appearances": 4,
       "n_documents_searched": 77,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001676238-22-000005",
+        "form": "10-K",
+        "filing_date": "2022-03-31",
+        "document": "brze-20220131.htm",
+        "doc_type": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000167623822000005/brze-20220131.htm",
+        "char_offset": 365525,
+        "context": "other professional fees, software costs, certain tax, license and insurance-related expenses and allocated overhead costs. Stock-Based Compensation 78 Table of Contents We measure and record the expense related to stock-based payment awards based on the fair value of those awards as determined on the date of grant. We recognize stock-based compensation expense over the requisite service period of the individual grant, generally equal to the vesting period,",
+        "match_mode": "strict",
+        "matched_text": "and record the expense related to stock-based payment awards based on the fair value of those awards"
+      },
+      "last_appearance": {
+        "accession": "0001676238-24-000049",
+        "form": "10-K",
+        "filing_date": "2024-04-01",
+        "document": "brze-20240131.htm",
+        "doc_type": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000167623824000049/brze-20240131.htm",
+        "char_offset": 385718,
+        "context": "egal, accounting and other professional fees, software costs, certain tax, license and insurance-related expenses and allocated overhead costs. Stock-Based Compensation We measure and record the expense related to stock-based payment awards based on the fair value of those awards as determined on the date of grant. We recognize stock-based compensation expense over the requisite service period of the individual grant, generally equal to the vesting period,",
+        "match_mode": "strict",
+        "matched_text": "and record the expense related to stock-based payment awards based on the fair value of those awards"
+      }
     },
     {
       "cik": 1676238,
@@ -2972,8 +4336,30 @@
       "n_appearances": 646,
       "n_documents_searched": 77,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001193125-21-362420",
+        "form": "8-K",
+        "filing_date": "2021-12-20",
+        "document": "d262464dex991.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000119312521362420/d262464dex991.htm",
+        "char_offset": 2292,
+        "context": "ers for the trailing 12 months ended October 31, 2021 and October 31, 2020 was 126% and 124%, respectively; dollar-based net retention for customers with annual recurring revenue (ARR) of $500,000 or more was 136% compared to 134% in the third quarter of the fiscal year ended January 31, 2021. \u0095 Total customers increased to 1,247 as of October 31, 2021 from 841",
+        "match_mode": "strict",
+        "matched_text": "ARR"
+      },
+      "last_appearance": {
+        "accession": "0001676238-26-000027",
+        "form": "10-Q",
+        "filing_date": "2026-05-28",
+        "document": "brze-20260430.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000167623826000027/brze-20260430.htm",
+        "char_offset": 95812,
+        "context": "110% and 109%, respectively, for all our customers, and 111% and 112%, respectively, for our customers with ARR of $500,000 or more. In addition, 349 and 262 of our customers had ARR of $500,000 or more as of April 30, 2026 and April 30, 2025, respectively. 29 Table of Contents Our dollar-based net retention rate is influenced by macroeconomic factors that imp",
+        "match_mode": "strict",
+        "matched_text": "ARR"
+      }
     },
     {
       "cik": 1676238,
@@ -3011,8 +4397,30 @@
       "n_appearances": 19,
       "n_documents_searched": 77,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001193125-21-362420",
+        "form": "8-K",
+        "filing_date": "2021-12-20",
+        "document": "d262464dex991.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000119312521362420/d262464dex991.htm",
+        "char_offset": 9591,
+        "context": "uncing quarterly and fiscal year financial results, including this press release, and not to rely on any single financial measure to evaluate Braze\u0092s business. Definition of Other Business Metrics Customer : Braze defines a customer, as of period end, as the separate and distinct, ultimate parent-level entity that has an active subscription with Braze to use its products. A",
+        "match_mode": "strict",
+        "matched_text": "Business Metrics"
+      },
+      "last_appearance": {
+        "accession": "0001676238-26-000024",
+        "form": "8-K",
+        "filing_date": "2026-05-27",
+        "document": "a20260430-brazeincxq127ear.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000167623826000024/a20260430-brazeincxq127ear.htm",
+        "char_offset": 12612,
+        "context": "uncing quarterly and fiscal year financial results, including this press release, and not to rely on any single financial measure to evaluate Braze\u2019s business. Definition of Other Business Metrics Customer : Braze defines a customer, as of period end, as the separate and distinct, ultimate parent-level entity that has an active subscription with Braze to use its products. A",
+        "match_mode": "strict",
+        "matched_text": "Business Metrics"
+      }
     },
     {
       "cik": 1676238,
@@ -3050,8 +4458,30 @@
       "n_appearances": 463,
       "n_documents_searched": 77,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001193125-21-362420",
+        "form": "8-K",
+        "filing_date": "2021-12-20",
+        "document": "d262464dex991.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000119312521362420/d262464dex991.htm",
+        "char_offset": 3272,
+        "context": "AP net loss per basic and diluted share attributable to Braze common stockholders was $(0.16) compared to $(0.35) in the third quarter of the fiscal year ended January 31, 2021. \u0095 Free cash flow was $(3.5) million compared to $(6.8) million in the third quarter of the fiscal year end January 31, 2021. \u0095 Total cash and cash equivalents, restricted cash, and marketable secu",
+        "match_mode": "strict",
+        "matched_text": "Free cash flow"
+      },
+      "last_appearance": {
+        "accession": "0001676238-26-000027",
+        "form": "10-Q",
+        "filing_date": "2026-05-28",
+        "document": "brze-20260430.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000167623826000027/brze-20260430.htm",
+        "char_offset": 160943,
+        "context": "ers, monthly active users, platform enabled interactions, consumer generated data points, customer messages, annual recurring revenue, dollar-based net retention rate and non-GAAP free cash flow. Our operational metrics are tracked with internal systems and tools that are not independently verified by any third party and which may differ from estimates or similar metrics",
+        "match_mode": "strict",
+        "matched_text": "free cash flow"
+      }
     },
     {
       "cik": 1676238,
@@ -3089,8 +4519,30 @@
       "n_appearances": 5,
       "n_documents_searched": 77,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001676238-22-000005",
+        "form": "10-K",
+        "filing_date": "2022-03-31",
+        "document": "brze-20220131.htm",
+        "doc_type": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000167623822000005/brze-20220131.htm",
+        "char_offset": 46777,
+        "context": "-date with the latest data inputs. \u2022 Segment Insights: Segment Insights allows customers to analyze how segments are performing relative to each other across a set of pre-selected key performance indicators. Additionally, customers can use this tool to understand the factors that determine which consumers belong to a particular segment. \u2022 Predictive Suite: Our Predictive Suite allows",
+        "match_mode": "strict",
+        "matched_text": "key performance indicators"
+      },
+      "last_appearance": {
+        "accession": "0001676238-26-000013",
+        "form": "10-K",
+        "filing_date": "2026-03-25",
+        "document": "brze-20260131.htm",
+        "doc_type": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000167623826000013/brze-20260131.htm",
+        "char_offset": 64139,
+        "context": "-date with the latest data inputs. \u2022 Segment Insights: Segment Insights allows customers to analyze how segments are performing relative to each other across a set of pre-selected key performance indicators. Additionally, customers can use this tool to understand the factors that determine which consumers belong to a particular segment. Orchestration \u2022 Canvas: Canvas is our flagship",
+        "match_mode": "strict",
+        "matched_text": "key performance indicators"
+      }
     },
     {
       "cik": 1676238,
@@ -3128,8 +4580,30 @@
       "n_appearances": 2,
       "n_documents_searched": 77,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001676238-25-000054",
+        "form": "10-K",
+        "filing_date": "2025-03-31",
+        "document": "brze-20250131.htm",
+        "doc_type": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000167623825000054/brze-20250131.htm",
+        "char_offset": 59765,
+        "context": "and aggregate statistics from their usage of our platform. \u25e6 Dashboards: Braze enables customers to aggregate and further analyze engagement, conversion, deliverability, and other key performance metrics using pre-built, customizable dashboards. \u25e6 Query Builder and BrazeAI Query Builder: Customers can generate highly-customized reports using a SQL editor or pre-built template. The",
+        "match_mode": "strict",
+        "matched_text": "key performance metrics"
+      },
+      "last_appearance": {
+        "accession": "0001676238-26-000013",
+        "form": "10-K",
+        "filing_date": "2026-03-25",
+        "document": "brze-20260131.htm",
+        "doc_type": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000167623826000013/brze-20260131.htm",
+        "char_offset": 67332,
+        "context": "and aggregate statistics from their usage of our platform. \u2022 Dashboards: Braze enables customers to aggregate and further analyze engagement, conversion, deliverability, and other key performance metrics using pre-built, customizable dashboards. \u2022 Query Builder and BrazeAI Query Builder: Customers can generate highly-customized reports using a SQL editor or pre-built template. The",
+        "match_mode": "strict",
+        "matched_text": "key performance metrics"
+      }
     },
     {
       "cik": 1676238,
@@ -3167,8 +4641,30 @@
       "n_appearances": 1101,
       "n_documents_searched": 77,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001193125-21-362420",
+        "form": "8-K",
+        "filing_date": "2021-12-20",
+        "document": "d262464dex991.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000119312521362420/d262464dex991.htm",
+        "char_offset": 3665,
+        "context": "llion as of October 31, 2021 compared to $91.0 million as of October 31, 2020. Recent Business Highlights \u0095 Recognized as a leader in The Forrester Wave \u0099 : Cross-Channel Campaign Management (Independent Platforms), Q3 2021 report; Braze received the highest score of all vendors in the Strategy category. \u0095 Continued to acquire talent, growing headcount by more than 30",
+        "match_mode": "strict",
+        "matched_text": "Management"
+      },
+      "last_appearance": {
+        "accession": "0001676238-26-000027",
+        "form": "10-Q",
+        "filing_date": "2026-05-28",
+        "document": "brze-20260430.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000167623826000027/brze-20260430.htm",
+        "char_offset": 322331,
+        "context": "ties have been subject to securities class action litigation. We may be the target of this type of litigation in the future, which could result in substantial costs and divert our management\u2019s attention. Our issuance of additional capital stock in connection with financings, acquisitions, investments, our equity incentive plans or otherwise will dilute all other stock",
+        "match_mode": "strict",
+        "matched_text": "management"
+      }
     },
     {
       "cik": 1676238,
@@ -3206,8 +4702,30 @@
       "n_appearances": 76,
       "n_documents_searched": 77,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001193125-21-362420",
+        "form": "8-K",
+        "filing_date": "2021-12-20",
+        "document": "d262464dex991.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000119312521362420/d262464dex991.htm",
+        "char_offset": 7781,
+        "context": "s. Investors are encouraged to review the reconciliation of these historical non-GAAP financial measures to their most directly comparable GAAP financial measures. Braze uses this non-GAAP financial information internally in analyzing its financial results and believes that this non-GAAP financial information, when taken collectively with GAAP financial measures, may be helpful to invest",
+        "match_mode": "strict",
+        "matched_text": "non-GAAP financial information"
+      },
+      "last_appearance": {
+        "accession": "0001676238-26-000024",
+        "form": "8-K",
+        "filing_date": "2026-05-27",
+        "document": "a20260430-brazeincxq127ear.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000167623826000024/a20260430-brazeincxq127ear.htm",
+        "char_offset": 11242,
+        "context": "ity with past financial performance and assists in comparisons with other companies, some of which use similar non-GAAP financial information to supplement their GAAP results. The non-GAAP financial information is presented for supplemental informational purposes only, and should not be considered a substitute for financial information presented in accordance with generally accepted acco",
+        "match_mode": "strict",
+        "matched_text": "non-GAAP financial information"
+      }
     },
     {
       "cik": 1676238,
@@ -3245,8 +4763,30 @@
       "n_appearances": 171,
       "n_documents_searched": 77,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001193125-21-362420",
+        "form": "8-K",
+        "filing_date": "2021-12-20",
+        "document": "d262464dex991.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000119312521362420/d262464dex991.htm",
+        "char_offset": 6724,
+        "context": "tion Supplemental information, including an accompanying financial presentation and other information can be accessed through the Company\u0092s investor website at investors.braze.com Non-GAAP Financial Measures This press release and the accompanying tables contain the following non-GAAP financial measures: non-GAAP gross profit and margin, non-GAAP sales and marketing expense, non-GAAP",
+        "match_mode": "strict",
+        "matched_text": "Non-GAAP Financial Measures"
+      },
+      "last_appearance": {
+        "accession": "0001676238-26-000027",
+        "form": "10-Q",
+        "filing_date": "2026-05-28",
+        "document": "brze-20260430.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000167623826000027/brze-20260430.htm",
+        "char_offset": 119242,
+        "context": "ancial results in accordance with GAAP. To supplement our unaudited condensed consolidated financial statements, we provide investors with the amount of free cash flow, which is a non-GAAP financial measure. Our management uses free cash flow to assess our operating performance and our progress towards our goal of positive free cash flow. We define free cash flow as net cash used in",
+        "match_mode": "strict",
+        "matched_text": "non-GAAP financial measure"
+      }
     },
     {
       "cik": 1676238,
@@ -3284,8 +4824,30 @@
       "n_appearances": 38,
       "n_documents_searched": 77,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001193125-21-362420",
+        "form": "8-K",
+        "filing_date": "2021-12-20",
+        "document": "d262464dex991.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000119312521362420/d262464dex991.htm",
+        "char_offset": 8521,
+        "context": "substitute for financial information presented in accordance with generally accepted accounting principles in the United States (GAAP), and may be different from similarly-titled non-GAAP measures used by other companies. The principal limitation of these non-GAAP financial measures is that they exclude significant expenses that are required by GAAP to be recorded in Braze\u0092",
+        "match_mode": "strict",
+        "matched_text": "non-GAAP measures"
+      },
+      "last_appearance": {
+        "accession": "0001676238-26-000027",
+        "form": "10-Q",
+        "filing_date": "2026-05-28",
+        "document": "brze-20260430.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000167623826000027/brze-20260430.htm",
+        "char_offset": 120142,
+        "context": "e of these limitations are (1) it is not a substitute for net cash provided by/(used in) operating activities, (2) other companies may calculate free cash flow or similarly titled non-GAAP measures differently or may use other measures to evaluate their performance, all of which could reduce the usefulness of free cash flow as a tool for comparison, and (3) the utility of fr",
+        "match_mode": "strict",
+        "matched_text": "non-GAAP measures"
+      }
     },
     {
       "cik": 1676238,
@@ -3323,8 +4885,30 @@
       "n_appearances": 66,
       "n_documents_searched": 77,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001193125-21-362420",
+        "form": "8-K",
+        "filing_date": "2021-12-20",
+        "document": "d262464dex991.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000119312521362420/d262464dex991.htm",
+        "char_offset": 11061,
+        "context": "customers\u0092 spending levels. ARR should be viewed independently of revenue and does not represent Braze\u0092s GAAP revenue on an annualized basis or a forecast of revenue, as it is an operating metric that can be impacted by contract start and end dates and renewal rates. Dollar-Based Net Retention Rate : Braze calculates dollar-based net retention rate as of a period end by st",
+        "match_mode": "strict",
+        "matched_text": "operating metric"
+      },
+      "last_appearance": {
+        "accession": "0001676238-26-000027",
+        "form": "10-Q",
+        "filing_date": "2026-05-28",
+        "document": "brze-20260430.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000167623826000027/brze-20260430.htm",
+        "char_offset": 162230,
+        "context": "n details of our business, which could affect our long-term strategies. If our operating metrics are not accurate representations of our business, if investors do not perceive our operating metrics to be accurate, or if we discover material inaccuracies with respect to these figures, we expect that our business, reputation, financial condition, and results of operations woul",
+        "match_mode": "strict",
+        "matched_text": "operating metrics"
+      }
     },
     {
       "cik": 1676238,
@@ -3362,8 +4946,30 @@
       "n_appearances": 71,
       "n_documents_searched": 77,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001676238-21-000006",
+        "form": "10-Q",
+        "filing_date": "2021-12-21",
+        "document": "brze-20211031.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000167623821000006/brze-20211031.htm",
+        "char_offset": 106266,
+        "context": "d metrics presented by other companies and may not be comparable to such other metrics. A further indication of the propensity of our customer relationships to expand over time is our dollar-based net retention rate. We calculate our dollar-based net retention rate as of a period end by starting with the ARR from the cohort of all customers as of 12 months prior to such period-end, or the Pri",
+        "match_mode": "strict",
+        "matched_text": "our dollar-based net retention rate"
+      },
+      "last_appearance": {
+        "accession": "0001676238-26-000027",
+        "form": "10-Q",
+        "filing_date": "2026-05-28",
+        "document": "brze-20260430.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1676238/000167623826000027/brze-20260430.htm",
+        "char_offset": 146275,
+        "context": "nonetheless reduce their customer engagement technology spending and elect not to purchase additional products and services in the future due to budget limitations. Additionally, our dollar-based net retention rate is influenced by macroeconomic factors that impact our customers\u2019 purchasing decisions, who may choose to renew their contracts at levels more closely aligned with their current n",
+        "match_mode": "strict",
+        "matched_text": "our dollar-based net retention rate"
+      }
     },
     {
       "cik": 1689657,
@@ -3395,8 +5001,30 @@
       "n_appearances": 2,
       "n_documents_searched": 90,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001689657-21-000005",
+        "form": "10-K",
+        "filing_date": "2021-03-12",
+        "document": "bli-20201231.htm",
+        "doc_type": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1689657/000168965721000005/bli-20201231.htm",
+        "char_offset": 362219,
+        "context": "gative impacts to our results of operations and cash flows, but we are undertaking such investments in the belief that they will contribute to long-term growth and sustainability. Key business metrics We regularly review the following key business metrics to evaluate our business, measure our performance, identify trends affecting our business, formulate financial projections a",
+        "match_mode": "strict",
+        "matched_text": "Key business metrics"
+      },
+      "last_appearance": {
+        "accession": "0001689657-21-000005",
+        "form": "10-K",
+        "filing_date": "2021-03-12",
+        "document": "bli-20201231.htm",
+        "doc_type": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1689657/000168965721000005/bli-20201231.htm",
+        "char_offset": 362274,
+        "context": "ows, but we are undertaking such investments in the belief that they will contribute to long-term growth and sustainability. Key business metrics We regularly review the following key business metrics to evaluate our business, measure our performance, identify trends affecting our business, formulate financial projections and make strategic decisions. We believe that the follow",
+        "match_mode": "strict",
+        "matched_text": "key business metrics"
+      }
     },
     {
       "cik": 1689657,
@@ -3428,8 +5056,30 @@
       "n_appearances": 1,
       "n_documents_searched": 90,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001689657-23-000030",
+        "form": "8-K",
+        "filing_date": "2023-08-14",
+        "document": "exhibit991q2-23results.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1689657/000168965723000030/exhibit991q2-23results.htm",
+        "char_offset": 9555,
+        "context": "forecasting and analyzing future periods. The Company believes its non-GAAP financial measures are useful to investors because they allow for greater transparency with respect to key financial measures that it uses in making operating decisions and because its investors and analysts use them to help assess the health of the Company\u2019s business. While the Company believes these no",
+        "match_mode": "strict",
+        "matched_text": "key financial measures"
+      },
+      "last_appearance": {
+        "accession": "0001689657-23-000030",
+        "form": "8-K",
+        "filing_date": "2023-08-14",
+        "document": "exhibit991q2-23results.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1689657/000168965723000030/exhibit991q2-23results.htm",
+        "char_offset": 9555,
+        "context": "forecasting and analyzing future periods. The Company believes its non-GAAP financial measures are useful to investors because they allow for greater transparency with respect to key financial measures that it uses in making operating decisions and because its investors and analysts use them to help assess the health of the Company\u2019s business. While the Company believes these no",
+        "match_mode": "strict",
+        "matched_text": "key financial measures"
+      }
     },
     {
       "cik": 1689657,
@@ -3461,8 +5111,30 @@
       "n_appearances": 23,
       "n_documents_searched": 90,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001689657-20-000006",
+        "form": "10-Q",
+        "filing_date": "2020-08-25",
+        "document": "bli-20200630.htm",
+        "doc_type": "10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1689657/000168965720000006/bli-20200630.htm",
+        "char_offset": 86022,
+        "context": "ents contain these words. These forward-looking statements include, but are not limited to, statements about: \u2022 estimates of our addressable market, market growth, future revenue, key performance indicators, expenses, capital requirements and our needs for additional financing; \u2022 the implementation of our business model and strategic plans for our products, workflows and technologies",
+        "match_mode": "strict",
+        "matched_text": "key performance indicators"
+      },
+      "last_appearance": {
+        "accession": "0001689657-23-000009",
+        "form": "10-K",
+        "filing_date": "2023-02-23",
+        "document": "bli-20221231.htm",
+        "doc_type": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1689657/000168965723000009/bli-20221231.htm",
+        "char_offset": 114269,
+        "context": "rs may not reflect our actual performance. If the annual serviceable addressable market or the potential market growth for our platform is smaller than we have estimated or if the key performance indicators we utilize to forecast revenue are inaccurate, it may impair our sales growth and have an adverse impact on our business, financial condition, results of operations and prospects.",
+        "match_mode": "strict",
+        "matched_text": "key performance indicators"
+      }
     },
     {
       "cik": 1689657,
@@ -3494,8 +5166,30 @@
       "n_appearances": 10,
       "n_documents_searched": 90,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001689657-23-000030",
+        "form": "8-K",
+        "filing_date": "2023-08-14",
+        "document": "exhibit991q2-23results.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1689657/000168965723000030/exhibit991q2-23results.htm",
+        "char_offset": 8015,
+        "context": "atforms are used by researchers across the globe, including those at the top 15 global pharmaceutical companies and approximately 85% of leading U.S. comprehensive cancer centers. Non-GAAP Financial Measures To supplement the Company\u2019s financial statements, which are presented on the basis of U.S. generally accepted accounting principles (GAAP), the non-GAAP measures of adjusted gross",
+        "match_mode": "strict",
+        "matched_text": "Non-GAAP Financial Measures"
+      },
+      "last_appearance": {
+        "accession": "0001689657-23-000030",
+        "form": "8-K",
+        "filing_date": "2023-08-14",
+        "document": "exhibit991q2-23results.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1689657/000168965723000030/exhibit991q2-23results.htm",
+        "char_offset": 16517,
+        "context": "omprehensive Income (loss) 50 (9) Total stockholders\u2019 equity 111,281 142,055 Total liabilities and stockholders\u2019 equity $ 178,332 $ 226,094 PhenomeX Inc. Reconciliation of GAAP to Non-GAAP financial measures (Unaudited in $ thousands) Three Months Ended Three Months Change June 30, 2023 June 30, 2022 (1) Amount % GAAP Gross Profit 6,043 12,926 (6,883) (53)% GAAP Gross Margin 43% 67% (",
+        "match_mode": "strict",
+        "matched_text": "Non-GAAP financial measures"
+      }
     },
     {
       "cik": 1689657,
@@ -3527,8 +5221,30 @@
       "n_appearances": 1,
       "n_documents_searched": 90,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001689657-23-000030",
+        "form": "8-K",
+        "filing_date": "2023-08-14",
+        "document": "exhibit991q2-23results.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1689657/000168965723000030/exhibit991q2-23results.htm",
+        "char_offset": 8187,
+        "context": "enters. Non-GAAP Financial Measures To supplement the Company\u2019s financial statements, which are presented on the basis of U.S. generally accepted accounting principles (GAAP), the non-GAAP measures of adjusted gross profit, adjusted gross margin and adjusted operating expenses are included in this press release. Adjusted gross profit is gross profit adjusted to exclude one-t",
+        "match_mode": "strict",
+        "matched_text": "non-GAAP measures"
+      },
+      "last_appearance": {
+        "accession": "0001689657-23-000030",
+        "form": "8-K",
+        "filing_date": "2023-08-14",
+        "document": "exhibit991q2-23results.htm",
+        "doc_type": "EX-99.1",
+        "url": "https://www.sec.gov/Archives/edgar/data/1689657/000168965723000030/exhibit991q2-23results.htm",
+        "char_offset": 8187,
+        "context": "enters. Non-GAAP Financial Measures To supplement the Company\u2019s financial statements, which are presented on the basis of U.S. generally accepted accounting principles (GAAP), the non-GAAP measures of adjusted gross profit, adjusted gross margin and adjusted operating expenses are included in this press release. Adjusted gross profit is gross profit adjusted to exclude one-t",
+        "match_mode": "strict",
+        "matched_text": "non-GAAP measures"
+      }
     },
     {
       "cik": 1689657,
@@ -3560,8 +5276,30 @@
       "n_appearances": 2,
       "n_documents_searched": 90,
       "n_documents_failed": 0,
-      "first_appearance": null,
-      "last_appearance": null
+      "first_appearance": {
+        "accession": "0001689657-21-000005",
+        "form": "10-K",
+        "filing_date": "2021-03-12",
+        "document": "bli-20201231.htm",
+        "doc_type": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1689657/000168965721000005/bli-20201231.htm",
+        "char_offset": 362759,
+        "context": "e substituted for additional or different metrics as our business grows. Year ended December 31, Change (dollars in thousands) 2020 2019 % Revenue from new and existing customers: Revenue from new customers (1) $ 26,639 $ 29,639 (10) % Revenue from existing customers 37,664 27,054 39 % Revenue streams: Direct platform sales $ 44,656 $ 39,116 14 % Recurring revenue 13,888 8,021 73 % M",
+        "match_mode": "strict",
+        "matched_text": "Revenue from new customers"
+      },
+      "last_appearance": {
+        "accession": "0001689657-21-000005",
+        "form": "10-K",
+        "filing_date": "2021-03-12",
+        "document": "bli-20201231.htm",
+        "doc_type": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1689657/000168965721000005/bli-20201231.htm",
+        "char_offset": 363165,
+        "context": "ms 5,759 9,556 (40) % Platform placements and installation base outside of our BioFoundry: Direct platform sales placements 27 26 4 % Total installed base 75 48 56 % (1) We define revenue from new customers as revenue from a customer for which we have not previously recorded revenue on any prior transaction. COVID-19 update In response to the COVID-19 pandemic and various resulting g",
+        "match_mode": "strict",
+        "matched_text": "revenue from new customers"
+      }
     }
   ]
 }

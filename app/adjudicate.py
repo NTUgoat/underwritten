@@ -26,6 +26,33 @@ not settle it". A deferral is written as ``NOT_DETERMINABLE`` in the ``include``
 column, spelled exactly as §5 spells it, so no downstream reader can mistake it
 for a "no".
 
+**Two passes over one ledger.** §4 rules on *inclusion*; §5 assigns the
+*terminal state* to the metrics §4 included. They are separate readings and
+``docs/ADJUDICATION.md`` §5 says so plainly — "Do not rule terminal states in
+the same pass as inclusion" — so they are separate routes: ``/adjudicate`` for
+the first, ``/adjudicate/state`` for the second. Both write into the same
+``metrics.csv``, and **neither may blank the other's columns**: a commit merges
+onto the row already on disk rather than rebuilding it, and the writer's header
+is the union of what is in the file and what is being written. The §5 columns
+are spelled exactly as ``pipeline.analysis.read_ledger`` reads them, because a
+mismatch there is not an error — it is a ruling the analysis silently drops.
+
+**The machine proposes nothing at §5.** There is a :func:`propose` for §4,
+where four written criteria can be reasoned about mechanically. There is no
+equivalent here and there must not be: "what happened to this metric" is the
+study's whole finding. What the machine may do is *show* the §6 absence
+evidence, which it computed, and *refuse* a ruling §6 forbids.
+
+**The DISCONTINUED guard.** METHOD.md §6 makes the four-period absence test a
+**necessary** condition. So ``DISCONTINUED`` cannot be committed unless the §6
+status for that metric is ``ABSENCE_TEST_MET``; the refusal names the trailing
+absent count and the count required. Meeting the test is still not sufficient —
+Airbnb's *Nights and Experiences Booked* scores ``ABSENCE_TEST_MET`` and was
+renamed to *Nights and Seats Booked* in an EX-99.1 (``docs/ADJUDICATION.md``) —
+so a ``DISCONTINUED`` ruling additionally requires the reviewer to confirm they
+looked for a rename and to write one line saying what they checked. That line is
+stored in its own column, not folded into the rationale.
+
 **Where it writes.** ``data/adjudication/metrics.csv``, in exactly the schema of
 ``pipeline.metrics.LEDGER_FIELDS``, plus an append-only audit log beside it.
 Nothing else, ever: every write target is ``<adjudication dir>/<literal
@@ -256,6 +283,244 @@ MAX_BODY_BYTES = 64 * 1024
 
 _REVIEWER_OK = re.compile(rf"^[A-Za-z][A-Za-z .'\-]{{0,{MAX_REVIEWER_CHARS - 1}}}$")
 _SOURCE_OK = re.compile(r"^(free_text|preset:[0-9]{1,2})$")
+
+
+# ===========================================================================
+# METHOD.md §5 — the terminal state. The second pass, over §4's includes.
+# ===========================================================================
+
+ALIVE = "ALIVE"
+REDEFINED = "REDEFINED"
+RENAMED = "RENAMED"
+ABSORBED = "ABSORBED"
+DISCONTINUED = "DISCONTINUED"
+# NOT_DETERMINABLE is the §4 constant above, reused deliberately: METHOD.md
+# spells the deferral the same way in both sections, and it is published under
+# that name in both.
+
+#: METHOD.md §5, in the order §5 tabulates them. Kept identical to
+#: ``pipeline.analysis.TERMINAL_STATES`` — a state this tool can write that the
+#: analysis cannot read is a ruling thrown away in silence, so the equality is
+#: asserted by a test rather than assumed.
+TERMINAL_STATES: tuple[str, ...] = (
+    ALIVE,
+    REDEFINED,
+    RENAMED,
+    ABSORBED,
+    DISCONTINUED,
+    NOT_DETERMINABLE,
+)
+
+STATE_LABEL: dict[str, str] = {
+    ALIVE: "still reported",
+    REDEFINED: "still reported, definition changed",
+    RENAMED: "same definition, new label",
+    ABSORBED: "subsumed by a broader metric",
+    DISCONTINUED: "gone — meets the §6 absence test",
+    NOT_DETERMINABLE: "can’t tell from the filed record",
+}
+
+#: One letter each, chosen so none collides with the navigation keys the §4
+#: page already owns (s skip, b back, r reviewer, t free text, ? help).
+STATE_KEY: dict[str, str] = {
+    ALIVE: "a",
+    REDEFINED: "e",
+    RENAMED: "m",
+    ABSORBED: "o",
+    DISCONTINUED: "d",
+    NOT_DETERMINABLE: "n",
+}
+
+#: Rationale presets, written by hand against §5 and ``docs/ADJUDICATION.md``.
+#: As at §4: selecting one is a human act, and the machine never pre-fills the
+#: field. Unlike §4, picking one does **not** commit — a §5 ruling usually needs
+#: a date, and often a name or a boolean, so the commit is always a second key.
+STATE_RATIONALE_PRESETS: dict[str, tuple[str, ...]] = {
+    ALIVE: (
+        "Reported in the most recent annual or quarterly report (§5).",
+        (
+            "Still reported in the most recent earnings release furnished on "
+            "8-K/6-K EX-99, which §6 counts as the filed corpus (§5)."
+        ),
+        "Reported throughout; the definition is unchanged from the listing document (§5).",
+    ),
+    REDEFINED: (
+        "The population counted changed; the reported number is not comparable (§5).",
+        "The time window changed; the reported number is not comparable (§5).",
+        "The arithmetic changed — a line was added to or removed from the measure (§5).",
+        (
+            "Reworded only. The calculation is identical and the number would not "
+            "change, so the change is cosmetic, not substantive (§5)."
+        ),
+    ),
+    RENAMED: (
+        "Same definition under a new label; traced and treated as continuous (§5).",
+        (
+            "The new label first appears in a furnished EX-99 earnings exhibit, "
+            "not in an annual report (§5, §6)."
+        ),
+    ),
+    ABSORBED: (
+        (
+            "The company states a broader metric now subsumes this one, and gives "
+            "the successor by name (§5)."
+        ),
+    ),
+    DISCONTINUED: (
+        (
+            "Absent from the entire filed corpus for the required consecutive "
+            "periods; no rename, no successor, and no disposal disclosed (§6)."
+        ),
+        (
+            "Absent for the required periods; the business the metric measured was "
+            "disposed of and the disposal is disclosed (§6, §7.4)."
+        ),
+    ),
+    NOT_DETERMINABLE: (
+        "The filed record does not settle what happened to this metric (§5).",
+        (
+            "A similarly-shaped metric appears around when this one stopped, but "
+            "the filings do not state that it is the same measure (§5)."
+        ),
+        (
+            "The corpus boundary bites here: the measure may still be reported "
+            "outside the SEC-filed record (§6)."
+        ),
+        (
+            "A coverage gap in the filed corpus covers the run of absent periods, "
+            "so absence cannot be distinguished from a retrieval failure (§6, §12)."
+        ),
+    ),
+}
+
+STATE_KEYBOARD_MAP: tuple[tuple[str, str], ...] = (
+    ("a", "arm ALIVE"),
+    ("e", "arm REDEFINED"),
+    ("m", "arm RENAMED"),
+    ("o", "arm ABSORBED"),
+    ("d", "arm DISCONTINUED — refused unless §6 is met"),
+    ("n", "arm NOT_DETERMINABLE"),
+    ("1…9", "pick a rationale preset for the armed state (does not commit)"),
+    ("Enter", "commit the armed state with everything filled in"),
+    ("t", "type a free-text rationale"),
+    ("Esc", "disarm / leave the text field"),
+    ("s", "skip — write nothing, next metric"),
+    ("b", "back to the previous metric"),
+    ("r", "edit reviewer initials"),
+    ("?", "show or hide this list"),
+)
+
+#: METHOD.md §7.4's four named benign causes, plus an explicit "other". These
+#: are recorded as *labels* rather than folded into the rationale because §7.4
+#: re-runs the primary with them removed, which needs a machine-readable field.
+#: The spelling follows the schema documented in ``app/data.py``.
+BENIGN_LABELS: tuple[tuple[str, str], ...] = (
+    ("BENIGN_SEGMENT_RECLASSIFICATION", "Segment reclassification (ASC 280 / IFRS 8)"),
+    ("BENIGN_ACCOUNTING_STANDARD", "Superseded by an accounting standard"),
+    ("BENIGN_SEC_COMMENT_LETTER", "SEC comment-letter-driven non-GAAP change"),
+    ("BENIGN_BUSINESS_DISPOSAL", "Disposal of the business the metric measured"),
+    ("BENIGN_OTHER", "Other benign cause — described below"),
+)
+
+BENIGN_CODES: frozenset[str] = frozenset(code for code, _ in BENIGN_LABELS)
+
+#: §7.4 only asks the question of the two states that can hide one.
+BENIGN_APPLIES_TO: frozenset[str] = frozenset({DISCONTINUED, REDEFINED})
+
+IMPROVING = "IMPROVING"
+DETERIORATING = "DETERIORATING"
+UNDETERMINED = "UNDETERMINED"
+
+#: METHOD.md §7.3. Spelled as ``pipeline.analysis.DIRECTIONS`` spells them.
+DIRECTIONS: tuple[str, ...] = (IMPROVING, DETERIORATING, UNDETERMINED)
+
+DIRECTION_LABEL: dict[str, str] = {
+    IMPROVING: "improving over its final two reported periods",
+    DETERIORATING: "deteriorating over its final two reported periods",
+    UNDETERMINED: "not determined from the filed record",
+}
+
+#: Columns the §5 pass adds to the ledger. Every name here that the analysis
+#: reads is spelled exactly as ``pipeline.analysis.read_ledger`` reads it:
+#: ``metric_id``, ``state``, ``substantive``, ``direction_at_last_report``,
+#: ``state_change_date``, ``last_appearance_date``, ``first_appearance_date``,
+#: ``benign``, ``benign_label``, ``benign_detail`` — plus ``absence_periods``,
+#: which ``build_metrics_payload`` publishes. The remainder are this pass's own
+#: provenance and are carried through in the row's ``raw`` mapping.
+#:
+#: They are NOT in ``pipeline.metrics.LEDGER_FIELDS``, which is the §4 locator's
+#: schema and has no state column at all. They are appended to the header only
+#: once something actually writes one, so a ledger carrying §4 rulings alone is
+#: byte-identical to what the locator would have written.
+STATE_FIELDS: tuple[str, ...] = (
+    "metric_id",
+    "state",
+    "substantive",
+    "direction_at_last_report",
+    "state_change_date",
+    "last_appearance_date",
+    "first_appearance_date",
+    "benign",
+    "benign_label",
+    "benign_detail",
+    "absence_periods",
+    "renamed_to",
+    "state_checked",
+    "absence_status_at_ruling",
+    "state_reviewer",
+    "state_review_date",
+    "state_rationale",
+)
+
+LEDGER_FIELDS_EXTENDED: tuple[str, ...] = pipeline_metrics.LEDGER_FIELDS + STATE_FIELDS
+
+MAX_NAME_CHARS = 200
+MAX_DETAIL_CHARS = 400
+
+_TRUE_TOKENS = frozenset({"true", "t", "yes", "y", "1", "on"})
+_FALSE_TOKENS = frozenset({"false", "f", "no", "n", "0", "off", ""})
+
+_SLUG_NON_ALNUM = re.compile(r"[^a-z0-9]+")
+
+
+def _slugify(value: str) -> str:
+    """The slug half of a ``metric_id``. Must match ``analysis.slugify``.
+
+    Copied rather than imported so that a local disk-writing tool does not pull
+    SciPy into a request, which is what importing ``pipeline.analysis`` costs.
+    The equality is pinned by a test, so the copy cannot drift unnoticed.
+    """
+    slug = _SLUG_NON_ALNUM.sub("-", (value or "").strip().lower()).strip("-")
+    return slug or "unnamed"
+
+
+def _boolean(raw: str) -> bool | None:
+    """A submitted boolean, or None when nothing was submitted.
+
+    None is not False. ``substantive`` on a ``REDEFINED`` ruling is a judgment
+    the reviewer has to make (METHOD.md §5 distinguishes substantive from
+    cosmetic and calls it "a human ruling"), so an unanswered field is refused
+    rather than defaulted.
+    """
+    token = (raw or "").strip().casefold()
+    if token in _TRUE_TOKENS:
+        return True
+    if token in _FALSE_TOKENS:
+        return False
+    return None
+
+
+def _iso_or_blank(raw: str, *, field: str) -> str:
+    """An ISO date, or "". Anything else is refused rather than stored."""
+    token = (raw or "").strip()
+    if not token:
+        return ""
+    try:
+        return date.fromisoformat(token).isoformat()
+    except ValueError:
+        raise ValueError(
+            f"{field} must be an ISO date (YYYY-MM-DD) or left empty; got {token!r}."
+        ) from None
 
 
 # ===========================================================================
@@ -738,12 +1003,20 @@ def surrounding_context(occurrence: Occurrence) -> dict[str, str]:
 
 
 def read_ledger_rows(path: Path | None = None) -> list[dict[str, str]]:
-    """Every row currently in the ledger, in file order, nothing dropped.
+    """Every row currently in the ledger, in file order, **and every column**.
 
     ``pipeline.metrics.read_rulings`` is the right reader for *rulings* and is
     used for resume and progress below, but it drops rows that carry none. This
     reader keeps everything, so a rewrite can never lose a row somebody put
     there by hand.
+
+    It also keeps every *column*, which is load-bearing rather than tidy. This
+    ledger is filled in over two passes: §4 writes ``include``/``reviewer``/
+    ``review_date``/``rationale``, §5 writes the terminal state beside them. An
+    earlier version of this function narrowed each row to
+    ``pipeline.metrics.LEDGER_FIELDS``, so re-reading before a write silently
+    deleted every column the other pass had written. Rows are widened to the
+    known schema so a caller can rely on those keys, and never narrowed.
     """
     target = path or ledger_path()
     if not target.is_file():
@@ -753,11 +1026,37 @@ def read_ledger_rows(path: Path | None = None) -> list[dict[str, str]]:
             rows = list(csv.DictReader(handle))
     except (OSError, UnicodeDecodeError, csv.Error) as exc:
         raise RuntimeError(f"Cannot read the ledger at {target}: {exc}") from exc
-    return [
-        {field: (row.get(field) or "").strip() for field in pipeline_metrics.LEDGER_FIELDS}
-        for row in rows
-        if (row.get("candidate_id") or "").strip()
+
+    out: list[dict[str, str]] = []
+    for row in rows:
+        if not (row.get("candidate_id") or "").strip():
+            continue
+        clean = {field: "" for field in pipeline_metrics.LEDGER_FIELDS}
+        for key, value in row.items():
+            # `None` is csv's restkey: columns beyond the header, which have no
+            # name and therefore no meaning. Dropping them is not data loss.
+            if not key:
+                continue
+            clean[key] = (value or "").strip()
+        out.append(clean)
+    return out
+
+
+def ledger_fieldnames(rows: Sequence[dict[str, str]]) -> list[str]:
+    """The header to write: the locator's schema, then whatever else is there.
+
+    A ledger holding only §4 rulings keeps exactly
+    ``pipeline.metrics.LEDGER_FIELDS`` — the same header the locator writes, so
+    nothing changes shape until a §5 ruling actually needs a column. Once one
+    does, the §5 columns follow in :data:`STATE_FIELDS` order, and any column a
+    human added by hand follows those in sorted order rather than being dropped.
+    """
+    seen = {key for row in rows for key in row}
+    known = list(pipeline_metrics.LEDGER_FIELDS) + [
+        field for field in STATE_FIELDS if field in seen
     ]
+    extra = sorted(seen - set(known))
+    return known + extra
 
 
 def read_rulings(path: Path | None = None) -> dict[str, dict[str, str]]:
@@ -792,11 +1091,19 @@ def _atomic_write_rows(path: Path, rows: Sequence[dict[str, str]]) -> None:
     The same discipline as ``pipeline.metrics.write_candidates``, and for the
     same reason: a process that dies mid-write must not leave a truncated
     ledger, because METHOD.md §4 calls this file the study.
+
+    The header is :func:`ledger_fieldnames` of the rows being written, never a
+    fixed list. A fixed list is how one pass comes to delete the other's work:
+    ``DictWriter`` writes only the columns it was told about, so a header
+    narrower than the data is a silent column-wise truncation of a file that is
+    supposed to be append-only in spirit.
     """
     path.parent.mkdir(parents=True, exist_ok=True)
     staging = path.with_name(path.name + ".partial")
     with staging.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(pipeline_metrics.LEDGER_FIELDS))
+        writer = csv.DictWriter(
+            handle, fieldnames=ledger_fieldnames(rows), restval=""
+        )
         writer.writeheader()
         writer.writerows(rows)
     os.replace(staging, path)
@@ -868,16 +1175,24 @@ def commit_ruling(
     index = {row["candidate_id"]: position for position, row in enumerate(rows)}
 
     for occurrence in group.occurrences:
-        row = {
-            field: occurrence.row.get(field, "")
-            for field in pipeline_metrics.CANDIDATE_FIELDS
-        }
+        position = index.get(occurrence.candidate_id)
+        # Merge onto the row already on disk. Whatever the §5 pass wrote there —
+        # the terminal state, its date, its benign label — is none of this
+        # ruling's business and must survive it. Rebuilding the row from the
+        # candidate columns instead, which is what this did once, silently
+        # deleted a completed §5 ruling every time a §4 one was revised.
+        row = dict(rows[position]) if position is not None else {}
+        row.update(
+            {
+                field: occurrence.row.get(field, "")
+                for field in pipeline_metrics.CANDIDATE_FIELDS
+            }
+        )
         # The identity the locator would compute for this span. Recomputed and
         # compared rather than trusted, so a candidate file edited by hand
         # cannot smuggle a row in under someone else's id.
         row["candidate_id"] = occurrence.candidate_id
         row.update(ruling)
-        position = index.get(occurrence.candidate_id)
         if position is None:
             index[occurrence.candidate_id] = len(rows)
             rows.append(row)
@@ -911,6 +1226,308 @@ def commit_ruling(
     return Commit(
         group_id=group.gid,
         verdict=verdict,
+        reviewer=reviewer,
+        review_date=stamped,
+        rationale=rationale,
+        n_rows=group.n,
+        ledger=str(path),
+    )
+
+
+# ---------------------------------------------------------------------------
+# METHOD.md §5 — the terminal state ruling, and the §6 guard on DISCONTINUED
+# ---------------------------------------------------------------------------
+
+
+def discontinued_block_reason(absence: dict[str, Any] | None) -> str:
+    """Why ``DISCONTINUED`` may not be committed here, or "" when §6 permits it.
+
+    METHOD.md §6: *"A metric is DISCONTINUED only when its defining phrase, and
+    every traced rename of it, is absent from the issuer's entire filed corpus
+    for four consecutive reporting periods."* That is a **necessary** condition,
+    so failing it is not a warning — it is a refusal, and the refusal names the
+    trailing absent count against the count §6 requires so the reviewer can see
+    exactly how far from the test the record is.
+
+    Absent evidence is also a refusal. "The stage has not run" is not "the test
+    passed", and a tool that let the second stand in for the first would publish
+    a discontinuation on no evidence at all.
+    """
+    required = pipeline_config.DISCONTINUATION_PERIODS
+    if not absence:
+        return (
+            f"{DISCONTINUED} cannot be committed: METHOD.md §6 requires that the "
+            f"phrase be absent from the entire filed corpus for {required} "
+            "consecutive reporting periods, and no §6 evidence has been computed "
+            "for this metric — the trailing absent count is unknown against the "
+            f"{required} required. Run `python -m pipeline.build_evidence` first. "
+            f"Where the record does not settle it, the state is {NOT_DETERMINABLE}."
+        )
+    status = str(absence.get("status") or "").strip() or "not recorded"
+    if status == pipeline_metrics.ABSENCE_TEST_MET:
+        return ""
+    try:
+        trailing = int(absence.get("trailing_absent_periods") or 0)
+    except (TypeError, ValueError):
+        trailing = 0
+    try:
+        required = int(absence.get("required_periods") or required)
+    except (TypeError, ValueError):
+        pass
+    return (
+        f"{DISCONTINUED} cannot be committed: the METHOD.md §6 absence test for "
+        f"this metric is {status}, not {pipeline_metrics.ABSENCE_TEST_MET}. The "
+        f"phrase is absent for {trailing} trailing reporting period(s) against the "
+        f"{required} consecutive periods §6 requires, so the necessary condition "
+        f"is not met. Where the filed record does not settle it, §5 says the state "
+        f"is {NOT_DETERMINABLE} — which is published, not a failure."
+    )
+
+
+#: Shown beside the confirmation, and quoted in the refusal. This is the exact
+#: case ``docs/ADJUDICATION.md`` records as "the single most likely way to
+#: publish a false finding", and the guard exists because of it.
+RENAME_TRAP = (
+    "Airbnb’s “Nights and Experiences Booked” scores ABSENCE_TEST_MET and was "
+    "not discontinued — it was renamed to “Nights and Seats Booked”, first "
+    "appearing in an EX-99.1 earnings exhibit rather than an annual report. "
+    "Meeting the §6 test is necessary, never sufficient."
+)
+
+
+@dataclass(frozen=True)
+class StateCommit:
+    """What one §5 ruling wrote. Returned so the page can show it back."""
+
+    group_id: str
+    state: str
+    reviewer: str
+    review_date: str
+    rationale: str
+    n_rows: int
+    ledger: str
+
+
+def commit_state_ruling(
+    # Long, and deliberately so: every argument is a column METHOD.md asks the
+    # ledger to carry, and collapsing them into a dict would lose the signature
+    # as the record of what a §5 ruling consists of.
+    *,
+    group: Group,
+    state: str,
+    reviewer: str,
+    rationale: str,
+    rationale_source: str = "free_text",
+    absence: dict[str, Any] | None = None,
+    substantive: str = "",
+    renamed_to: str = "",
+    checked: str = "",
+    rename_confirmed: str = "",
+    direction: str = "",
+    state_change_date: str = "",
+    last_appearance_date: str = "",
+    first_appearance_date: str = "",
+    benign_label: str = "",
+    benign_detail: str = "",
+    review_date: str | None = None,
+) -> StateCommit:
+    """Write one human §5 terminal state through to every occurrence row.
+
+    The §4 ruling on those rows is left exactly as it was: this writes only the
+    :data:`STATE_FIELDS` columns, onto whatever is already on disk.
+    """
+    state = (state or "").strip().upper()
+    if state not in TERMINAL_STATES:
+        raise ValueError(
+            f"Not a METHOD.md §5 terminal state: {state!r}. One of "
+            f"{', '.join(TERMINAL_STATES)} is required."
+        )
+
+    reviewer = reviewer.strip()
+    rationale = normalise_whitespace(rationale).strip()
+    if not _REVIEWER_OK.match(reviewer):
+        raise ValueError(
+            "Reviewer initials are required, and must be letters (up to "
+            f"{MAX_REVIEWER_CHARS} characters). A row without initials is not a "
+            "signed ruling."
+        )
+    if not rationale:
+        raise ValueError(
+            "A rationale is required. METHOD.md §4 records one for every ruling, "
+            "and §5 is a ruling, so the terminal state carries one too."
+        )
+    if len(rationale) > MAX_RATIONALE_CHARS:
+        raise ValueError(f"The rationale must be {MAX_RATIONALE_CHARS} characters or fewer.")
+    if not _SOURCE_OK.match(rationale_source or ""):
+        rationale_source = "free_text"
+
+    checked = normalise_whitespace(checked).strip()
+    renamed_to = normalise_whitespace(renamed_to).strip()
+    benign_detail = normalise_whitespace(benign_detail).strip()
+    benign_label = (benign_label or "").strip().upper()
+
+    # --- the §6 guard, and it is the point of this pass --------------------
+    if state == DISCONTINUED:
+        blocked = discontinued_block_reason(absence)
+        if blocked:
+            raise ValueError(blocked)
+        if _boolean(rename_confirmed) is not True:
+            raise ValueError(
+                "Confirm that you checked for a rename before committing "
+                f"{DISCONTINUED}. " + RENAME_TRAP
+            )
+        if not checked:
+            raise ValueError(
+                f"A one-line record of what you checked is required for "
+                f"{DISCONTINUED}: the most recent earnings release including "
+                "EX-99 exhibits, any similarly-shaped metric that appeared when "
+                "this one stopped, a disposal of the measured business, and a "
+                "segment or accounting-standard change (§6, docs/ADJUDICATION.md)."
+            )
+        if len(checked) > MAX_DETAIL_CHARS:
+            raise ValueError(
+                f"What you checked must be {MAX_DETAIL_CHARS} characters or fewer."
+            )
+
+    if state == RENAMED and not renamed_to:
+        raise ValueError(
+            "RENAMED needs the new name. §6 tests the defining phrase *and every "
+            "traced rename of it*, so the alias has to be recorded or the test "
+            "cannot be re-run over the traced set."
+        )
+    if len(renamed_to) > MAX_NAME_CHARS:
+        raise ValueError(f"The new name must be {MAX_NAME_CHARS} characters or fewer.")
+
+    is_substantive = _boolean(substantive) if substantive.strip() else None
+    if state == REDEFINED and is_substantive is None:
+        raise ValueError(
+            "REDEFINED needs the substantive-or-cosmetic call. METHOD.md §5: "
+            "cosmetic rewording, rounding and unit changes are not REDEFINED, and "
+            "the distinction is a human ruling — it is never inferred here."
+        )
+
+    stamped_change = _iso_or_blank(state_change_date, field="state_change_date")
+    stamped_last = _iso_or_blank(last_appearance_date, field="last_appearance_date")
+    stamped_first = _iso_or_blank(first_appearance_date, field="first_appearance_date")
+
+    # METHOD.md §7.2 counts adverse filing events *after* the move, so a Mover
+    # with no date at all takes no part in the primary. Refusing here is better
+    # than writing a ruling the analysis has to drop.
+    if (state == DISCONTINUED or (state == REDEFINED and is_substantive)) and not (
+        stamped_change or stamped_last
+    ):
+        raise ValueError(
+            "A date is required for this state: METHOD.md §7.2 counts adverse "
+            "filing events only after the first discontinuation or redefinition, "
+            "so give state_change_date, or last_appearance_date if that is the "
+            "only date the filed record settles."
+        )
+
+    direction = (direction or "").strip().upper() or UNDETERMINED
+    if direction not in DIRECTIONS:
+        raise ValueError(
+            f"direction_at_last_report must be one of {', '.join(DIRECTIONS)} (§7.3)."
+        )
+
+    if benign_label and benign_label not in BENIGN_CODES:
+        raise ValueError(
+            f"Not a METHOD.md §7.4 benign-cause label: {benign_label!r}."
+        )
+    if benign_label and state not in BENIGN_APPLIES_TO:
+        raise ValueError(
+            "A benign-cause label is only recorded against "
+            f"{' or '.join(sorted(BENIGN_APPLIES_TO))} (§7.4)."
+        )
+    if benign_label == "BENIGN_OTHER" and not benign_detail:
+        raise ValueError(
+            "An 'other' benign cause has to say what it was: §7.4 re-runs the "
+            "primary with these removed, and an unnamed label cannot be checked."
+        )
+    if len(benign_detail) > MAX_DETAIL_CHARS:
+        raise ValueError(
+            f"The benign-cause detail must be {MAX_DETAIL_CHARS} characters or fewer."
+        )
+
+    stamped = review_date or date.today().isoformat()  # noqa: DTZ011
+    absence_status = str((absence or {}).get("status") or "")
+    absence_periods = str((absence or {}).get("trailing_absent_periods") or "")
+
+    written = {
+        # Metric identity, written explicitly. `pipeline.analysis` falls back to
+        # "<cik>-<slugified metric_name>", and the occurrence rows of one metric
+        # carry the issuer's different spellings of it — so the fallback would
+        # split one metric into several and inflate the §7.1 denominator.
+        "metric_id": f"{group.cik}-{_slugify(group.normalised)}",
+        "state": state,
+        # Blank where the question does not arise. `analysis` defaults a blank
+        # to TRUE and reads it only for REDEFINED, so this cannot misfire.
+        "substantive": ("true" if is_substantive else "false") if state == REDEFINED else "",
+        "direction_at_last_report": direction,
+        "state_change_date": stamped_change,
+        "last_appearance_date": stamped_last,
+        "first_appearance_date": stamped_first,
+        "benign": "true" if benign_label else "false",
+        "benign_label": benign_label,
+        "benign_detail": benign_detail,
+        "absence_periods": absence_periods,
+        "renamed_to": renamed_to,
+        "state_checked": checked,
+        "absence_status_at_ruling": absence_status,
+        "state_reviewer": reviewer,
+        "state_review_date": stamped,
+        "state_rationale": rationale,
+    }
+
+    path = ledger_path()
+    rows = read_ledger_rows(path)
+    index = {row["candidate_id"]: position for position, row in enumerate(rows)}
+
+    for occurrence in group.occurrences:
+        position = index.get(occurrence.candidate_id)
+        # Merge, never rebuild: the §4 ruling on this row is not this pass's to
+        # touch, and the candidate columns beneath it are the locator's.
+        row = dict(rows[position]) if position is not None else {}
+        for field in pipeline_metrics.CANDIDATE_FIELDS:
+            row.setdefault(field, occurrence.row.get(field, ""))
+        row["candidate_id"] = occurrence.candidate_id
+        row.update(written)
+        if position is None:
+            index[occurrence.candidate_id] = len(rows)
+            rows.append(row)
+        else:
+            rows[position] = row
+
+    _atomic_write_rows(path, rows)
+    _append_log(
+        {
+            "ts": datetime.now(UTC).isoformat(timespec="seconds"),
+            "pass": "state",
+            "group_id": group.gid,
+            "cik": group.cik,
+            "metric_name": group.display_name,
+            "normalised_name": group.normalised,
+            "state": state,
+            "reviewer": reviewer,
+            "review_date": stamped,
+            "rationale": rationale,
+            "rationale_source": rationale_source,
+            "n_occurrences": group.n,
+            "candidate_ids": [o.candidate_id for o in group.occurrences],
+            # No proposal is recorded because none was made: §5 has no machine
+            # proposal, by design. What the machine contributed is the §6
+            # evidence the ruling was made against, so that is what is kept.
+            "absence_evidence": {
+                "status": absence_status or None,
+                "trailing_absent_periods": absence_periods or None,
+                "required_periods": (absence or {}).get("required_periods"),
+                "presence_vector": (absence or {}).get("vector"),
+            },
+            "fields": {key: value for key, value in written.items() if value},
+        }
+    )
+    return StateCommit(
+        group_id=group.gid,
+        state=state,
         reviewer=reviewer,
         review_date=stamped,
         rationale=rationale,
@@ -1083,6 +1700,128 @@ def load_board(order: str = "issuer") -> Board:
     return Board(groups=_CACHE["groups"][order], rulings=read_rulings(), order=order)
 
 
+# ---------------------------------------------------------------------------
+# The §5 board. The same groups, narrowed to the ones §4 let through.
+# ---------------------------------------------------------------------------
+
+
+def group_state(group: Group, rows: dict[str, dict[str, str]]) -> dict[str, str] | None:
+    """The §5 ruling on this group, or None. Disagreement inside it is shown.
+
+    The same discipline as :func:`group_ruling`, one section later: a ruling is
+    written through to every occurrence at once, so a group whose occurrences
+    disagree has been edited by hand or has changed underneath a ruling. It
+    reads as ``MIXED`` and is offered again rather than counted as done.
+    """
+    found = [
+        rows[o.candidate_id]
+        for o in group.occurrences
+        if (rows.get(o.candidate_id) or {}).get("state")
+    ]
+    if not found:
+        return None
+    states = {row.get("state", "") for row in found}
+    row = dict(found[0])
+    row["_state"] = (
+        "MIXED"
+        if len(states) > 1 or len(found) != len(group.occurrences)
+        else found[0].get("state", "")
+    )
+    return row
+
+
+@dataclass(frozen=True)
+class StateBoard:
+    """The §5 pass: §4's includes, and whatever terminal state they carry.
+
+    Composed from a :class:`Board` rather than replacing it, so the grouping,
+    the ordering and the §4 rulings are read by exactly one implementation. What
+    is different here is the population — only metrics ruled ``INCLUDE`` at §4
+    have a terminal state to assign — and the column the progress is counted in.
+    """
+
+    board: Board
+    groups: tuple[Group, ...]
+    rows: dict[str, dict[str, str]]
+
+    @property
+    def order(self) -> str:
+        return self.board.order
+
+    @property
+    def total(self) -> int:
+        return len(self.groups)
+
+    @property
+    def n_included(self) -> int:
+        return len(self.groups)
+
+    @property
+    def n_awaiting_inclusion(self) -> int:
+        """Groups §4 has not ruled yet, and so cannot reach this pass."""
+        return sum(1 for g in self.board.groups if not self.board.status(g))
+
+    def status(self, group: Group) -> str:
+        row = group_state(group, self.rows)
+        return row.get("_state", "") if row else ""
+
+    @property
+    def ruled_ids(self) -> set[str]:
+        return {g.gid for g in self.groups if self.status(g)}
+
+    @property
+    def n_ruled(self) -> int:
+        return len(self.ruled_ids)
+
+    def tally(self) -> list[dict[str, Any]]:
+        counts = {state: 0 for state in TERMINAL_STATES}
+        mixed = 0
+        for group in self.groups:
+            state = self.status(group)
+            if state in counts:
+                counts[state] += 1
+            elif state:
+                mixed += 1
+        out = [
+            {"state": state, "label": STATE_LABEL[state], "n": counts[state]}
+            for state in TERMINAL_STATES
+        ]
+        if mixed:
+            out.append({"state": "MIXED", "label": "mixed — needs re-ruling", "n": mixed})
+        return out
+
+    def index_of(self, gid: str) -> int:
+        for position, group in enumerate(self.groups):
+            if group.gid == gid:
+                return position
+        raise KeyError(gid)
+
+    def next_unruled(self, after: int = -1) -> Group | None:
+        ruled = self.ruled_ids
+        for group in list(self.groups)[after + 1 :] + list(self.groups)[: after + 1]:
+            if group.gid not in ruled:
+                return group
+        return None
+
+
+def load_state_board(order: str = "issuer") -> StateBoard:
+    """The §5 board for this request.
+
+    Reads the ledger once for the whole row (the §5 columns live there) and
+    reuses :func:`load_board` for the grouping and the §4 verdicts. A group is
+    in this pass only when §4 ruled it ``INCLUDE`` outright: an ``EXCLUDE`` has
+    no life history to trace, a ``NOT_DETERMINABLE`` at §4 was never established
+    as a metric of this study, and a ``MIXED`` §4 ruling has to be settled at §4
+    before it can be built on.
+    """
+    board = load_board(order)
+    rows = {
+        row["candidate_id"]: row for row in read_ledger_rows() if row.get("candidate_id")
+    }
+    included = tuple(group for group in board.groups if board.status(group) == INCLUDE)
+    return StateBoard(board=board, groups=included, rows=rows)
+
+
 # ===========================================================================
 # Routes
 # ===========================================================================
@@ -1115,6 +1854,18 @@ def register(app, templates) -> None:
             "verdicts": VERDICTS,
             "verdict_label": VERDICT_LABEL,
             "verdict_key": VERDICT_KEY,
+            # METHOD.md §5 vocabulary, available to both templates so the two
+            # passes cannot drift apart in what they call the same thing.
+            "state_keyboard_map": STATE_KEYBOARD_MAP,
+            "state_presets": STATE_RATIONALE_PRESETS,
+            "states": TERMINAL_STATES,
+            "state_label": STATE_LABEL,
+            "state_key": STATE_KEY,
+            "benign_labels": BENIGN_LABELS,
+            "directions": DIRECTIONS,
+            "direction_label": DIRECTION_LABEL,
+            "required_periods": pipeline_config.DISCONTINUATION_PERIODS,
+            "rename_trap": RENAME_TRAP,
             "ledger_display": _relative(ledger_path()),
             "log_display": _relative(log_path()),
             "candidates_display": _relative(candidates_path()),
@@ -1169,6 +1920,132 @@ def register(app, templates) -> None:
             n_unruled=len(unruled),
             recent=recent,
         )
+
+    # -- METHOD.md §5, the second pass ------------------------------------
+    #
+    # Registered BEFORE "/adjudicate/{gid}" on purpose. Starlette matches in
+    # registration order, so a literal two-segment path declared after the
+    # parametrised one would be swallowed by it and 404 as an unknown group.
+
+    def _state_board(request: Request) -> StateBoard:
+        try:
+            return load_state_board(_order(request))
+        except RuntimeError as exc:
+            raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+    @app.get("/adjudicate/state", response_class=HTMLResponse)
+    def adjudicate_state_entry(request: Request) -> Response:
+        """Resume the §5 pass: the first included metric with no state."""
+        board = _state_board(request)
+        if not board.total:
+            return render(
+                "adjudicate_state_done.html",
+                request,
+                phase="nothing_included",
+                board=board,
+                order=board.order,
+                suffix=_suffix(board.order),
+            )
+        target = board.next_unruled()
+        if target is None:
+            return RedirectResponse(
+                f"/adjudicate/state/done{_suffix(board.order)}", status_code=303
+            )
+        return RedirectResponse(
+            f"/adjudicate/state/{target.gid}{_suffix(board.order)}", status_code=303
+        )
+
+    @app.get("/adjudicate/state/done", response_class=HTMLResponse)
+    def adjudicate_state_done(request: Request) -> HTMLResponse:
+        board = _state_board(request)
+        unruled = [g for g in board.groups if not board.status(g)]
+        recent = [
+            row for row in reversed(read_ledger_rows()) if row.get("state_reviewer")
+        ][:25]
+        return render(
+            "adjudicate_state_done.html",
+            request,
+            phase=(
+                "nothing_included"
+                if not board.total
+                else ("complete" if not unruled else "in_progress")
+            ),
+            board=board,
+            order=board.order,
+            suffix=_suffix(board.order),
+            unruled=unruled[:200],
+            n_unruled=len(unruled),
+            recent=recent,
+        )
+
+    @app.get("/adjudicate/state/{gid}", response_class=HTMLResponse)
+    def adjudicate_state_group(request: Request, gid: str) -> HTMLResponse:
+        board = _state_board(request)
+        group, position = _locate_state(board, gid)
+        return render(
+            "adjudicate_state.html", request, **_state_context(board, group, position)
+        )
+
+    @app.post("/adjudicate/state/{gid}")
+    async def adjudicate_state_commit(request: Request, gid: str) -> Response:
+        if not _same_origin(request):
+            raise HTTPException(status_code=403, detail="Cross-origin post refused.")
+        board = _state_board(request)
+        group, position = _locate_state(board, gid)
+        fields, wants_json = await _payload(request)
+
+        try:
+            commit = commit_state_ruling(
+                group=group,
+                state=(fields.get("state") or "").strip().upper(),
+                reviewer=fields.get("reviewer") or "",
+                rationale=fields.get("rationale") or "",
+                rationale_source=(fields.get("rationale_source") or "").strip(),
+                # Read here, never from the request: the §6 evidence is the
+                # machine's own computation and a posted status could otherwise
+                # walk straight past the guard.
+                absence=absence_evidence_for(group),
+                substantive=fields.get("substantive") or "",
+                renamed_to=fields.get("renamed_to") or "",
+                checked=fields.get("state_checked") or "",
+                rename_confirmed=fields.get("rename_confirmed") or "",
+                direction=fields.get("direction_at_last_report") or "",
+                state_change_date=fields.get("state_change_date") or "",
+                last_appearance_date=fields.get("last_appearance_date") or "",
+                first_appearance_date=fields.get("first_appearance_date") or "",
+                benign_label=fields.get("benign_label") or "",
+                benign_detail=fields.get("benign_detail") or "",
+            )
+        except ValueError as exc:
+            if wants_json:
+                return JSONResponse({"ok": False, "error": str(exc)}, status_code=400)
+            return render(
+                "adjudicate_state.html",
+                request,
+                **_state_context(board, group, position, error=str(exc), draft=fields),
+            )
+
+        after = load_state_board(board.order)
+        nxt = after.next_unruled(position)
+        next_url = (
+            f"/adjudicate/state/{nxt.gid}{_suffix(board.order)}"
+            if nxt is not None
+            else f"/adjudicate/state/done{_suffix(board.order)}"
+        )
+        if wants_json:
+            return JSONResponse(
+                {
+                    "ok": True,
+                    "next_url": next_url,
+                    "group_id": commit.group_id,
+                    "state": commit.state,
+                    "rows_written": commit.n_rows,
+                    "n_ruled": after.n_ruled,
+                    "total": after.total,
+                    "ledger": _relative(Path(commit.ledger)),
+                }
+            )
+        return RedirectResponse(next_url, status_code=303)
 
     @app.get("/adjudicate/{gid}", response_class=HTMLResponse)
     def adjudicate_group(request: Request, gid: str) -> HTMLResponse:
@@ -1234,6 +2111,72 @@ def _locate(board: Board, gid: str) -> tuple[Group, int]:
     except KeyError:
         raise HTTPException(status_code=404, detail="No such candidate group.") from None
     return board.groups[position], position
+
+
+def _locate_state(board: StateBoard, gid: str) -> tuple[Group, int]:
+    """The included group this URL names, or a 404.
+
+    A group that exists but was not ruled ``INCLUDE`` at §4 is a 404 here rather
+    than a page with the form disabled: §5 applies to included metrics, and
+    offering the second ruling on something the first pass excluded would invite
+    a state to be recorded for a metric that is not in the study.
+    """
+    try:
+        position = board.index_of(gid)
+    except KeyError:
+        raise HTTPException(
+            status_code=404,
+            detail=(
+                "No such metric in the §5 pass. Only groups ruled INCLUDE under "
+                "METHOD.md §4 are assigned a terminal state."
+            ),
+        ) from None
+    return board.groups[position], position
+
+
+def _state_context(
+    board: StateBoard,
+    group: Group,
+    position: int,
+    *,
+    error: str = "",
+    draft: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    """Everything the §5 page renders. It shows evidence and proposes nothing."""
+    suffix = _suffix(board.order)
+    previous = board.groups[position - 1] if position > 0 else None
+    following = board.groups[position + 1] if position + 1 < board.total else None
+    absence = absence_evidence_for(group)
+    blocked = discontinued_block_reason(absence)
+    return {
+        "group": group,
+        "position": position,
+        "human_position": position + 1,
+        "total": board.total,
+        "n_ruled": board.n_ruled,
+        "absence": absence,
+        "discontinued_blocked": blocked,
+        "order": board.order,
+        "suffix": suffix,
+        # The §4 ruling this metric got, shown so the §5 reviewer can see what
+        # was decided and why before ruling on what happened to it.
+        "inclusion": group_ruling(group, board.board.rulings),
+        "existing": group_state(group, board.rows),
+        "variants": group.variants[:MAX_VARIANTS_SHOWN],
+        "n_variants": len(group.variants),
+        "hidden_variants": max(0, len(group.variants) - MAX_VARIANTS_SHOWN),
+        "prev_url": f"/adjudicate/state/{previous.gid}{suffix}" if previous else "",
+        "next_url": f"/adjudicate/state/{following.gid}{suffix}" if following else "",
+        "done_url": f"/adjudicate/state/done{suffix}",
+        "post_url": f"/adjudicate/state/{group.gid}{suffix}",
+        "inclusion_url": f"/adjudicate/{group.gid}{suffix}",
+        "error": error,
+        "draft": draft or {},
+        "statuses": [
+            {"gid": g.gid, "state": board.status(g)}
+            for g in board.groups[max(0, position - 40) : position + 40]
+        ],
+    }
 
 
 def _group_context(
@@ -1348,13 +2291,22 @@ __all__ = [
     "Group",
     "Occurrence",
     "Proposal",
+    "StateBoard",
+    "StateCommit",
     "Variant",
+    "absence_evidence_for",
     "build_groups",
     "commit_ruling",
+    "commit_state_ruling",
+    "discontinued_block_reason",
     "group_id",
+    "group_ruling",
+    "group_state",
     "is_enabled",
+    "ledger_fieldnames",
     "ledger_path",
     "load_board",
+    "load_state_board",
     "normalise_name",
     "propose",
     "read_candidates",

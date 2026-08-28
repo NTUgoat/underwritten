@@ -28,6 +28,7 @@
     <span class="adj-prog__track" aria-hidden="true"><span class="adj-prog__fill" style="width: {{ ((board.n_ruled / board.total * 100) if board.total else 0)|round(1) }}%"></span></span>
   </div>
   <div class="adj-bar__who">
+        <a class="adj-bar__done" href="/adjudicate/state{{ suffix }}">§5 terminal states →</a>
     <a class="adj-bar__done" href="/adjudicate{{ suffix }}">resume</a>
   </div>
 </header>

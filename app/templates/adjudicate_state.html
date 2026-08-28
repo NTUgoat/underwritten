@@ -1,0 +1,339 @@
+{#- METHOD.md §5 — the terminal state. The second pass, over §4's includes.
+
+    Two rules this template enforces visually, and they are the feature:
+
+    1. The §6 absence evidence is the PRIMARY evidence here, not a footnote. It
+       sits at the top of the evidence column, full width, before anything else.
+    2. There is NO machine proposal on this page. §4 has one because four
+       written criteria can be reasoned about mechanically; "what happened to
+       this metric" is the study's finding, and a machine that guessed at it
+       would be answering the research question on the reviewer's behalf. -#}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>§5 {{ human_position }}/{{ total }} · {{ group.display_name }} — adjudicate</title>
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/static/underwritten.css">
+<link rel="stylesheet" href="/static/adjudicate.css">
+</head>
+<body class="page adj adj--state">
+
+<header class="adj-bar">
+  <div class="adj-bar__id">
+    <a class="adj-bar__name" href="/">Underwritten</a>
+    <span class="adj-bar__tool">§5 terminal state</span>
+    <span class="adj-bar__local" title="These routes exist only because UNDERWRITTEN_ADJUDICATE=1 is set. They write to disk and are never mounted on the public site.">local tool · writes to disk</span>
+  </div>
+
+  <div class="adj-bar__progress">
+    <span class="adj-prog__count"><strong>{{ n_ruled }}</strong> / {{ total }} included metrics stated</span>
+    <span class="adj-prog__track" aria-hidden="true"><span class="adj-prog__fill" style="width: {{ ((n_ruled / total * 100) if total else 0)|round(1) }}%"></span></span>
+    <span class="adj-prog__here">metric {{ human_position }} of {{ total }}</span>
+  </div>
+
+  <div class="adj-bar__who">
+    <label for="adj-reviewer">reviewer</label>
+    <input id="adj-reviewer" name="reviewer" form="adj-form" type="text"
+           spellcheck="false" autocomplete="off" maxlength="12"
+           value="{{ draft.reviewer or default_reviewer }}"
+           placeholder="initials" aria-describedby="adj-reviewer-why">
+    <span id="adj-reviewer-why" class="u-sr">Written into every row this session commits, with today's date.</span>
+    <a class="adj-bar__done" href="{{ done_url }}">summary</a>
+  </div>
+</header>
+
+<div class="adj-strip" aria-hidden="true">
+  {% for s in statuses %}
+  <span class="adj-dot {% if s.gid == group.gid %}is-here{% endif %} {% if s.state %}is-{{ s.state|lower }}{% endif %}"></span>
+  {% endfor %}
+</div>
+
+<main class="adj-main" id="main">
+
+<div class="adj-cols">
+
+  {# ---------------------------------------------------------- evidence -- #}
+  <section class="adj-evidence" aria-label="Evidence">
+
+    <div class="adj-head">
+      <p class="adj-head__cik">CIK {{ group.cik }} · METHOD.md §5, second pass</p>
+      <h1 class="adj-head__name">{{ group.display_name }}</h1>
+      <p class="adj-head__facts">
+        <span class="adj-fact"><strong>{{ group.n }}</strong> located occurrence{{ '' if group.n == 1 else 's' }}</span>
+        <span class="adj-fact">{{ group.first_date or '—' }} → {{ group.last_date or '—' }}</span>
+        <span class="adj-fact">{{ group.accessions|length }} filing{{ '' if group.accessions|length == 1 else 's' }}</span>
+        <span class="adj-fact">{{ group.forms|join(', ') or 'form not recorded' }}</span>
+      </p>
+      <p class="adj-head__note">Exactly one terminal state is assigned, as at {{ as_at|default('2026-08-28', true) }}, and written to all {{ group.n }} occurrence row{{ '' if group.n == 1 else 's' }} of this metric. The §4 inclusion ruling on those rows is not touched.</p>
+    </div>
+
+    {# ------------------------------------------------ §6, front and centre #}
+    {% if absence %}
+    <section class="adj-six {% if absence.status == 'ABSENCE_TEST_MET' %}adj-six--met{% elif absence.status == 'NOT_DETERMINABLE' %}adj-six--nd{% endif %}">
+      <header class="adj-six__head">
+        <h2 class="adj-six__h">METHOD.md §6 — the four-period absence test</h2>
+        <span class="adj-six__status">{{ absence.status }}</span>
+      </header>
+
+      <p class="adj-six__reason">{{ absence.reason }}</p>
+
+      <dl class="adj-six__facts">
+        <div><dt>searched for</dt><dd class="def">“{{ absence.phrase }}”</dd></div>
+        <div><dt>appearances</dt><dd><strong>{{ absence.n_appearances }}</strong> across the whole filed corpus</dd></div>
+        <div><dt>documents searched</dt><dd><strong>{{ absence.n_documents_searched }}</strong>{% if absence.n_documents_failed %} · {{ absence.n_documents_failed }} could not be read{% endif %}</dd></div>
+        <div><dt>reporting periods</dt><dd>present in <strong>{{ absence.n_present }}</strong> of {{ absence.n_periods }}</dd></div>
+        <div><dt>trailing absent</dt><dd><strong>{{ absence.trailing_absent_periods }}</strong> of the {{ absence.required_periods or required_periods }} §6 requires</dd></div>
+        <div><dt>longest absent run</dt><dd>{{ absence.max_absent_run }}</dd></div>
+      </dl>
+
+      <p class="adj-six__vlabel">presence by reporting period — oldest first, filled = reported somewhere in the filed corpus</p>
+      <div class="adj-six__vector" aria-hidden="true">
+        {% for c in absence.vector %}<span class="adj-cell {% if c == '1' %}is-on{% endif %}"></span>{% endfor %}
+      </div>
+      <p class="adj-six__code"><code>{{ absence.vector }}</code></p>
+
+      <div class="adj-six__ends">
+        <p><span class="adj-six__endlabel">first appearance</span>
+          {% if absence.first_appearance %}{{ absence.first_appearance.date or absence.first_appearance.filing_date }} · {{ absence.first_appearance.accession }}{% else %}not recorded by the evidence stage{% endif %}</p>
+        <p><span class="adj-six__endlabel">last appearance</span>
+          {% if absence.last_appearance %}{{ absence.last_appearance.date or absence.last_appearance.filing_date }} · {{ absence.last_appearance.accession }}{% else %}not recorded by the evidence stage{% endif %}</p>
+      </div>
+
+      <p class="adj-six__warn">
+        <strong>ABSENCE_TEST_MET is a necessary condition for <code>DISCONTINUED</code>, never a sufficient one.</strong>
+        {{ rename_trap }}
+        The corpus is the SEC-filed record only: investor decks, transcripts and websites are outside it, and where that boundary is what decides the question the state is <code>NOT_DETERMINABLE</code>, not <code>DISCONTINUED</code> (§6).
+      </p>
+    </section>
+    {% else %}
+    <section class="adj-six adj-six--absent">
+      <header class="adj-six__head">
+        <h2 class="adj-six__h">METHOD.md §6 — the four-period absence test</h2>
+        <span class="adj-six__status">NOT COMPUTED</span>
+      </header>
+      <p class="adj-six__reason">No §6 evidence exists for this metric, so the trailing absent count is unknown against the {{ required_periods }} §6 requires. Run <code>python -m pipeline.build_evidence</code> to compute it. <strong><code>DISCONTINUED</code> is refused until it exists</strong> — an uncomputed test is not a passed one.</p>
+    </section>
+    {% endif %}
+
+    {# ------------------------------------------------- what §4 decided --- #}
+    {% if inclusion %}
+    <section class="adj-prior">
+      <h3 class="adj-prior__h">Ruled at §4 — <span class="adj-prior__verdict">{{ inclusion._verdict|lower|replace('_', ' ') }}</span></h3>
+      <p class="adj-prior__meta">{{ inclusion.reviewer }} · {{ inclusion.review_date }} · <a href="{{ inclusion_url }}">re-open the §4 ruling</a></p>
+      <p class="adj-prior__why">{{ inclusion.rationale }}</p>
+    </section>
+    {% endif %}
+
+    {# -------------------------------- the variants, for the REDEFINED call #}
+    {% if n_variants > 1 %}
+    <p class="adj-warn">This metric is defined <strong>{{ n_variants }} different ways</strong> across the filed record. Read them against each other: a change to the population counted, the time window or the arithmetic is <code>REDEFINED</code> and <em>substantive</em>; rewording that leaves the number identical is <code>REDEFINED</code> and <em>cosmetic</em>, which METHOD.md §5 says is not a redefinition at all.{% if hidden_variants %} Showing {{ variants|length }}; <strong>{{ hidden_variants }} further variant{{ '' if hidden_variants == 1 else 's' }} not shown</strong>.{% endif %}</p>
+    {% endif %}
+
+    <div class="adj-defs">
+      {% for v in variants %}
+      <article class="adj-def">
+        <header class="adj-def__head">
+          <span class="adj-def__n">definition {{ loop.index }} of {{ n_variants }}</span>
+          <span class="adj-def__span">{{ v.first_date or '—' }} → {{ v.last_date or '—' }}</span>
+          <span class="adj-def__count">{{ v.n }} occurrence{{ '' if v.n == 1 else 's' }}</span>
+        </header>
+        <blockquote class="adj-sentence">{{ v.text }}</blockquote>
+        <p class="adj-def__cite">
+          {% set lead = v.occurrences[0] %}
+          {% if lead and lead.filing_url %}<a href="{{ lead.filing_url }}" target="_blank" rel="noopener nofollow">{{ lead.form }} {{ lead.filing_date }} · {{ lead.accession }}</a>{% elif lead %}{{ lead.form }} {{ lead.filing_date }} · {{ lead.accession }}{% endif %}
+        </p>
+      </article>
+      {% else %}
+      <p class="adj-context__none">No defining sentence is recorded for this metric, which should not happen. Do not rule on it — open the filing and check the candidate file.</p>
+      {% endfor %}
+    </div>
+
+  </section>
+
+  {# ------------------------------------------------------------ ruling -- #}
+  <aside class="adj-rule" aria-label="Terminal state">
+    <div class="adj-rule__sticky">
+
+      <div class="adj-noproposal">
+        <p class="adj-noproposal__tag">no machine proposal</p>
+        <p class="adj-noproposal__why">§4 carries a proposal because its four criteria can be reasoned about mechanically. §5 does not, and will not: what happened to a metric is the study's finding, and the machine's only contribution here is the §6 evidence above — and the refusal beneath it.</p>
+      </div>
+
+      {% if existing %}
+      <div class="adj-existing">
+        <p class="adj-existing__tag">already stated</p>
+        <p class="adj-existing__verdict">{{ existing._state|lower|replace('_', ' ') }}</p>
+        <p class="adj-existing__meta">{{ existing.state_reviewer or existing.reviewer }} · {{ existing.state_review_date }}</p>
+        <p class="adj-existing__why">{{ existing.state_rationale }}</p>
+        {% if existing.renamed_to %}<p class="adj-existing__why">renamed to: <strong>{{ existing.renamed_to }}</strong></p>{% endif %}
+        {% if existing.benign_label %}<p class="adj-existing__why">benign cause: <code>{{ existing.benign_label }}</code> {{ existing.benign_detail }}</p>{% endif %}
+        {% if existing.state_checked %}<p class="adj-existing__why">checked: {{ existing.state_checked }}</p>{% endif %}
+        <p class="adj-existing__note">Committing again replaces this state on every occurrence, and both are kept in the audit log. The §4 ruling is untouched either way.</p>
+      </div>
+      {% endif %}
+
+      {% if error %}<p class="adj-error" role="alert">{{ error }}</p>{% endif %}
+      <p class="adj-error" role="alert" id="adj-error" hidden></p>
+
+      <form class="adj-form" id="adj-form" method="post" action="{{ post_url }}">
+        <input type="hidden" name="rationale_source" id="adj-source" value="free_text">
+
+        <fieldset class="adj-verdicts">
+          <legend>terminal state — exactly one</legend>
+          {% for s in states %}
+          {% set blocked = (s == 'DISCONTINUED' and discontinued_blocked) %}
+          <label class="adj-verdict adj-verdict--{{ s|lower }} {% if blocked %}is-blocked{% endif %}"
+                 data-verdict="{{ s }}" data-key="{{ state_key[s] }}"
+                 {% if blocked %}data-blocked="{{ discontinued_blocked }}"{% endif %}>
+            <input type="radio" name="state" value="{{ s }}"{% if blocked %} disabled{% endif %}{% if draft.state == s and not blocked %} checked{% endif %}>
+            <span class="adj-verdict__key">{{ state_key[s] }}</span>
+            <span class="adj-verdict__label"><strong>{{ s }}</strong> — {{ state_label[s] }}</span>
+          </label>
+          {% endfor %}
+          {% if discontinued_blocked %}
+          <p class="adj-blocked" role="note">{{ discontinued_blocked }}</p>
+          {% endif %}
+          <p class="adj-verdicts__hint"><code>NOT_DETERMINABLE</code> is always available and is <strong>never</strong> a soft exclude — METHOD.md §5 publishes it as a state in its own right (§12.4).</p>
+        </fieldset>
+
+        {# --- DISCONTINUED only: the rename guard ------------------------ #}
+        <fieldset class="adj-when" data-show-for="DISCONTINUED">
+          <legend>before <code>DISCONTINUED</code> — required</legend>
+          <label class="adj-check">
+            <input type="checkbox" name="rename_confirmed" value="true"{% if draft.rename_confirmed %} checked{% endif %}>
+            <span>I read the most recent earnings release <strong>including EX-99 exhibits</strong>, looked for a similarly-shaped metric that appeared when this one stopped, and checked for a disposal, a segment reclassification and an accounting-standard change.</span>
+          </label>
+          <p class="adj-when__note">{{ rename_trap }}</p>
+          <label class="adj-free" for="adj-checked">what I checked — one line, required</label>
+          <textarea id="adj-checked" name="state_checked" rows="2" maxlength="400"
+                    placeholder="e.g. read Q2 FY2026 EX-99.1 of 2026-08-06; no similarly-shaped metric introduced; no disposal disclosed.">{{ draft.state_checked or '' }}</textarea>
+        </fieldset>
+
+        {# --- RENAMED only: the alias ------------------------------------ #}
+        <fieldset class="adj-when" data-show-for="RENAMED">
+          <legend>the new name — required for <code>RENAMED</code></legend>
+          <label class="adj-free" for="adj-renamed">new label, verbatim as the issuer writes it</label>
+          <input id="adj-renamed" class="adj-text" type="text" name="renamed_to" maxlength="200"
+                 autocomplete="off" spellcheck="false"
+                 value="{{ draft.renamed_to or '' }}" placeholder="e.g. Nights and Seats Booked">
+          <p class="adj-when__note">Stored so §6 can be re-run over the traced alias set — <code>absence_test</code> takes the aliases and an appearance of any of them is an appearance of the metric.</p>
+        </fieldset>
+
+        {# --- REDEFINED only: substantive or cosmetic -------------------- #}
+        <fieldset class="adj-when" data-show-for="REDEFINED">
+          <legend>substantive or cosmetic — required for <code>REDEFINED</code></legend>
+          <label class="adj-check">
+            <input type="radio" name="substantive" value="true"{% if draft.substantive == 'true' %} checked{% endif %}>
+            <span><strong>Substantive</strong> — the population counted, the time window or the arithmetic changed, so the reported number is not comparable.</span>
+          </label>
+          <label class="adj-check">
+            <input type="radio" name="substantive" value="false"{% if draft.substantive == 'false' %} checked{% endif %}>
+            <span><strong>Cosmetic</strong> — rewording, rounding, units or a move to another section. The number would not change.</span>
+          </label>
+          <p class="adj-when__note">Recorded as you set it and never inferred. Only a substantive redefinition makes the issuer a §7.2 <em>Mover</em>.</p>
+        </fieldset>
+
+        {# --- benign cause, §7.4 ----------------------------------------- #}
+        <fieldset class="adj-when" data-show-for="DISCONTINUED REDEFINED">
+          <legend>benign cause — optional label (§7.4)</legend>
+          <label class="adj-free" for="adj-benign">a named cause, if the filed record discloses one</label>
+          <select id="adj-benign" class="adj-text" name="benign_label">
+            <option value="">— none recorded —</option>
+            {% for code, label in benign_labels %}
+            <option value="{{ code }}"{% if draft.benign_label == code %} selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          <label class="adj-free" for="adj-benign-detail">what it was, and where it is disclosed</label>
+          <textarea id="adj-benign-detail" name="benign_detail" rows="2" maxlength="400"
+                    placeholder="e.g. segments restated in the FY2023 10-K; the metric measured the segment that was merged away.">{{ draft.benign_detail or '' }}</textarea>
+          <p class="adj-when__note">Recorded as a <strong>label</strong>, not folded into the rationale: §7.4 re-runs the primary with these removed and publishes both versions, which needs a field it can read.</p>
+        </fieldset>
+
+        {# --- dates and direction ---------------------------------------- #}
+        <fieldset class="adj-dates">
+          <legend>dates and direction</legend>
+
+          <label class="adj-free" for="adj-change">state change date — §7.2 counts adverse filings only after this</label>
+          <input id="adj-change" class="adj-text" type="date" name="state_change_date" value="{{ draft.state_change_date or '' }}">
+
+          <label class="adj-free" for="adj-last">last appearance date — anywhere in the filed corpus</label>
+          <input id="adj-last" class="adj-text" type="date" name="last_appearance_date" value="{{ draft.last_appearance_date or '' }}">
+          {% if group.last_date %}<p class="adj-fill"><button type="button" class="adj-fillbtn" data-fill="adj-last" data-value="{{ group.last_date }}">use {{ group.last_date }}</button> <span class="muted">— the last filing the §4 locator found the definition in, which is not the same as the last appearance anywhere. Check §6 above before using it.</span></p>{% endif %}
+
+          <label class="adj-free" for="adj-first">first appearance date</label>
+          <input id="adj-first" class="adj-text" type="date" name="first_appearance_date" value="{{ draft.first_appearance_date or '' }}">
+          {% if group.first_date %}<p class="adj-fill"><button type="button" class="adj-fillbtn" data-fill="adj-first" data-value="{{ group.first_date }}">use {{ group.first_date }}</button> <span class="muted">— first located occurrence.</span></p>{% endif %}
+
+          <label class="adj-free" for="adj-direction">direction over its final two reported periods (§7.3)</label>
+          <select id="adj-direction" class="adj-text" name="direction_at_last_report">
+            {% for d in directions %}
+            <option value="{{ d }}"{% if (draft.direction_at_last_report or 'UNDETERMINED') == d %} selected{% endif %}>{{ d }} — {{ direction_label[d] }}</option>
+            {% endfor %}
+          </select>
+          <p class="adj-when__note">§7.3 is the pre-registered counter-hypothesis and is published either way, so <code>UNDETERMINED</code> is a real answer rather than a missing one.</p>
+        </fieldset>
+
+        <div class="adj-presets" id="adj-presets">
+          <p class="adj-presets__idle">Arm a state to see its rationale presets.</p>
+          {% for s in states %}
+          <ul class="adj-presets__set" data-for="{{ s }}" hidden>
+            {% for text in state_presets[s] %}
+            <li><button type="button" class="adj-preset" data-n="{{ loop.index }}" data-text="{{ text }}"><span class="adj-preset__n">{{ loop.index }}</span><span class="adj-preset__t">{{ text }}</span></button></li>
+            {% endfor %}
+          </ul>
+          {% endfor %}
+        </div>
+
+        <label class="adj-free" for="adj-rationale">rationale — written into every row, required</label>
+        <textarea id="adj-rationale" name="rationale" rows="3" maxlength="400"
+                  placeholder="Say what you relied on, not how you felt. Pick a preset by number, or type your own.">{{ draft.rationale or '' }}</textarea>
+
+        <div class="adj-actions">
+          <button class="btn" type="submit" id="adj-commit">commit terminal state</button>
+          <a class="btn btn--quiet" href="{{ next_url or done_url }}" id="adj-skip">skip</a>
+          {% if prev_url %}<a class="btn btn--quiet" href="{{ prev_url }}" id="adj-back">back</a>{% endif %}
+        </div>
+        <p class="adj-actions__note">A preset selects here; it does not commit. §5 usually needs a date, and often a name or a boolean, so the commit is always a second, separate key.</p>
+      </form>
+
+      <details class="adj-keys" id="adj-keys">
+        <summary>keyboard</summary>
+        <dl>
+          {% for key, what in state_keyboard_map %}
+          <div><dt><kbd>{{ key }}</kbd></dt><dd>{{ what }}</dd></div>
+          {% endfor %}
+        </dl>
+      </details>
+
+      <p class="adj-paths">
+        writes <code>{{ ledger_display }}</code><br>
+        audit <code>{{ log_display }}</code><br>
+        §6 evidence <code>data/derived/absence_evidence.json</code>
+      </p>
+
+    </div>
+  </aside>
+
+</div>
+</main>
+
+<script id="adj-data" type="application/json">{
+  "pass": "state",
+  "group_id": {{ group.gid|tojson }},
+  "post_url": {{ post_url|tojson }},
+  "next_url": {{ (next_url or done_url)|tojson }},
+  "prev_url": {{ prev_url|tojson }},
+  "done_url": {{ done_url|tojson }},
+  "verdict_field": "state",
+  "commit_on_preset": false,
+  "verdicts": {{ states|list|tojson }}
+}</script>
+<script src="/static/adjudicate.js" defer></script>
+</body>
+</html>

@@ -283,3 +283,187 @@
 .adj-panel__lede { max-width: var(--measure); color: var(--ink-2); }
 .adj-panel__note { font-size: 0.84rem; color: var(--ink-3); max-width: var(--measure); }
 .adj-dim { color: var(--ink-3); }
+
+/* ==========================================================================
+   METHOD.md §6 evidence, and the §5 terminal-state pass.
+
+   The same rule as above, applied one section later. At §4 the machine makes a
+   PROPOSAL and it is drawn dashed. At §5 the machine makes no proposal at all,
+   so there is nothing dashed to draw — what it contributes is EVIDENCE, drawn
+   as a panel of facts, and a REFUSAL, drawn like an error because it is one.
+   Neither may be mistakable for a ruling.
+   ========================================================================== */
+
+/* --- the compact §6 panel on the §4 page --------------------------------- */
+
+.adj-absence {
+  border: 1px solid var(--rule-2); background: var(--paper-2);
+  padding: 0.8rem 0.95rem; margin: 0 0 1.4rem;
+}
+.adj-absence__h {
+  font-family: var(--sans); font-size: 0.7rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-2); margin: 0 0 0.5rem;
+  display: flex; gap: 0.6rem; align-items: baseline; flex-wrap: wrap;
+}
+.adj-absence__tag {
+  font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.06em;
+  text-transform: none; color: var(--ink-3);
+}
+.adj-absence__body { margin: 0 0 0.45rem; font-size: 0.86rem; line-height: 1.5; color: var(--ink-2); }
+.adj-absence__vector { margin: 0 0 0.45rem; font-size: 0.72rem; color: var(--ink-3); word-break: break-all; }
+.adj-absence__vector code { font-family: var(--mono); color: var(--ink); }
+.adj-absence__warn { margin: 0; font-size: 0.78rem; line-height: 1.5; color: var(--ink-3); }
+
+/* --- the full §6 panel on the §5 page ------------------------------------ */
+/* Primary evidence at §5, so it is the first thing in the column and the only
+   block on the page allowed to carry a filled status chip. */
+
+.adj-six {
+  border: 1px solid var(--ink); background: var(--paper-2);
+  padding: 1rem 1.1rem; margin: 0 0 1.6rem;
+}
+.adj-six--nd, .adj-six--absent { border-color: var(--rule-2); }
+.adj-six--met { border-color: var(--flag); }
+.adj-six__head {
+  display: flex; gap: 0.8rem; align-items: baseline; flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+.adj-six__h {
+  font-family: var(--sans); font-size: 0.76rem; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--ink-2); margin: 0;
+}
+.adj-six__status {
+  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.06em;
+  padding: 0.16rem 0.45rem; border: 1px solid var(--rule-2); color: var(--ink);
+  background: var(--paper);
+}
+.adj-six--met .adj-six__status {
+  border-color: var(--flag); color: var(--flag); background: var(--flag-tint);
+}
+.adj-six__reason {
+  margin: 0 0 0.8rem; font-family: var(--serif); font-size: 0.95rem;
+  line-height: 1.55; color: var(--ink);
+}
+.adj-six__facts {
+  margin: 0 0 0.9rem; display: grid; gap: 0.35rem 1.4rem;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+}
+.adj-six__facts div { display: flex; gap: 0.5rem; align-items: baseline; }
+.adj-six__facts dt {
+  font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); flex: 0 0 8.5rem;
+}
+.adj-six__facts dd { margin: 0; font-size: 0.84rem; color: var(--ink-2); }
+.adj-six__facts dd strong { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--ink); }
+
+.adj-six__vlabel {
+  margin: 0 0 0.3rem; font-family: var(--sans); font-size: 0.66rem;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3);
+}
+.adj-six__vector { display: flex; gap: 2px; flex-wrap: wrap; margin-bottom: 0.35rem; }
+.adj-cell {
+  width: 10px; height: 16px; background: var(--paper-3);
+  border: 1px solid var(--rule); flex: 0 0 auto;
+}
+.adj-cell.is-on { background: var(--ink); border-color: var(--ink); }
+.adj-six__code { margin: 0 0 0.8rem; font-size: 0.7rem; word-break: break-all; color: var(--ink-3); }
+.adj-six__code code { font-family: var(--mono); }
+
+.adj-six__ends { margin: 0 0 0.8rem; display: grid; gap: 0.2rem; }
+.adj-six__ends p { margin: 0; font-size: 0.8rem; color: var(--ink-2); font-family: var(--mono); }
+.adj-six__endlabel {
+  font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); margin-right: 0.5rem;
+}
+.adj-six__warn {
+  margin: 0; padding: 0.6rem 0.8rem; border-left: 2px solid var(--flag);
+  background: var(--flag-tint); font-size: 0.82rem; line-height: 1.55; color: var(--ink);
+}
+
+/* --- what §4 already decided, shown at §5 -------------------------------- */
+
+.adj-prior {
+  border-left: 2px solid var(--rule-2); padding: 0.1rem 0 0.1rem 0.9rem;
+  margin: 0 0 1.4rem;
+}
+.adj-prior__h {
+  font-family: var(--sans); font-size: 0.68rem; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--ink-3); margin: 0 0 0.3rem;
+}
+.adj-prior__verdict { color: var(--ink); }
+.adj-prior__meta { margin: 0 0 0.3rem; font-family: var(--mono); font-size: 0.72rem; color: var(--ink-3); }
+.adj-prior__why { margin: 0; font-size: 0.86rem; color: var(--ink-2); }
+
+/* --- the definitions, side by side, for the substantive/cosmetic call ---- */
+
+.adj-defs { display: grid; gap: 1.2rem; }
+.adj-def { border-top: 1px solid var(--rule); padding-top: 0.8rem; }
+.adj-def__head {
+  display: flex; gap: 0.9rem; flex-wrap: wrap; margin-bottom: 0.5rem;
+  font-family: var(--mono); font-size: 0.7rem; color: var(--ink-3);
+}
+.adj-def__n { color: var(--ink-2); }
+.adj-def__cite { margin: 0.4rem 0 0; font-family: var(--mono); font-size: 0.72rem; color: var(--ink-3); }
+
+/* --- "there is no proposal here", said out loud -------------------------- */
+
+.adj-noproposal {
+  border: 1px dotted var(--rule-2); padding: 0.7rem 0.9rem; margin-bottom: 1rem;
+}
+.adj-noproposal__tag {
+  font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-3); margin: 0 0 0.35rem;
+}
+.adj-noproposal__why { margin: 0; font-size: 0.8rem; line-height: 1.5; color: var(--ink-3); }
+
+/* --- the refused option -------------------------------------------------- */
+
+.adj-verdict.is-blocked {
+  opacity: 0.55; cursor: not-allowed; border-style: dashed;
+}
+.adj-verdict.is-blocked .adj-verdict__key { color: var(--ink-3); }
+.adj-verdict--discontinued.is-armed { border-color: var(--flag); }
+.adj-verdict--discontinued.is-armed .adj-verdict__key { background: var(--flag); border-color: var(--flag); }
+.adj-verdict__label strong { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.03em; }
+
+.adj-blocked {
+  margin: 0.5rem 0 0; padding: 0.55rem 0.8rem;
+  border: 1px solid var(--flag); background: var(--flag-tint);
+  font-size: 0.8rem; line-height: 1.5; color: var(--ink);
+}
+
+/* --- the conditional fieldsets ------------------------------------------- */
+
+.adj-when, .adj-dates {
+  border: 1px solid var(--rule); padding: 0.7rem 0.85rem; margin: 0 0 0.9rem;
+}
+.adj-when legend, .adj-dates legend {
+  font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-3); padding: 0 0.35rem;
+}
+.adj-when[hidden], .adj-dates[hidden] { display: none; }
+.adj-when__note { margin: 0.45rem 0 0; font-size: 0.74rem; line-height: 1.5; color: var(--ink-3); }
+.adj-check {
+  display: flex; gap: 0.55rem; align-items: flex-start; cursor: pointer;
+  margin-bottom: 0.45rem; font-size: 0.82rem; line-height: 1.45; color: var(--ink-2);
+}
+.adj-check input { margin-top: 0.25rem; flex: 0 0 auto; }
+.adj-text {
+  width: 100%; font-family: var(--mono); font-size: 0.84rem;
+  color: var(--ink); background: var(--paper); border: 1px solid var(--rule-2);
+  border-radius: 0; padding: 0.35rem 0.45rem; margin-bottom: 0.5rem;
+}
+select.adj-text { font-family: var(--sans); }
+.adj-fill { margin: -0.2rem 0 0.6rem; font-size: 0.72rem; color: var(--ink-3); line-height: 1.5; }
+.adj-fillbtn {
+  font-family: var(--mono); font-size: 0.7rem; color: var(--ink-2);
+  background: var(--paper-2); border: 1px solid var(--rule-2); border-radius: 0;
+  padding: 0.12rem 0.4rem; cursor: pointer;
+}
+.adj-fillbtn:hover, .adj-fillbtn:focus-visible { border-color: var(--ink); color: var(--ink); }
+
+/* --- the position strip, in §5 colours ----------------------------------- */
+
+.adj-dot.is-alive { background: var(--ink-2); }
+.adj-dot.is-redefined, .adj-dot.is-renamed, .adj-dot.is-absorbed { background: var(--rule-2); }
+.adj-dot.is-discontinued { background: var(--flag); }

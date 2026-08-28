@@ -1,14 +1,32 @@
 /* ==========================================================================
    Keyboard driving for the adjudication tool.
 
-   Two keystrokes per group is the target: one to arm a verdict, one to pick
-   the rationale. That is where the hours go.
+   Two keystrokes per group is the target at §4: one to arm a verdict, one to
+   pick the rationale. That is where the hours go.
 
-   What this file does NOT do, and must never do: arm a verdict on its own,
-   pick a rationale on its own, or submit anything the reviewer did not press a
-   key for on that specific group. There is no bulk action here, because there
-   is no bulk action anywhere in this tool. Every POST it sends is one human
+   ONE FILE, TWO PASSES. The §4 inclusion page and the §5 terminal-state page
+   are the same machine: arm a value, pick or type a rationale, commit. So
+   nothing here is hard-coded to either. The keys come from `data-key` on the
+   option labels, the payload comes from the form itself, and the two places
+   they differ are declared in the page's own JSON block:
+
+     verdict_field     the field name the armed value is posted under
+     commit_on_preset  §4 commits on the preset number, because a §4 ruling is
+                       complete at that point. §5 does NOT: a terminal state
+                       usually needs a date, and often a name or a boolean, so
+                       the commit is always a second, separate key.
+
+   What this file does NOT do, and must never do: arm a value on its own, pick
+   a rationale on its own, or submit anything the reviewer did not press a key
+   for on that specific group. There is no bulk action here, because there is
+   no bulk action anywhere in this tool. Every POST it sends is one human
    ruling on one group that was on the screen when the key was pressed.
+
+   An option the server has refused — METHOD.md §6 forbids DISCONTINUED where
+   the four-period absence test is not met — is rendered disabled and carries
+   its reason in `data-blocked`. This file refuses to arm it and shows that
+   reason. The server refuses it again regardless; this is the courtesy, not
+   the guard.
 
    The page works with this file absent: the form is a real form, the buttons
    are real buttons, and the server accepts a plain urlencoded post.
@@ -36,8 +54,12 @@
   var keysBox = document.getElementById("adj-keys");
   if (!form || !rationale || !presetHost) return;
 
+  var VERDICT_FIELD = data.verdict_field || "verdict";
+  var COMMIT_ON_PRESET = data.commit_on_preset !== false;
   var REVIEWER_KEY = "underwritten.adjudicate.reviewer";
-  var draftKey = "underwritten.adjudicate.draft." + (data.group_id || "");
+  var draftKey =
+    "underwritten.adjudicate." + (data.pass || "inclusion") + ".draft." +
+    (data.group_id || "");
   var armed = "";
   var sending = false;
 
@@ -70,19 +92,57 @@
     errorBox.hidden = !message;
   }
 
-  /* --- arming a verdict ---------------------------------------------- */
+  function armPrompt() {
+    var names = [];
+    each(verdictLabels(), function (label) {
+      var key = label.getAttribute("data-key");
+      var value = label.getAttribute("data-verdict");
+      if (key && value) names.push(key + " " + value);
+    });
+    return "Arm a value first: " + names.join(", ") + ".";
+  }
+
+  /* --- arming a value -------------------------------------------------- */
 
   function verdictLabels() {
     return form.querySelectorAll(".adj-verdict");
   }
 
+  function blockedReason(label) {
+    if (!label) return "";
+    if (label.getAttribute("data-blocked")) return label.getAttribute("data-blocked");
+    return label.className.indexOf("is-blocked") >= 0
+      ? "That state is not available on this metric."
+      : "";
+  }
+
+  /* Fieldsets that only apply to one armed value — the rename check for
+     DISCONTINUED, the new name for RENAMED, the substantive call for
+     REDEFINED, the §7.4 benign label for either of the two states that can
+     hide one. Visible to everyone when this file is absent. */
+  function updateConditional() {
+    each(document.querySelectorAll("[data-show-for]"), function (element) {
+      var applies = (element.getAttribute("data-show-for") || "").split(/\s+/);
+      element.hidden = !armed || applies.indexOf(armed) < 0;
+    });
+  }
+
   function arm(verdict) {
+    var target = verdict
+      ? form.querySelector('.adj-verdict[data-verdict="' + verdict + '"]')
+      : null;
+    var refusal = verdict ? blockedReason(target) : "";
+    if (refusal) {
+      showError(refusal);
+      return;
+    }
+
     armed = verdict || "";
     each(verdictLabels(), function (label) {
       var mine = label.getAttribute("data-verdict") === armed;
       label.classList.toggle("is-armed", mine);
       var radio = label.querySelector("input[type=radio]");
-      if (radio) radio.checked = mine;
+      if (radio && !radio.disabled) radio.checked = mine;
     });
 
     var showing = false;
@@ -94,6 +154,7 @@
     var idle = presetHost.querySelector(".adj-presets__idle");
     if (idle) idle.hidden = showing;
 
+    updateConditional();
     showError("");
   }
 
@@ -127,6 +188,28 @@
     return (reviewer && reviewer.value ? reviewer.value : "").trim();
   }
 
+  /* The body is the form's own fields, so a field added to the template
+     reaches the server without a change here — and so the JavaScript path and
+     the no-JavaScript path post the same thing. The armed value, the initials
+     and the rationale are set explicitly afterwards because those three are
+     what this file is driving. */
+  function body(who, why) {
+    var out = {};
+    try {
+      var entries = new FormData(form);
+      entries.forEach(function (value, key) {
+        if (typeof value === "string") out[key] = value;
+      });
+    } catch (err) {
+      /* No FormData: the three fields below still carry the ruling. */
+    }
+    out[VERDICT_FIELD] = armed;
+    out.reviewer = who;
+    out.rationale = why;
+    out.rationale_source = source ? source.value : "free_text";
+    return out;
+  }
+
   function commit() {
     if (sending) return;
 
@@ -140,7 +223,7 @@
       return;
     }
     if (!armed) {
-      showError("Arm a verdict first: i to include, x to exclude, n for can’t-tell.");
+      showError(armPrompt());
       return;
     }
     var why = (rationale.value || "").trim();
@@ -157,12 +240,7 @@
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
       credentials: "same-origin",
-      body: JSON.stringify({
-        verdict: armed,
-        reviewer: who,
-        rationale: why,
-        rationale_source: source ? source.value : "free_text"
-      })
+      body: JSON.stringify(body(who, why))
     })
       .then(function (response) {
         return response
@@ -170,8 +248,8 @@
           .catch(function () {
             return {};
           })
-          .then(function (body) {
-            return { ok: response.ok, body: body };
+          .then(function (parsed) {
+            return { ok: response.ok, body: parsed };
           });
       })
       .then(function (result) {
@@ -193,9 +271,9 @@
       });
   }
 
-  function chooseAndCommit(button) {
+  function choosePresetAndMaybeCommit(button) {
     choosePreset(button);
-    commit();
+    if (COMMIT_ON_PRESET) commit();
   }
 
   /* --- wiring --------------------------------------------------------- */
@@ -208,7 +286,16 @@
 
   each(presetHost.querySelectorAll(".adj-preset"), function (button) {
     button.addEventListener("click", function () {
-      chooseAndCommit(button);
+      choosePresetAndMaybeCommit(button);
+    });
+  });
+
+  /* A dated fact the tool already knows, copied into a field by a human
+     click. It fills a box; it never rules, and it never fills one by itself. */
+  each(document.querySelectorAll("[data-fill]"), function (button) {
+    button.addEventListener("click", function () {
+      var target = document.getElementById(button.getAttribute("data-fill"));
+      if (target) target.value = button.getAttribute("data-value") || "";
     });
   });
 
@@ -236,10 +323,24 @@
 
   /* --- keys ------------------------------------------------------------ */
 
+  /* Built from the page rather than hard-coded, so §4's i/x/n and §5's
+     a/e/m/o/d/n are the same three lines of code. */
+  var KEY_TO_VERDICT = {};
+  each(verdictLabels(), function (label) {
+    var key = (label.getAttribute("data-key") || "").toLowerCase();
+    var value = label.getAttribute("data-verdict");
+    if (key && value) KEY_TO_VERDICT[key] = value;
+  });
+
   function typing(target) {
     if (!target) return false;
     var tag = (target.tagName || "").toLowerCase();
-    return tag === "input" || tag === "textarea" || target.isContentEditable;
+    return (
+      tag === "input" ||
+      tag === "textarea" ||
+      tag === "select" ||
+      target.isContentEditable
+    );
   }
 
   document.addEventListener("keydown", function (event) {
@@ -258,39 +359,34 @@
     }
 
     var key = event.key;
+    var lower = (key || "").toLowerCase();
 
-    if (key === "i" || key === "I") {
+    if (KEY_TO_VERDICT[lower]) {
       event.preventDefault();
-      arm("INCLUDE");
-    } else if (key === "x" || key === "X") {
-      event.preventDefault();
-      arm("EXCLUDE");
-    } else if (key === "n" || key === "N") {
-      event.preventDefault();
-      arm("NOT_DETERMINABLE");
+      arm(KEY_TO_VERDICT[lower]);
     } else if (key >= "1" && key <= "9") {
       var button = presetByNumber(parseInt(key, 10));
       if (button) {
         event.preventDefault();
-        chooseAndCommit(button);
+        choosePresetAndMaybeCommit(button);
       } else if (!armed) {
-        showError("Arm a verdict first: i to include, x to exclude, n for can’t-tell.");
+        showError(armPrompt());
       }
     } else if (key === "Enter") {
       event.preventDefault();
       commit();
-    } else if (key === "t" || key === "T") {
+    } else if (lower === "t") {
       event.preventDefault();
       rationale.focus();
-    } else if (key === "s" || key === "S") {
+    } else if (lower === "s") {
       event.preventDefault();
       window.location.assign(data.next_url || data.done_url);
-    } else if (key === "b" || key === "B") {
+    } else if (lower === "b") {
       if (data.prev_url) {
         event.preventDefault();
         window.location.assign(data.prev_url);
       }
-    } else if (key === "r" || key === "R") {
+    } else if (lower === "r") {
       if (reviewer) {
         event.preventDefault();
         reviewer.focus();
