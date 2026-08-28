@@ -27,15 +27,33 @@ THE ADJUDICATION LEDGER - data/adjudication/metrics.csv
 --------------------------------------------------------------------------
 
 Written by a human, one row per adjudicated metric. It does not exist yet.
+
+**It is filled in over two passes and this module reads both.** The adjudication
+tool writes `pipeline.metrics.LEDGER_FIELDS`, which carries the METHOD.md §4
+inclusion ruling in `include` and no `state` column at all. The §5 terminal
+state is a later, separate ruling on the rows that survived §4. A row that has
+an `include` ruling and no `state` yet is counted and published as *included,
+awaiting a terminal state*; it is never given one by default.
+
 Required columns::
 
     cik                        int, must be a frozen cohort member
     metric_name                the company's own name for it
-    state                      one of METHOD.md §5, or NO_METRICS_DEFINED
+    state                      one of METHOD.md §5, or NO_METRICS_DEFINED.
+                               Blank means the §5 ruling has not been made and
+                               the row takes no part in §7
 
 Optional columns, each with a stated default::
 
-    metric_id                  default: "<cik>-<slugified metric_name>"
+    include                    the §4 ruling. FALSE removes the candidate from
+                               the study entirely; blank with a blank state
+                               means the row has not been read yet
+    metric_id                  default: `candidate_id`, else
+                               "<cik>-<slugified metric_name>"
+    accession, form, filing_date, defining_sentence
+                               written by the §4 locator; used to build the
+                               first-appearance citation when no
+                               first_appearance_* column is present
     substantive                REDEFINED only. default TRUE (§5 defines
                                REDEFINED as substantive; a FALSE here records a
                                cosmetic change that must not make a Mover)
@@ -473,6 +491,9 @@ class Ledger:
     rows: tuple[LedgerRow, ...] = ()
     invalid: tuple[dict[str, str], ...] = ()
     off_cohort: tuple[dict[str, str], ...] = ()
+    ruled_out: tuple[dict[str, str], ...] = ()
+    awaiting_state: tuple[dict[str, str], ...] = ()
+    unruled: tuple[dict[str, str], ...] = ()
 
     @property
     def metric_rows(self) -> tuple[LedgerRow, ...]:
@@ -492,15 +513,40 @@ class Ledger:
             "n_issuers_no_metrics_defined": len(self.no_metrics_ciks),
             "n_invalid_rows": len(self.invalid),
             "n_rows_outside_cohort": len(self.off_cohort),
+            "n_ruled_out_at_inclusion": len(self.ruled_out),
+            "n_included_awaiting_terminal_state": len(self.awaiting_state),
+            "n_not_yet_ruled": len(self.unruled),
             "invalid_rows": list(self.invalid),
             "rows_outside_cohort": list(self.off_cohort),
+            "stages": (
+                "A row is read in two stages. METHOD.md §4 rules on inclusion "
+                "(`include`); METHOD.md §5 assigns the terminal state (`state`). "
+                "A row that has passed the first and not the second is counted "
+                "here and takes no part in §7."
+            ),
         }
 
 
 def read_ledger(
     path: Path = LEDGER_PATH, *, cohort_ciks: Iterable[int] | None = None
 ) -> Ledger:
-    """Read the human ledger. A missing one is an absence, never a zero."""
+    """Read the human ledger. A missing one is an absence, never a zero.
+
+    The ledger is filled in over two passes and this reader must cope with a
+    file that is part-way through either. `pipeline.metrics.LEDGER_FIELDS` - the
+    schema the adjudication tool writes - carries the METHOD.md §4 inclusion
+    ruling in `include` and carries no `state` column at all. The §5 terminal
+    state is a second, later ruling. So:
+
+    - `include` ruled false is a §4 exclusion. The candidate is not a metric of
+      this study and takes no part in §7.
+    - `include` ruled true with no `state` yet is *included, awaiting a terminal
+      state*. It is counted and published as such, and it is neither dropped nor
+      given a state by default - §5 states are human rulings only.
+    - a row with neither ruling has not been read yet.
+
+    All three are counted. None of them is silently discarded.
+    """
     relative = _relative(path)
     if not path.is_file():
         return Ledger(path=relative, available=False, reason=LEDGER_ABSENT_REASON)
@@ -522,16 +568,49 @@ def read_ledger(
     rows: list[LedgerRow] = []
     invalid: list[dict[str, str]] = []
     off_cohort: list[dict[str, str]] = []
+    ruled_out: list[dict[str, str]] = []
+    awaiting_state: list[dict[str, str]] = []
+    unruled: list[dict[str, str]] = []
 
     for offset, raw in enumerate(raw_rows, start=2):  # row 1 is the header
         clean = {k: (v or "").strip() for k, v in raw.items() if k}
         cik_token = clean.get("cik", "")
         state = clean.get("state", "").strip().upper()
         name = clean.get("metric_name", "")
+        include_token = clean.get("include", "")
+        marker = {"row": str(offset), "cik": cik_token, "metric_name": name}
 
         if not cik_token.isdigit():
             invalid.append({"row": str(offset), "problem": "cik is missing or not a number"})
             continue
+
+        # METHOD.md §4 first. A candidate ruled out is not a metric of the study.
+        included: bool | None = None
+        if include_token:
+            lowered = include_token.lower()
+            if lowered in TRUE_TOKENS:
+                included = True
+            elif lowered in FALSE_TOKENS:
+                included = False
+            else:
+                invalid.append(
+                    {
+                        "row": str(offset),
+                        "problem": (
+                            f"include {include_token!r} is neither a yes nor a no, "
+                            "so the METHOD.md §4 ruling cannot be read"
+                        ),
+                    }
+                )
+                continue
+        if included is False:
+            ruled_out.append(marker)
+            continue
+
+        if not state:
+            (awaiting_state if included else unruled).append(marker)
+            continue
+
         if state not in LEDGER_STATES:
             invalid.append(
                 {
@@ -556,7 +635,11 @@ def read_ledger(
         rows.append(
             LedgerRow(
                 row_number=offset,
-                metric_id=clean.get("metric_id") or f"{cik}-{slugify(name)}",
+                metric_id=(
+                    clean.get("metric_id")
+                    or clean.get("candidate_id")
+                    or f"{cik}-{slugify(name)}"
+                ),
                 cik=cik,
                 metric_name=name,
                 state=state,
@@ -573,21 +656,27 @@ def read_ledger(
         )
 
     if not rows:
-        detail = (
-            f" {len(invalid)} row(s) could not be parsed and {len(off_cohort)} row(s) "
-            f"name a CIK outside the frozen cohort."
-            if (invalid or off_cohort)
-            else ""
-        )
+        counted = [
+            (len(awaiting_state), "ruled included under §4 but carrying no §5 terminal state yet"),
+            (len(unruled), "not yet ruled on at all"),
+            (len(ruled_out), "ruled out at §4 inclusion"),
+            (len(invalid), "unparseable"),
+            (len(off_cohort), "naming a CIK outside the frozen cohort"),
+        ]
+        detail = "".join(f" {n} row(s) {what}." for n, what in counted if n)
         return Ledger(
             path=relative,
             available=False,
             reason=(
-                f"The adjudication ledger at {relative} holds no usable ruling.{detail} "
-                "No terminal state is inferred and no figure is published."
+                f"The adjudication ledger at {relative} carries no METHOD.md §5 "
+                f"terminal state.{detail} No terminal state is inferred from the "
+                "filed record and no figure is published in place of one."
             ),
             invalid=tuple(invalid),
             off_cohort=tuple(off_cohort),
+            ruled_out=tuple(ruled_out),
+            awaiting_state=tuple(awaiting_state),
+            unruled=tuple(unruled),
         )
 
     return Ledger(
@@ -597,6 +686,9 @@ def read_ledger(
         rows=tuple(rows),
         invalid=tuple(invalid),
         off_cohort=tuple(off_cohort),
+        ruled_out=tuple(ruled_out),
+        awaiting_state=tuple(awaiting_state),
+        unruled=tuple(unruled),
     )
 
 
@@ -1173,10 +1265,15 @@ def sensitivity(
             "ci_high": benign_removed.ci_high,
         },
         "delta_pp": share_delta_pp,
+        "delta_pp_measures": (
+            "the change in the discontinuation share of adjudicated metrics. "
+            "The change in the §7.2 difference between the arms is published "
+            "separately under primary_difference_deltas_pp."
+        ),
         "n_benign_removed": len(removed),
         "benign_labels": sorted({r.benign_label for r in removed if r.benign_label}),
         "runs": {key: run.as_dict() for key, run in runs.items()},
-        "deltas_pp": deltas,
+        "primary_difference_deltas_pp": deltas,
         "operationalisation": (
             "A metric carrying a hand-written benign label leaves both the "
             "numerator and the denominator. Amendment 1's E2 mechanical de-SPAC "
@@ -1662,15 +1759,30 @@ def _issuer_cells(
 def _citation(
     row: LedgerRow, prefix: str, value: str, cik: int
 ) -> dict[str, Any] | None:
-    accession = row.raw.get(f"{prefix}_accession", "")
+    """One CITATION for the site, or None if it would not resolve to a filing.
+
+    METHOD.md §8.3 and `app/data.py`: a numeral whose citation lacks a quote or
+    an accession is rendered as pending rather than printed, so an incomplete
+    citation is returned as None instead of a half-built dictionary.
+
+    The first appearance falls back to the row-level `accession`, `form` and
+    `filing_date` written by the §4 locator, which is where the verbatim
+    defining sentence came from in the first place.
+    """
+    fallback = prefix == "first_appearance"
+    accession = row.raw.get(f"{prefix}_accession", "") or (
+        row.raw.get("accession", "") if fallback else ""
+    )
     quote = row.raw.get(f"{prefix}_quote", "") or row.raw.get("defining_sentence", "")
     if not accession or not quote:
         return None
     return {
         "value": value,
         "quote": quote,
-        "form": row.raw.get(f"{prefix}_form", ""),
-        "filed": row.raw.get(f"{prefix}_date", ""),
+        "form": row.raw.get(f"{prefix}_form", "")
+        or (row.raw.get("form", "") if fallback else ""),
+        "filed": row.raw.get(f"{prefix}_date", "")
+        or (row.raw.get("filing_date", "") if fallback else ""),
         "accession": accession,
         "cik": cik,
     }
@@ -1955,7 +2067,7 @@ def _spec_runs(finding: Mapping[str, Any]) -> tuple[SpecRun, ...]:
         sens,
         (
             "Primary difference delta "
-            f"{(sens.get('deltas_pp') or {}).get('warrant_restatements_restored')} pp "
+            f"{(sens.get('primary_difference_deltas_pp') or {}).get('warrant_restatements_restored')} pp "
             "with Amendment 1 E1 restored"
         ),
     )

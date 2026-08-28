@@ -1,6 +1,6 @@
 {
   "as_at": "2026-08-28",
-  "generated": "2026-08-28T13:28:35+00:00",
+  "generated": "2026-08-28T13:34:12+00:00",
   "available": false,
   "reason": "The adjudication ledger data/adjudication/metrics.csv has not been written yet. METHOD.md \u00a74 requires every candidate to be ruled on by hand and \u00a75 makes the terminal state a human ruling, so no state is inferred here and no figure is published in its place.",
   "cohort": {
@@ -53,7 +53,8 @@
     "available": false,
     "reason": "The adverse-event extraction was not run because the adjudication ledger is absent: with no Keeper/Mover split there is nothing to score events against.",
     "n_issuers_with_a_filing_index": 0,
-    "errors": []
+    "errors": [],
+    "errors_note": "Every retrieval failure is recorded with the stage it belongs to. An issuer whose filing index could not be read is not scored as having no adverse event; it is absent from both arms."
   },
   "ledger": {
     "path": "data/adjudication/metrics.csv",
@@ -64,8 +65,12 @@
     "n_issuers_no_metrics_defined": 0,
     "n_invalid_rows": 0,
     "n_rows_outside_cohort": 0,
+    "n_ruled_out_at_inclusion": 0,
+    "n_included_awaiting_terminal_state": 0,
+    "n_not_yet_ruled": 0,
     "invalid_rows": [],
-    "rows_outside_cohort": []
+    "rows_outside_cohort": [],
+    "stages": "A row is read in two stages. METHOD.md \u00a74 rules on inclusion (`include`); METHOD.md \u00a75 assigns the terminal state (`state`). A row that has passed the first and not the second is counted here and takes no part in \u00a77."
   },
   "limitations": [
     "n is small. At n = 50 the study is underpowered for anything but a large effect, and no directional claim is made.",

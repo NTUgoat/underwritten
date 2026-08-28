@@ -37,6 +37,10 @@ class EdgarError(RuntimeError):
     """Raised when EDGAR cannot satisfy a request after retries."""
 
 
+class OfflineCacheMiss(EdgarError):
+    """An offline client was asked for a document that is not cached."""
+
+
 @dataclass(frozen=True)
 class Fetched:
     """An immutable record of one retrieved document."""
@@ -115,13 +119,23 @@ def _atomic_write(path: Path, payload: bytes) -> None:
 class EdgarClient:
     """A caching EDGAR reader that records the hash of everything it reads."""
 
-    def __init__(self, contact: str | None = None) -> None:
+    def __init__(self, contact: str | None = None, *, offline: bool = False) -> None:
+        """`offline=True` forbids network access entirely.
+
+        Analysis stages run against the cached corpus and must never fetch. Left
+        to discipline this goes wrong: a stage that quietly fetches a missing
+        document competes with a running corpus build for the SEC's fair-access
+        budget, and both processes then share one 10 requests/second ceiling
+        while each believes it owns it. Making the guarantee structural means a
+        cache miss raises instead of silently going to the network.
+        """
         contact = contact or config.SEC_CONTACT
         if "@" not in contact:
             raise ValueError(
                 "SEC requires a contact address in the User-Agent. "
                 "Set SEC_CONTACT='Your Name your@email' in the environment."
             )
+        self.offline = offline
         self._session = requests.Session()
         self._session.headers.update(
             {
@@ -148,6 +162,11 @@ class EdgarClient:
             )
             self._manifest[url] = record
             return record
+
+        if self.offline:
+            raise OfflineCacheMiss(
+                f"Not in the local cache and this client is offline: {url}"
+            )
 
         payload = self._get_with_retries(url)
         path.parent.mkdir(parents=True, exist_ok=True)

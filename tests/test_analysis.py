@@ -354,7 +354,7 @@ def test_missing_ledger_is_unavailable_with_a_stated_reason(tmp_path):
 def test_header_only_ledger_is_unavailable_not_a_zero(tmp_path):
     ledger = read_ledger(write_ledger(tmp_path / "metrics.csv", []))
     assert ledger.available is False
-    assert "no usable ruling" in ledger.reason
+    assert "no METHOD.md §5 terminal state" in ledger.reason
 
 
 def test_unreadable_ledger_degrades_with_the_error_recorded(tmp_path):
@@ -828,8 +828,9 @@ def test_sensitivity_publishes_both_deltas(split_ledger):
         "benign_removed",
         "warrant_restatements_restored",
     }
-    assert set(result["deltas_pp"]) == {"benign_removed", "warrant_restatements_restored"}
-    assert result["deltas_pp"]["warrant_restatements_restored"] is not None
+    deltas = result["primary_difference_deltas_pp"]
+    assert set(deltas) == {"benign_removed", "warrant_restatements_restored"}
+    assert deltas["warrant_restatements_restored"] is not None
 
 
 def test_benign_labels_leave_both_the_numerator_and_the_denominator(split_ledger):
@@ -1280,7 +1281,12 @@ def test_the_descriptive_specifications_run_without_the_outcome_variable(split_l
     assert finding["sensitivity"]["available"] is True
     assert finding["primary_test"]["available"] is False
     assert finding["sensitivity"]["runs"]["as_preregistered"]["available"] is False
-    assert finding["sensitivity"]["deltas_pp"]["warrant_restatements_restored"] is None
+    assert (
+        finding["sensitivity"]["primary_difference_deltas_pp"][
+            "warrant_restatements_restored"
+        ]
+        is None
+    )
     assert finding["exclusions_applied"] == {}
 
 
@@ -1293,3 +1299,145 @@ def test_the_power_statement_carries_the_realised_arm_sizes(primary_fixture):
     assert "1 Keeper(s)" in note and "3 Mover(s)" in note
     assert "underpowered" in note.lower()
     assert not analysis.FORBIDDEN_PATTERN.search(note)
+
+
+# ==========================================================================
+# 14. Composing with the adjudication tool's own ledger schema
+# ==========================================================================
+
+
+def test_a_section_four_only_ledger_is_read_without_inventing_a_terminal_state(tmp_path):
+    """`app/adjudicate.py` writes `pipeline.metrics.LEDGER_FIELDS`, which has
+    `include` and no `state`. Those rows are included, awaiting a §5 ruling."""
+    path = tmp_path / "metrics.csv"
+    with path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(metrics_module.LEDGER_FIELDS))
+        writer.writeheader()
+        writer.writerow(
+            {
+                "candidate_id": "abc123",
+                "cik": "1",
+                "accession": "0001104659-21-064530",
+                "form": "10-K",
+                "filing_date": "2021-02-25",
+                "metric_name": "Adjusted Active Consumers",
+                "defining_sentence": "We define Adjusted Active Consumers as ...",
+                "include": "TRUE",
+                "reviewer": "JL",
+                "review_date": "2026-08-28",
+                "rationale": "company-defined, quantitative, operating",
+            }
+        )
+        writer.writerow({"candidate_id": "def456", "cik": "1", "metric_name": "Market size", "include": "FALSE"})
+        writer.writerow({"candidate_id": "ghi789", "cik": "1", "metric_name": "Unread"})
+    ledger = read_ledger(path, cohort_ciks=[1])
+
+    assert ledger.available is False
+    assert "no METHOD.md §5 terminal state" in ledger.reason
+    assert len(ledger.awaiting_state) == 1
+    assert len(ledger.ruled_out) == 1
+    assert len(ledger.unruled) == 1
+    assert ledger.invalid == ()  # a missing state is not a malformed row
+    payload = ledger.as_dict()
+    assert payload["n_included_awaiting_terminal_state"] == 1
+    assert payload["n_ruled_out_at_inclusion"] == 1
+    assert payload["n_not_yet_ruled"] == 1
+
+
+def test_a_candidate_ruled_out_at_inclusion_never_reaches_section_seven(tmp_path):
+    path = write_ledger(
+        tmp_path / "metrics.csv",
+        [
+            metric(1, "Kept", "ALIVE", include="TRUE"),
+            metric(1, "Market size estimate", "ALIVE", include="FALSE"),
+        ],
+        columns=LEDGER_COLUMNS + ("include",),
+    )
+    ledger = read_ledger(path, cohort_ciks=[1])
+    assert [row.metric_name for row in ledger.rows] == ["Kept"]
+    assert len(ledger.ruled_out) == 1
+
+
+def test_the_candidate_id_becomes_the_published_metric_id(tmp_path):
+    path = write_ledger(
+        tmp_path / "metrics.csv",
+        [metric(1, "Adjusted Active Consumers", "ALIVE", candidate_id="abc123")],
+        columns=LEDGER_COLUMNS + ("candidate_id",),
+    )
+    assert read_ledger(path).rows[0].metric_id == "abc123"
+
+
+def test_the_first_appearance_citation_falls_back_to_the_locator_columns(tmp_path):
+    path = write_ledger(
+        tmp_path / "metrics.csv",
+        [
+            metric(
+                1,
+                "Adjusted Active Consumers",
+                "ALIVE",
+                accession="0001104659-21-064530",
+                form="10-K",
+                filing_date="2021-02-25",
+                defining_sentence="We define Adjusted Active Consumers as ...",
+            )
+        ],
+        columns=LEDGER_COLUMNS + ("accession", "form", "filing_date", "defining_sentence"),
+    )
+    ledger = read_ledger(path, cohort_ciks=[1])
+    entry = analysis.build_metrics_payload(ledger, [cohort_row(1)])["metrics"][0]
+    citation = entry["first_appearance"]
+    assert citation["accession"] == "0001104659-21-064530"
+    assert citation["form"] == "10-K"
+    assert citation["filed"] == "2021-02-25"
+    assert citation["quote"].startswith("We define")
+
+
+def test_an_incomplete_citation_is_none_rather_than_a_half_built_one(tmp_path):
+    path = write_ledger(tmp_path / "metrics.csv", [metric(1, "Bare", "ALIVE")])
+    ledger = read_ledger(path, cohort_ciks=[1])
+    entry = analysis.build_metrics_payload(ledger, [cohort_row(1)])["metrics"][0]
+    assert entry["first_appearance"] is None
+    assert entry["last_appearance"] is None
+
+
+def test_the_spec_log_records_the_actual_warrant_sensitivity_delta(split_ledger):
+    """A regression: the log line must read the key the payload actually uses."""
+    analysed = run(
+        make_inputs(
+            cohort=[cohort_row(i) for i in (1, 2, 3, 4, 5)],
+            ledger=split_ledger,
+            events={
+                3: (
+                    event(
+                        "8-K",
+                        date(2024, 1, 1),
+                        items=("4.02",),
+                        reason="Non-reliance",
+                        excluded=EXCL_WARRANT,
+                    ),
+                )
+            },
+            outcome_available=True,
+        )
+    )
+    warrant_line = next(
+        spec for spec in analysed.spec_runs if "warrant restatements restored" in spec.specification
+    )
+    assert "None pp" not in warrant_line.result
+    assert warrant_line.result.endswith("with Amendment 1 E1 restored")
+    delta = dict(analysed.finding)["sensitivity"]["primary_difference_deltas_pp"][
+        "warrant_restatements_restored"
+    ]
+    assert str(delta) in warrant_line.result
+
+
+def test_an_unreadable_inclusion_ruling_is_recorded_not_guessed(tmp_path):
+    path = write_ledger(
+        tmp_path / "metrics.csv",
+        [metric(1, "Ambiguous", "ALIVE", include="maybe")],
+        columns=LEDGER_COLUMNS + ("include",),
+    )
+    ledger = read_ledger(path, cohort_ciks=[1])
+    assert ledger.rows == ()
+    assert len(ledger.invalid) == 1
+    assert "neither a yes nor a no" in ledger.invalid[0]["problem"]

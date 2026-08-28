@@ -1,0 +1,416 @@
+{
+  "as_at": "2026-08-28",
+  "issuers_measured": 7,
+  "complete": false,
+  "issuers_skipped": 43,
+  "occurrences": 2833,
+  "groups_to_rule": 79,
+  "by_arm": {
+    "IPO": 5,
+    "DESPAC": 2
+  },
+  "per_issuer": [
+    {
+      "cik": 775215,
+      "name": "HBT Financial, Inc.",
+      "arm": "IPO",
+      "documents": 197,
+      "occurrences": 1348,
+      "groups": 10
+    },
+    {
+      "cik": 1621672,
+      "name": "Super League Enterprise, Inc.",
+      "arm": "IPO",
+      "documents": 252,
+      "occurrences": 197,
+      "groups": 10
+    },
+    {
+      "cik": 1651944,
+      "name": "DermTech, Inc.",
+      "arm": "DESPAC",
+      "documents": 148,
+      "occurrences": 50,
+      "groups": 17
+    },
+    {
+      "cik": 1653558,
+      "name": "Priority Technology Holdings, Inc.",
+      "arm": "DESPAC",
+      "documents": 271,
+      "occurrences": 761,
+      "groups": 7
+    },
+    {
+      "cik": 1654126,
+      "name": "ZIM Integrated Shipping Services Ltd.",
+      "arm": "IPO",
+      "documents": 267,
+      "occurrences": 76,
+      "groups": 16
+    },
+    {
+      "cik": 1676238,
+      "name": "Braze, Inc.",
+      "arm": "IPO",
+      "documents": 77,
+      "occurrences": 363,
+      "groups": 13
+    },
+    {
+      "cik": 1689657,
+      "name": "Bruker Cellular Analysis, Inc.",
+      "arm": "IPO",
+      "documents": 90,
+      "occurrences": 38,
+      "groups": 6
+    }
+  ],
+  "skipped": [
+    {
+      "cik": 1690080,
+      "name": "FORUM MARKETS Inc",
+      "reason": "corpus incomplete",
+      "documents": 187,
+      "expected_filings": 257,
+      "gaps": 378
+    },
+    {
+      "cik": 1691421,
+      "name": "Lemonade, Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 80,
+      "gaps": 190
+    },
+    {
+      "cik": 1691493,
+      "name": "Nu Holdings Ltd.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 173,
+      "gaps": 509
+    },
+    {
+      "cik": 1691936,
+      "name": "STRYVE FOODS, INC.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 105,
+      "gaps": 265
+    },
+    {
+      "cik": 1698991,
+      "name": "Accel Entertainment, Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 137,
+      "gaps": 333
+    },
+    {
+      "cik": 1699838,
+      "name": "Confluent, Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 56,
+      "gaps": 128
+    },
+    {
+      "cik": 1703057,
+      "name": "AbCellera Biologics Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 87,
+      "gaps": 213
+    },
+    {
+      "cik": 1703956,
+      "name": "Concrete Pumping Holdings, Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 115,
+      "gaps": 269
+    },
+    {
+      "cik": 1706946,
+      "name": "Virgin Galactic Holdings, Inc",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 145,
+      "gaps": 359
+    },
+    {
+      "cik": 1709048,
+      "name": "GLOBALFOUNDRIES Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 77,
+      "gaps": 221
+    },
+    {
+      "cik": 1709682,
+      "name": "Custom Truck One Source, Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 153,
+      "gaps": 383
+    },
+    {
+      "cik": 1712189,
+      "name": "Target Hospitality Corp.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 176,
+      "gaps": 458
+    },
+    {
+      "cik": 1712463,
+      "name": "Ranpak Holdings Corp.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 125,
+      "gaps": 303
+    },
+    {
+      "cik": 1713952,
+      "name": "Vivint Smart Home, Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 86,
+      "gaps": 212
+    },
+    {
+      "cik": 1716166,
+      "name": "Vivos Therapeutics, Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 106,
+      "gaps": 268
+    },
+    {
+      "cik": 1716947,
+      "name": "Ensysce Biosciences, Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 164,
+      "gaps": 416
+    },
+    {
+      "cik": 1718405,
+      "name": "HYCROFT MINING HOLDING CORP",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 189,
+      "gaps": 495
+    },
+    {
+      "cik": 1719406,
+      "name": "NRX Pharmaceuticals, Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 175,
+      "gaps": 439
+    },
+    {
+      "cik": 1720592,
+      "name": "Repay Holdings Corp",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 146,
+      "gaps": 360
+    },
+    {
+      "cik": 1721181,
+      "name": "HeadHunter Group PLC",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 66,
+      "gaps": 188
+    },
+    {
+      "cik": 1722438,
+      "name": "Doma Holdings, Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 64,
+      "gaps": 160
+    },
+    {
+      "cik": 1725134,
+      "name": "Digital Media Solutions, Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 120,
+      "gaps": 296
+    },
+    {
+      "cik": 1725872,
+      "name": "BM Technologies, Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 116,
+      "gaps": 296
+    },
+    {
+      "cik": 1725882,
+      "name": "INX Ltd",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 101,
+      "gaps": 287
+    },
+    {
+      "cik": 1726445,
+      "name": "Seer, Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 83,
+      "gaps": 199
+    },
+    {
+      "cik": 1728190,
+      "name": "HUYA Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 85,
+      "gaps": 239
+    },
+    {
+      "cik": 1731289,
+      "name": "Nikola Corp",
+      "reason": "corpus incomplete",
+      "documents": 1,
+      "expected_filings": 157,
+      "gaps": 404
+    },
+    {
+      "cik": 1733298,
+      "name": "Qutoutiao Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 40,
+      "gaps": 106
+    },
+    {
+      "cik": 1734722,
+      "name": "UiPath, Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 65,
+      "gaps": 153
+    },
+    {
+      "cik": 1737806,
+      "name": "PDD Holdings Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 77,
+      "gaps": 215
+    },
+    {
+      "cik": 1739566,
+      "name": "Utz Brands, Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 116,
+      "gaps": 282
+    },
+    {
+      "cik": 1742927,
+      "name": "REVIVA PHARMACEUTICALS HOLDINGS, INC.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 132,
+      "gaps": 326
+    },
+    {
+      "cik": 1743102,
+      "name": "Jiayin Group Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 63,
+      "gaps": 175
+    },
+    {
+      "cik": 1743907,
+      "name": "Sun Country Airlines Holdings, LLC",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 99,
+      "gaps": 251
+    },
+    {
+      "cik": 1744494,
+      "name": "ADVENT TECHNOLOGIES HOLDINGS, INC.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 145,
+      "gaps": 377
+    },
+    {
+      "cik": 1746618,
+      "name": "Revolve Group, Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 77,
+      "gaps": 173
+    },
+    {
+      "cik": 1747748,
+      "name": "Qualtrics International Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 45,
+      "gaps": 115
+    },
+    {
+      "cik": 1750153,
+      "name": "Canoo Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 126,
+      "gaps": 330
+    },
+    {
+      "cik": 1750593,
+      "name": "Fangdd Network Group Ltd.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 90,
+      "gaps": 252
+    },
+    {
+      "cik": 1751008,
+      "name": "AppLovin Corp",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 80,
+      "gaps": 196
+    },
+    {
+      "cik": 1752474,
+      "name": "KLDiscovery Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 85,
+      "gaps": 209
+    },
+    {
+      "cik": 1752828,
+      "name": "Celularity Inc",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 149,
+      "gaps": 387
+    },
+    {
+      "cik": 1753539,
+      "name": "BlackSky Technology Inc.",
+      "reason": "corpus incomplete",
+      "documents": 0,
+      "expected_filings": 99,
+      "gaps": 227
+    }
+  ]
+}

@@ -4,6 +4,67 @@ Operational guidance for ruling on metric candidates under `METHOD.md` §4 and �
 Written before the rulings begin, so the standard is fixed in advance rather than
 drifting as the work goes on.
 
+---
+
+## How to run the session
+
+Two commands. The first regenerates the candidate file from the corpus; the second
+starts the tool on localhost.
+
+```powershell
+# 1. Extract candidates from the built corpus (minutes, no network)
+.venv\Scripts\python.exe -m pipeline.build_candidates
+
+# 2. Start the tool. It writes to disk, so it only mounts with the flag set.
+$env:UNDERWRITTEN_ADJUDICATE = "1"
+$env:UNDERWRITTEN_REVIEWER   = "JL"     # your initials, written into every row
+.venv\Scripts\python.exe -m uvicorn app.main:app --port 8000
+```
+
+Then open <http://127.0.0.1:8000/adjudicate>.
+
+**The flag is never set on the deployed site.** With it unset the tool registers zero
+routes — the public site cannot reach it, which is checked by a test rather than assumed.
+
+### What to expect
+
+- Roughly **550 groups** across the cohort, one decision each. A group is one issuer and
+  one metric name; ruling it once writes through to every occurrence — the first group is
+  a heading with **1,014** occurrences behind it.
+- Over half are section headings or boilerplate: one keystroke each.
+- Progress is saved after every ruling. Close the browser whenever you like and resume
+  where you stopped; ruled groups are skipped.
+
+### Keys
+
+| Key | Action |
+|---|---|
+| `i` / `x` / `n` | arm INCLUDE / EXCLUDE / NOT_DETERMINABLE |
+| `1`–`9` | pick a rationale preset **and commit** |
+| `Enter` | commit the armed verdict with the rationale shown |
+| `t` | jump to the free-text rationale |
+| `s` | skip (writes nothing) |
+| `b` | back |
+| `?` | show all keys |
+
+Nothing is armed on load, and a commit requires a verdict, your initials, and a non-empty
+rationale — so an accidental keypress cannot write a row.
+
+### The machine's proposal
+
+Each group carries a proposed ruling with the rule it fired on, rendered dashed and
+labelled *"machine proposal · not a ruling"*. Nothing is pre-selected. The proposal text
+is **never** used as your rationale, and whether you agreed with it is recorded in
+`adjudication_log.jsonl`, so the agreement rate can be inspected afterwards. If that rate
+is near 100%, that is evidence the proposals were rubber-stamped rather than reviewed —
+which is exactly what a sceptical reader would want to check, so it is recorded.
+
+Validated against real filings: the proposals correctly excluded 24 section headings,
+included 10 genuine company-defined metrics (`EVE`, `cumulative deposit beta`), abstained
+on 9 it could not classify, and produced **one false include** — `Contents A CAM`, a
+Critical Audit Matter from the auditor's report. Expect a few of those. Catching them is
+the job.
+
 **This document does not contain any ruling.** It explains how to make one, and
 records the edge cases already found in real filings so the same question is not
 re-decided differently on day two. Every ruling is yours, signed and dated.
