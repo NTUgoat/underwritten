@@ -473,36 +473,66 @@ class PhraseError(ValueError):
     """Raised when a phrase cannot be turned into a searchable pattern."""
 
 
+# The shortest stem a plural rule is allowed to produce. Below these lengths a
+# truncation stops being a stem and becomes a different word - "Uses" -> "Us",
+# "Cases" -> "Cas" - and matching that word is a false appearance.
+_MIN_STEM_AFTER_ONE_CHAR = 3
+_MIN_STEM_AFTER_TWO_CHARS = 4
+
+_SIBILANT_PLURALS = ("ses", "xes", "zes", "ches", "shes")
+
+
+def _surface_forms(token: str) -> set[str]:
+    """The word forms a simple singular/plural alternation can reach.
+
+    Only whole words, never a bare truncated stem. Emitting a stem was the
+    earlier bug here: `Rates` became `Rat(?:es?)?`, whose optional group made
+    the non-word "Rat" independently matchable - and `Uses` became `Us(?:es?)?`,
+    which matches the pronoun "us". A false *appearance* suppresses a real
+    absence run just as surely as a false absence invents one, so the forms are
+    enumerated explicitly and each one has to be a plausible word.
+    """
+    forms = {token}
+    lowered = token.lower()
+
+    if lowered.endswith("ies") and len(token) > 4:
+        forms.add(token[:-3] + "y")            # Deliveries -> Delivery
+    elif lowered.endswith(_SIBILANT_PLURALS):
+        # Ambiguous: "Losses" is Loss+es, "Cases" is Case+s. Take both readings,
+        # subject to the stem still being long enough to be a word.
+        if len(token) - 2 >= _MIN_STEM_AFTER_TWO_CHARS:
+            forms.add(token[:-2])              # Losses -> Loss
+        if len(token) - 1 >= _MIN_STEM_AFTER_ONE_CHAR:
+            forms.add(token[:-1])              # Cases  -> Case
+    elif lowered.endswith("ss"):
+        forms.add(token + "es")                # Gross -> Grosses
+    elif lowered.endswith("s"):
+        if len(token) - 1 >= _MIN_STEM_AFTER_ONE_CHAR:
+            forms.add(token[:-1])              # Nights -> Night, Rates -> Rate
+    elif lowered.endswith("y") and token[-2].lower() not in "aeiou":
+        forms.add(token[:-1] + "ies")          # Delivery -> Deliveries
+    else:
+        forms.add(token + "s")                 # Night -> Nights
+        if lowered.endswith(("x", "z", "ch", "sh")):
+            forms.add(token + "es")            # Box -> Boxes
+
+    return forms
+
+
 def _token_pattern(token: str) -> str:
     """A token, tolerant of the simple singular/plural alternation.
 
-    Deliberately simple - it handles `-s`, `-es`, `-ies`, and the singular form
-    of each. It does not attempt irregular plurals: over-reaching here would
-    invent matches, and a false *appearance* is as damaging to the study as a
-    false absence.
+    Deliberately simple - `-s`, `-es`, `-ies` and their singulars. It does not
+    attempt irregular plurals: over-reaching here would invent matches, and a
+    false appearance is as damaging to the study as a false absence.
     """
     if not token.isalpha() or len(token) < 4:
         return re.escape(token)
 
-    lowered = token.lower()
-    if lowered.endswith("ies"):
-        return re.escape(token[:-3]) + r"(?:y|ies)"
-    if lowered.endswith("ss"):
-        return re.escape(token) + r"(?:es)?"
-    # `(?:es?)?` - not `(?:e?s)?` - because the stem has lost the "es" and both
-    # the singular ("Experience") and the plural ("Experiences") must be
-    # reachable from it. `e?s` cannot produce a bare "e" and would silently miss
-    # every singular, which is exactly the kind of quiet miss that turns into a
-    # false absence.
-    if lowered.endswith(("ses", "xes", "ches", "shes")):
-        return re.escape(token[:-2]) + r"(?:es?)?"
-    if lowered.endswith("es"):
-        return re.escape(token[:-2]) + r"(?:es?)?"
-    if lowered.endswith("s"):
-        return re.escape(token[:-1]) + r"s?"
-    if lowered.endswith("y") and token[-2].lower() not in "aeiou":
-        return re.escape(token[:-1]) + r"(?:y|ies)"
-    return re.escape(token) + r"(?:e?s)?"
+    forms = sorted(_surface_forms(token), key=lambda f: (-len(f), f))
+    if len(forms) == 1:
+        return re.escape(forms[0])
+    return "(?:" + "|".join(re.escape(form) for form in forms) + ")"
 
 
 def tokenise(phrase: str) -> tuple[str, ...]:

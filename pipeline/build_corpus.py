@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 import sys
 import time
 import warnings
@@ -40,8 +41,37 @@ def _cohort_rows() -> list[dict[str, str]]:
         return list(csv.DictReader(handle))
 
 
+def _acquire_lock() -> object:
+    """Refuse to run twice at once.
+
+    Two overlapping runs raced on the same cache paths (Errno 22 on Windows) and
+    could have left truncated files that later read back as short text - which,
+    in this study, reads as a phrase being absent. Cheap guard, real failure.
+    """
+    lock_path = config.DERIVED / "corpus_build.lock"
+    handle = open(lock_path, "w", encoding="utf-8")  # noqa: SIM115 - held for the run
+    try:
+        if os.name == "nt":
+            import msvcrt
+
+            msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+        else:
+            import fcntl
+
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        handle.close()
+        raise SystemExit(
+            "Another corpus build is already running. Two concurrent runs race on "
+            "the cache and can leave truncated documents, which read as an absent "
+            "phrase. Wait for it, or kill it first."
+        )
+    return handle
+
+
 def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
+    _lock = _acquire_lock()
     client = EdgarClient()
     rows = _cohort_rows()
 

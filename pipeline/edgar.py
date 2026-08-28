@@ -16,7 +16,9 @@ Nothing here interprets a filing. Parsing lives in corpus.py and metrics.py.
 from __future__ import annotations
 
 import hashlib
+import itertools
 import json
+import os
 import threading
 import time
 from dataclasses import dataclass, replace
@@ -26,6 +28,9 @@ from typing import Any
 import requests
 
 from . import config
+
+
+_TMP_COUNTER = itertools.count()
 
 
 class EdgarError(RuntimeError):
@@ -83,6 +88,30 @@ def _cache_path(url: str) -> Path:
     return config.RAW / digest[:2] / digest[2:4] / f"{digest}.bin"
 
 
+def _atomic_write(path: Path, payload: bytes) -> None:
+    """Write via a unique temp file then rename, so a reader never sees a partial file.
+
+    This is a correctness requirement, not tidiness. The cache key is a hash of
+    the URL, not of the content, so a half-written file is indistinguishable
+    from a complete one on the next run - it would simply be read back as short
+    text. In this study short text means a phrase appears absent, and absence is
+    what METHOD.md §6 turns into a DISCONTINUED verdict. A truncated cache entry
+    would therefore manufacture a finding.
+
+    Two runs of this pipeline overlapped once (Errno 22 on Windows, two
+    processes writing the same path), which is what surfaced this. `os.replace`
+    is atomic on both POSIX and Windows, and the PID/counter suffix keeps two
+    writers from colliding on the temp file itself.
+    """
+    tmp = path.with_name(f"{path.name}.{os.getpid()}.{next(_TMP_COUNTER)}.tmp")
+    try:
+        tmp.write_bytes(payload)
+        os.replace(tmp, path)
+    except BaseException:
+        tmp.unlink(missing_ok=True)
+        raise
+
+
 class EdgarClient:
     """A caching EDGAR reader that records the hash of everything it reads."""
 
@@ -122,7 +151,7 @@ class EdgarClient:
 
         payload = self._get_with_retries(url)
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_bytes(payload)
+        _atomic_write(path, payload)
 
         record = Fetched(
             url=url,

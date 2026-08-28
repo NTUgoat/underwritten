@@ -135,7 +135,7 @@ class DocumentFailure:
     filing_date: date
     filename: str
     url: str
-    stage: str  # "index" | "fetch" | "size" | "parse"
+    stage: str  # "index" | "header" | "fetch" | "size" | "parse"
     error: str
 
 
@@ -292,11 +292,15 @@ def submission_header_url(cik: int | str, accession: str) -> str:
     return f"{filing_directory_url(cik, accession)}/{accession}-index-headers.html"
 
 
-def parse_directory(payload: object) -> tuple[tuple[str, int], ...]:
+def parse_directory(payload: object) -> tuple[tuple[str, int | None], ...]:
     """`(filename, size)` for every file in a filing directory index.json.
 
+    Size is `None` when EDGAR leaves the field blank, which it often does. That
+    is *unknown*, not *empty*, and conflating the two silently drops real
+    documents - so the distinction is kept in the type.
+
     The `type` field in index.json is the icon EDGAR shows in its file browser
-    ("text.gif"), not the document type - so it is deliberately ignored here.
+    ("text.gif"), not the document type, so it is deliberately ignored here.
     Document types come from the submission header instead.
     """
     if not isinstance(payload, dict):
@@ -305,7 +309,7 @@ def parse_directory(payload: object) -> tuple[tuple[str, int], ...]:
     if not isinstance(items, list):
         return ()
 
-    out: list[tuple[str, int]] = []
+    out: list[tuple[str, int | None]] = []
     for item in items:
         if not isinstance(item, dict):
             continue
@@ -313,8 +317,7 @@ def parse_directory(payload: object) -> tuple[tuple[str, int], ...]:
         if not name:
             continue
         raw_size = str(item.get("size") or "").strip()
-        size = int(raw_size) if raw_size.isdigit() else 0
-        out.append((name, size))
+        out.append((name, int(raw_size) if raw_size.isdigit() else None))
     return tuple(out)
 
 
@@ -323,7 +326,7 @@ _HEADER_FILENAME = re.compile(r"<FILENAME>\s*([^\r\n<]+)")
 
 
 def parse_submission_header(raw: str) -> dict[str, str]:
-    """`{lowercased filename: EDGAR document type}` from an index-headers page.
+    """`{filename: EDGAR document type}` from an index-headers page.
 
     The page carries the filing's SGML header twice: once inside an HTML comment
     (submission level only) and once HTML-escaped in a `<PRE>` block with one
@@ -339,7 +342,7 @@ def parse_submission_header(raw: str) -> dict[str, str]:
             continue
         filename = name_match.group(1).strip()
         if filename:
-            types[filename.lower()] = type_match.group(1).strip()
+            types[filename] = type_match.group(1).strip()
     return types
 
 
@@ -369,17 +372,28 @@ def exhibit_files(
 ) -> tuple[tuple[tuple[str, str], ...], tuple[DocumentFailure, ...]]:
     """EX-99.x files in one filing, as `(filename, doc_type)` pairs.
 
-    Returns `((), failures)` when the filing directory cannot be listed, so the
-    caller records a coverage gap rather than assuming the filing had no
-    exhibits. Those two things must never be confused.
+    Two sources, and the result is their **union**, not their intersection.
 
-    A readable directory with an unreadable submission header still yields
-    exhibits, via the filename fallback - but the header failure is *also*
-    returned, because the fallback cannot see an exhibit whose filename does not
-    announce itself. An unenumerable 8-K is precisely the gap through which a
-    metric could still be reported while looking absent, so it is recorded and
-    left for the §6 test to weigh, not swallowed.
+    - `index.json` lists the filing directory. It is the documented way to find
+      a filing's files, and it carries sizes.
+    - `{accession}-index-headers.html` carries the submission's SGML header, one
+      `<DOCUMENT>` stanza per file with the authoritative `<TYPE>`.
+
+    Neither alone is sufficient, and this was established against the archive
+    rather than assumed. `index.json` for accession `0001193125-22-245113`
+    (Oaktree Strategic Income II, 8-K of 2022-09-15) lists only the primary
+    document, while the header lists `d693479dex991.htm` and
+    `d693479dex992.htm` - both of which sec.gov serves, at 24 KB and 29 KB. An
+    index.json-only reader silently loses those furnished exhibits, which is the
+    precise mechanism METHOD.md §6 exists to defeat. Conversely the header can
+    be unreachable, and then the directory listing plus the filename pattern is
+    all there is.
+
+    So both are read, both failures are recorded, and a document named by either
+    is a candidate. `((), failures)` means nothing could be enumerated at all -
+    which the caller must treat as a coverage gap, never as "no exhibits".
     """
+
     def gap(filename: str, url: str, stage: str, exc: BaseException) -> DocumentFailure:
         return DocumentFailure(
             cik=filing.cik,
@@ -392,38 +406,53 @@ def exhibit_files(
             error=f"{type(exc).__name__}: {exc}",
         )
 
+    failures: list[DocumentFailure] = []
+
     index_url = filing_index_json_url(filing.cik, filing.accession)
+    entries: tuple[tuple[str, int | None], ...] = ()
     try:
         entries = parse_directory(client.fetch_json(index_url))
     except Exception as exc:  # noqa: BLE001 - one bad index must not stop a run
-        return (), (gap("index.json", index_url, "index", exc),)
+        failures.append(gap("index.json", index_url, "index", exc))
 
-    # Header types are authoritative; the filename pattern is the fallback.
-    failures: list[DocumentFailure] = []
     header_url = submission_header_url(filing.cik, filing.accession)
+    types: dict[str, str] = {}
     try:
         types = parse_submission_header(client.fetch_text(header_url))
     except Exception as exc:  # noqa: BLE001
         logger.warning(
-            "Submission header unavailable for %s; falling back to filename "
-            "matching, which can miss an oddly named exhibit: %s",
+            "Submission header unavailable for %s; exhibit types fall back to "
+            "filename matching, which can miss an oddly named exhibit: %s",
             filing.accession,
             exc,
         )
         failures.append(gap(header_url.rsplit("/", 1)[-1], header_url, "header", exc))
-        types = {}
+
+    if not entries and not types:
+        return (), tuple(failures)
+
+    # Merge on a case-insensitive key while keeping the filename as filed, since
+    # that is what the archive URL needs.
+    merged: dict[str, tuple[str, str | None, int | None]] = {}
+    for name, size in entries:
+        merged[name.lower()] = (name, None, size)
+    for name, doc_type in types.items():
+        key = name.lower()
+        filed_name, _, size = merged.get(key, (name, None, None))
+        merged[key] = (filed_name, doc_type, size)
 
     found: list[tuple[str, str]] = []
-    for filename, size in entries:
-        if size == 0 or not is_readable_filename(filename):
+    for filed_name, doc_type, size in merged.values():
+        if size == 0:
+            continue  # known to be empty, as opposed to size unknown (None)
+        if not is_readable_filename(filed_name):
             continue
-        if filename.lower() == f"{filing.accession}.txt":
+        if filed_name.lower() == f"{filing.accession}.txt":
             continue  # the full submission duplicates every other document
-        doc_type = types.get(filename.lower())
-        if is_exhibit_99(filename, doc_type):
-            found.append((filename, doc_type or "EX-99"))
+        if is_exhibit_99(filed_name, doc_type):
+            found.append((filed_name, doc_type or "EX-99"))
 
-    return tuple(found), tuple(failures)
+    return tuple(sorted(found)), tuple(failures)
 
 
 # --- Document loading ------------------------------------------------------
@@ -550,13 +579,40 @@ def _period_label(anchor: Filing) -> str:
     return f"filed-{anchor.filing_date.isoformat()}/{anchor.form.upper()}"
 
 
+def _assign_to_periods(
+    ordered: Sequence[Filing], windows: Sequence[tuple[Filing, date, date]]
+) -> list[list[str]]:
+    """Partition filings across windows. Every filing lands in exactly one.
+
+    Consecutive windows share a boundary date (period i ends where period i+1
+    starts), and `break` on the first containing window is what makes that
+    overlap harmless: a filing on a shared date always resolves to the earlier
+    period. Removing the `break`, or iterating out of order, would double-count
+    a filing and inflate a period's document count.
+    """
+    buckets: list[list[str]] = [[] for _ in windows]
+    for filing in ordered:
+        for i, (_, start, end) in enumerate(windows):
+            if start <= filing.filing_date <= end:
+                buckets[i].append(filing.accession)
+                break
+        else:
+            # Earlier than every window: join the first period rather than
+            # opening an empty one, which would read as absence.
+            buckets[0].append(filing.accession)
+    return buckets
+
+
 def reporting_periods(filings: Sequence[Filing]) -> tuple[ReportingPeriod, ...]:
     """Group an issuer's filings into the periods its own reports define.
 
-    Each periodic report anchors one period; the window runs from the day after
-    the previous anchor was filed to the day this one was filed. Everything else
-    the issuer filed - 8-K, 6-K, exhibits - falls into whichever window contains
-    its filing date.
+    Each periodic report anchors one period. Windows are inclusive at both ends
+    and therefore touch: period i ends on its anchor's filing date and period
+    i+1 starts on that same date. Placement resolves the overlap by taking the
+    *first* window that contains a filing, so anything filed on an anchor's own
+    date belongs to that anchor's period and nothing is ever counted twice. That
+    rule is load-bearing, not incidental - `_assign_to_periods` restates it, and
+    a test asserts the partition is exact.
 
     Two boundary decisions, both taken in the direction that avoids inventing an
     empty period (an empty period reads as absence and would corrupt the §6
@@ -599,17 +655,7 @@ def reporting_periods(filings: Sequence[Filing]) -> tuple[ReportingPeriod, ...]:
     last_anchor, last_start, last_end = windows[-1]
     windows[-1] = (last_anchor, last_start, max(last_end, last_date))
 
-    buckets: list[list[str]] = [[] for _ in windows]
-    for filing in ordered:
-        placed = False
-        for i, (_, start, end) in enumerate(windows):
-            if start <= filing.filing_date <= end:
-                buckets[i].append(filing.accession)
-                placed = True
-                break
-        if not placed:
-            # Before the first window: join the first period.
-            buckets[0].append(filing.accession)
+    buckets = _assign_to_periods(ordered, windows)
 
     return tuple(
         ReportingPeriod(

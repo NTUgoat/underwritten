@@ -326,16 +326,84 @@ def test_a_failed_header_still_yields_exhibits_but_records_the_gap():
     assert [f.stage for f in failures] == ["header"]
 
 
-def test_unreadable_directory_is_a_recorded_gap_not_an_empty_filing():
-    class Broken(_StubClient):
-        def fetch_json(self, url):
-            raise OSError("HTTP 500")
+class _BrokenDirectory(_StubClient):
+    def fetch_json(self, url):
+        raise OSError("HTTP 500")
 
-    found, failures = exhibit_files(Broken(), _earnings_8k())
 
-    assert found == ()
+def test_an_unreadable_directory_still_yields_exhibits_from_the_header():
+    """Either source alone suffices; the failure is still recorded."""
+    found, failures = exhibit_files(_BrokenDirectory(), _earnings_8k())
+
+    assert [name for name, _ in found] == ["d147144dex991.htm"]
     assert [f.stage for f in failures] == ["index"]
     assert "HTTP 500" in failures[0].error
+
+
+def test_a_filing_that_cannot_be_enumerated_at_all_is_a_recorded_gap():
+    """No exhibits found must never be confused with no exhibits filed."""
+    found, failures = exhibit_files(
+        _BrokenDirectory(header=None), _earnings_8k()
+    )
+
+    assert found == ()
+    assert sorted(f.stage for f in failures) == ["header", "index"]
+
+
+# EDGAR's index.json is not always complete. For accession 0001193125-22-245113
+# (Oaktree Strategic Income II, 8-K of 2022-09-15) it lists only the primary
+# document, while the submission header lists two EX-99 exhibits that sec.gov
+# serves at 24 KB and 29 KB. Reading index.json alone loses them - and losing a
+# furnished exhibit is exactly how a still-reported metric reads as absent.
+INCOMPLETE_DIRECTORY_JSON = {
+    "directory": {
+        "item": [
+            {"name": "0001193125-22-245113-index.html", "type": "text.gif", "size": ""},
+            {"name": "0001193125-22-245113.txt", "type": "text.gif", "size": ""},
+            {"name": "d693479d8k.htm", "type": "text.gif", "size": "42956"},
+        ]
+    }
+}
+
+INCOMPLETE_DIRECTORY_HEADER = """<PRE>
+&lt;DOCUMENT&gt;
+&lt;TYPE&gt;8-K
+&lt;FILENAME&gt;d693479d8k.htm
+&lt;/DOCUMENT&gt;
+&lt;DOCUMENT&gt;
+&lt;TYPE&gt;EX-99.1
+&lt;FILENAME&gt;d693479dex991.htm
+&lt;/DOCUMENT&gt;
+&lt;DOCUMENT&gt;
+&lt;TYPE&gt;EX-99.2
+&lt;FILENAME&gt;d693479dex992.htm
+&lt;/DOCUMENT&gt;
+</PRE>"""
+
+
+def test_exhibits_the_directory_listing_omits_are_still_collected():
+    class Oaktree(_StubClient):
+        def fetch_json(self, url):
+            return INCOMPLETE_DIRECTORY_JSON
+
+        def fetch_text(self, url):
+            return INCOMPLETE_DIRECTORY_HEADER
+
+    found, failures = exhibit_files(Oaktree(), _earnings_8k())
+
+    assert failures == ()
+    assert [name for name, _ in found] == [
+        "d693479dex991.htm",
+        "d693479dex992.htm",
+    ]
+
+
+def test_a_blank_size_is_unknown_not_empty():
+    """Treating a blank size as zero bytes would drop real documents."""
+    sizes = dict(parse_directory(INCOMPLETE_DIRECTORY_JSON))
+
+    assert sizes["0001193125-22-245113.txt"] is None
+    assert sizes["d693479d8k.htm"] == 42956
 
 
 # ===========================================================================
@@ -440,6 +508,52 @@ def test_simple_plural_and_singular_both_match(phrase, haystack):
 )
 def test_word_boundaries_prevent_matching_inside_a_longer_word(haystack):
     assert not phrase_pattern("Active Consumer").search(haystack)
+
+
+@pytest.mark.parametrize(
+    "phrase,haystack",
+    [
+        # Regression: stem truncation used to emit `Rat(?:es?)?`, `Sal(?:es?)?`,
+        # `Us(?:es?)?` - each of which matched a bare non-word stem, and "us" is
+        # an ordinary English pronoun. A false appearance suppresses a real
+        # absence run, so these must not match.
+        ("Attach Rates", "Our Attach Rat improved slightly this quarter."),
+        ("Adjusted Sales", "Adjusted Sal figures were strong."),
+        ("Active Uses", "This helps Active us understand the business."),
+        ("Net Revenues", "Net Revenu was restated."),
+        ("Average Prices", "Average Pric moved higher."),
+        ("Treasury Shares", "Treasury Shar were retired."),
+    ],
+)
+def test_plural_tolerance_never_matches_a_truncated_stem(phrase, haystack):
+    assert not phrase_pattern(phrase).search(haystack)
+
+
+@pytest.mark.parametrize(
+    "phrase,haystack",
+    [
+        ("Attach Rates", "our Attach Rate was 40%"),
+        ("Attach Rate", "our Attach Rates were 40%"),
+        ("Net Revenues", "Net Revenue grew 20%"),
+        ("Adjusted Sales", "Adjusted Sale volume"),
+        ("Gross Bookings", "Grosses Booking"),
+    ],
+)
+def test_plural_tolerance_still_reaches_the_real_word_forms(phrase, haystack):
+    assert phrase_pattern(phrase).search(haystack)
+
+
+def test_every_alternative_in_a_token_pattern_is_a_whole_word_form():
+    """No bare stems - each alternative must be reachable by adding/removing a
+    plural ending, never by chopping a word in half."""
+    from pipeline.metrics import _surface_forms
+
+    assert _surface_forms("Uses") == {"Uses", "Use"}
+    assert _surface_forms("Cases") == {"Cases", "Case"}
+    assert _surface_forms("Losses") == {"Losses", "Losse", "Loss"}
+    assert _surface_forms("Gross") == {"Gross", "Grosses"}
+    assert "Rat" not in _surface_forms("Rates")
+    assert "Us" not in _surface_forms("Uses")
 
 
 def test_plural_tolerance_can_be_switched_off():
@@ -939,3 +1053,25 @@ def test_the_ledger_is_written_atomically(tmp_path):
     assert path.exists()
     assert not (tmp_path / "metrics_candidates.csv.partial").exists()
     assert list(tmp_path.iterdir()) == [path]
+
+
+def test_periods_partition_the_filings_exactly():
+    """Windows touch at their boundaries; first-window-wins keeps the partition
+    exact. Double-counting would inflate a period's document count and could
+    mask a real absence."""
+    filings = [
+        _filing("10-Q", date(2022, 5, 10), "a", date(2022, 3, 31)),
+        _filing("8-K", date(2022, 5, 10), "b"),          # on the boundary
+        _filing("8-K", date(2022, 6, 1), "c"),
+        _filing("10-Q", date(2022, 8, 9), "d", date(2022, 6, 30)),
+        _filing("10-K", date(2023, 2, 15), "e", date(2022, 12, 31)),
+        _filing("8-K", date(2023, 6, 1), "f"),           # after the last anchor
+    ]
+    periods = reporting_periods(filings)
+    assigned = [a for p in periods for a in p.accessions]
+
+    assert sorted(assigned) == ["a", "b", "c", "d", "e", "f"]
+    assert len(assigned) == len(set(assigned))          # nothing counted twice
+    assert all(p.accessions for p in periods)           # no empty period
+    # A filing on a shared boundary date belongs to the earlier period.
+    assert "b" in periods[0].accessions
