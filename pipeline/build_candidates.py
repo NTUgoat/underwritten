@@ -114,7 +114,17 @@ def main() -> int:
             # §6 absence corpus, where a pre-listing document would corrupt the
             # period vector.
             listing_docs = listing_documents(client, index, row)
-            found = locate((*listing_docs, *corpus.documents))
+            # §4 locates in the listing document and the first annual report.
+            # Those two are also the only places table extraction runs.
+            annuals = [
+                d for d in corpus.documents
+                if d.form.upper() in {"10-K", "20-F", "40-F"} and d.is_primary
+            ]
+            first_annual = annuals[:1]
+            found = locate(
+                (*listing_docs, *corpus.documents),
+                table_documents=(*listing_docs, *first_annual),
+            )
         except OfflineCacheMiss:
             skipped.append(
                 {"cik": cik, "name": row["name"], "reason": "corpus not built yet"}

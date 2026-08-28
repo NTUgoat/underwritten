@@ -1,12 +1,12 @@
 {
   "as_at": "2026-08-28",
-  "issuers_measured": 30,
+  "issuers_measured": 31,
   "complete": false,
-  "issuers_skipped": 20,
-  "occurrences": 13790,
-  "groups_to_rule": 538,
+  "issuers_skipped": 19,
+  "occurrences": 14377,
+  "groups_to_rule": 946,
   "by_arm": {
-    "IPO": 12,
+    "IPO": 13,
     "DESPAC": 18
   },
   "per_issuer": [
@@ -15,56 +15,56 @@
       "name": "HBT Financial, Inc.",
       "arm": "IPO",
       "documents": 197,
-      "occurrences": 1386,
-      "groups": 11
+      "occurrences": 1527,
+      "groups": 91
     },
     {
       "cik": 1621672,
       "name": "Super League Enterprise, Inc.",
       "arm": "IPO",
       "documents": 252,
-      "occurrences": 199,
-      "groups": 10
+      "occurrences": 211,
+      "groups": 22
     },
     {
       "cik": 1651944,
       "name": "DermTech, Inc.",
       "arm": "DESPAC",
       "documents": 148,
-      "occurrences": 52,
-      "groups": 17
+      "occurrences": 53,
+      "groups": 18
     },
     {
       "cik": 1653558,
       "name": "Priority Technology Holdings, Inc.",
       "arm": "DESPAC",
       "documents": 271,
-      "occurrences": 772,
-      "groups": 7
+      "occurrences": 784,
+      "groups": 19
     },
     {
       "cik": 1654126,
       "name": "ZIM Integrated Shipping Services Ltd.",
       "arm": "IPO",
       "documents": 267,
-      "occurrences": 88,
-      "groups": 19
+      "occurrences": 101,
+      "groups": 32
     },
     {
       "cik": 1676238,
       "name": "Braze, Inc.",
       "arm": "IPO",
       "documents": 77,
-      "occurrences": 370,
-      "groups": 13
+      "occurrences": 374,
+      "groups": 15
     },
     {
       "cik": 1689657,
       "name": "Bruker Cellular Analysis, Inc.",
       "arm": "IPO",
       "documents": 90,
-      "occurrences": 47,
-      "groups": 6
+      "occurrences": 56,
+      "groups": 10
     },
     {
       "cik": 1690080,
@@ -79,56 +79,56 @@
       "name": "Lemonade, Inc.",
       "arm": "IPO",
       "documents": 109,
-      "occurrences": 1758,
-      "groups": 48
+      "occurrences": 1806,
+      "groups": 78
     },
     {
       "cik": 1691493,
       "name": "Nu Holdings Ltd.",
       "arm": "IPO",
       "documents": 188,
-      "occurrences": 345,
-      "groups": 44
+      "occurrences": 373,
+      "groups": 55
     },
     {
       "cik": 1691936,
       "name": "STRYVE FOODS, INC.",
       "arm": "DESPAC",
       "documents": 145,
-      "occurrences": 100,
-      "groups": 7
+      "occurrences": 109,
+      "groups": 15
     },
     {
       "cik": 1698991,
       "name": "Accel Entertainment, Inc.",
       "arm": "DESPAC",
       "documents": 239,
-      "occurrences": 1367,
-      "groups": 17
+      "occurrences": 1417,
+      "groups": 59
     },
     {
       "cik": 1699838,
       "name": "Confluent, Inc.",
       "arm": "IPO",
       "documents": 82,
-      "occurrences": 563,
-      "groups": 24
+      "occurrences": 595,
+      "groups": 53
     },
     {
       "cik": 1703057,
       "name": "AbCellera Biologics Inc.",
       "arm": "IPO",
       "documents": 162,
-      "occurrences": 300,
-      "groups": 7
+      "occurrences": 304,
+      "groups": 9
     },
     {
       "cik": 1703956,
       "name": "Concrete Pumping Holdings, Inc.",
       "arm": "DESPAC",
       "documents": 192,
-      "occurrences": 437,
-      "groups": 7
+      "occurrences": 460,
+      "groups": 23
     },
     {
       "cik": 1706946,
@@ -143,40 +143,40 @@
       "name": "GLOBALFOUNDRIES Inc.",
       "arm": "IPO",
       "documents": 152,
-      "occurrences": 172,
-      "groups": 51
+      "occurrences": 178,
+      "groups": 56
     },
     {
       "cik": 1709682,
       "name": "Custom Truck One Source, Inc.",
       "arm": "DESPAC",
       "documents": 250,
-      "occurrences": 514,
-      "groups": 19
+      "occurrences": 523,
+      "groups": 25
     },
     {
       "cik": 1712189,
       "name": "Target Hospitality Corp.",
       "arm": "DESPAC",
       "documents": 279,
-      "occurrences": 665,
-      "groups": 18
+      "occurrences": 667,
+      "groups": 20
     },
     {
       "cik": 1712463,
       "name": "Ranpak Holdings Corp.",
       "arm": "DESPAC",
       "documents": 188,
-      "occurrences": 806,
-      "groups": 9
+      "occurrences": 811,
+      "groups": 14
     },
     {
       "cik": 1713952,
       "name": "Vivint Smart Home, Inc.",
       "arm": "DESPAC",
       "documents": 132,
-      "occurrences": 302,
-      "groups": 31
+      "occurrences": 375,
+      "groups": 100
     },
     {
       "cik": 1716166,
@@ -191,16 +191,16 @@
       "name": "Ensysce Biosciences, Inc.",
       "arm": "DESPAC",
       "documents": 238,
-      "occurrences": 32,
-      "groups": 9
+      "occurrences": 33,
+      "groups": 10
     },
     {
       "cik": 1718405,
       "name": "HYCROFT MINING HOLDING CORP",
       "arm": "DESPAC",
       "documents": 317,
-      "occurrences": 27,
-      "groups": 13
+      "occurrences": 30,
+      "groups": 16
     },
     {
       "cik": 1719406,
@@ -215,51 +215,51 @@
       "name": "Repay Holdings Corp",
       "arm": "DESPAC",
       "documents": 307,
-      "occurrences": 1393,
-      "groups": 26
+      "occurrences": 1412,
+      "groups": 38
     },
     {
       "cik": 1721181,
       "name": "HeadHunter Group PLC",
       "arm": "IPO",
       "documents": 135,
-      "occurrences": 217,
-      "groups": 29
+      "occurrences": 223,
+      "groups": 33
     },
     {
       "cik": 1722438,
       "name": "Doma Holdings, Inc.",
       "arm": "DESPAC",
       "documents": 105,
-      "occurrences": 520,
-      "groups": 12
+      "occurrences": 551,
+      "groups": 37
     },
     {
       "cik": 1725134,
       "name": "Digital Media Solutions, Inc.",
       "arm": "DESPAC",
       "documents": 181,
-      "occurrences": 694,
-      "groups": 30
+      "occurrences": 702,
+      "groups": 34
     },
     {
       "cik": 1725872,
       "name": "BM Technologies, Inc.",
       "arm": "DESPAC",
       "documents": 179,
-      "occurrences": 145,
-      "groups": 11
-    }
-  ],
-  "skipped": [
+      "occurrences": 146,
+      "groups": 12
+    },
     {
       "cik": 1725882,
       "name": "INX Ltd",
-      "reason": "corpus incomplete",
-      "documents": 69,
-      "expected_filings": 101,
-      "gaps": 192
-    },
+      "arm": "IPO",
+      "documents": 209,
+      "occurrences": 37,
+      "groups": 9
+    }
+  ],
+  "skipped": [
     {
       "cik": 1726445,
       "name": "Seer, Inc.",

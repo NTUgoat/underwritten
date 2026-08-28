@@ -1132,3 +1132,106 @@ def test_write_candidates_header_unchanged_for_a_plain_ledger(tmp_path):
     write_candidates([], path=path)
     header = next(iter(_csv.reader(path.open(encoding="utf-8"))))
     assert tuple(header) == tuple(LEDGER_FIELDS)
+
+
+# --- table rows under a KPI heading ---------------------------------------
+# The definition locators miss anything presented as a table, which is how many
+# issuers publish their scoreboard. False negatives are the expensive kind here:
+# an over-eager candidate costs the reviewer one keystroke, a metric that is
+# never located is invisible in the §7.1 denominator forever.
+
+
+def _doc(text: str):
+    from datetime import date as _date
+
+    from pipeline.corpus import Document
+
+    return Document(
+        cik=1,
+        accession="0000000000-00-000000",
+        form="S-1",
+        filing_date=_date(2019, 1, 4),
+        report_date=None,
+        filename="s1.htm",
+        doc_type="S-1",
+        is_primary=True,
+        url="https://example.invalid/s1.htm",
+        sha256="0" * 64,
+        n_bytes=len(text),
+        text=text,
+    )
+
+
+SUPER_LEAGUE = (
+    "Key Performance Indicators (\u201c KPI \u201d) 2015 2016 2017 2018 "
+    "Always On Venues 0 4 20 40 ~ 50 "
+    "Experiences 330 900 250 450 ~ 900 "
+    "Conversion Registered Accounts 13,000 30,000 43,000 230,000 ~ 300,000 "
+    "Engagement Participations 9,000 21,000 20,000 100,000 ~ 150,000 "
+    "Gameplay Hours 19,000 43,000 61,000 110,000 ~ 175,000 "
+)
+
+
+def test_table_rows_found_under_a_kpi_heading():
+    """Super League's prospectus names five metrics with no defining sentence."""
+    from pipeline.metrics import locate_table_rows, metric_key
+
+    found = {metric_key(c.metric_name) for c in locate_table_rows(_doc(SUPER_LEAGUE))}
+    for expected in (
+        "always on venues",
+        "experiences",
+        "conversion registered accounts",
+        "engagement participations",
+        "gameplay hours",
+    ):
+        assert expected in found, f"{expected!r} not located"
+
+
+def test_single_word_label_needs_several_numeric_cells():
+    """'Experiences 330 900 250' is a row; 'Revenue 5' in prose is not."""
+    from pipeline.metrics import locate_table_rows, metric_key
+
+    row = {metric_key(c.metric_name) for c in locate_table_rows(_doc(SUPER_LEAGUE))}
+    assert "experiences" in row
+
+    prose = _doc("Key Metrics are discussed below. Revenue 5 million was recorded.")
+    assert "revenue" not in {
+        metric_key(c.metric_name) for c in locate_table_rows(prose)
+    }
+
+
+def test_prose_fragments_ending_in_a_verb_are_rejected():
+    """Without this one bank produced 40 candidates, nearly all fragments."""
+    from pipeline.metrics import locate_table_rows, metric_key
+
+    doc = _doc(
+        "Key Operating Metrics Basic and diluted earnings per share were 1.42 "
+        "and C corp equivalent net income was 3.10 for the period."
+    )
+    found = {metric_key(c.metric_name) for c in locate_table_rows(doc)}
+    assert not any(k.endswith((" were", " was")) for k in found)
+
+
+def test_fragments_starting_with_a_preposition_are_rejected():
+    from pipeline.metrics import locate_table_rows, metric_key
+
+    doc = _doc("Key Metrics by their 12 own 34 definition 56 vary widely 78 here")
+    assert "by their" not in {
+        metric_key(c.metric_name) for c in locate_table_rows(doc)
+    }
+
+
+def test_month_abbreviations_are_not_metrics():
+    from pipeline.metrics import locate_table_rows, metric_key
+
+    doc = _doc("Key Metrics Dec 31 2021 12,000 Jan 31 2022 14,000 Feb 28 2022 16,000")
+    found = {metric_key(c.metric_name) for c in locate_table_rows(doc)}
+    assert not any(k.split()[0] in {"dec", "jan", "feb"} for k in found)
+
+
+def test_table_rows_are_scoped_to_the_heading_region():
+    """Outside a KPI section, 'capitalised phrase then number' is everything."""
+    from pipeline.metrics import locate_table_rows
+
+    doc = _doc("Risk Factors Our Business 12 may suffer 34 if markets 56 move.")
+    assert locate_table_rows(doc) == ()

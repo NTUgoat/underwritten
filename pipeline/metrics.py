@@ -202,6 +202,72 @@ LOCATORS: tuple[Locator, ...] = _DEFINITION_LOCATORS + _HEADING_LOCATORS
 SENTENCE_MAX_CHARS = 1200
 HEADING_CONTEXT_CHARS = 600
 
+# --- Table rows under a KPI heading ---------------------------------------
+#
+# The definition locators find "we define X as" and miss everything presented
+# as a TABLE, which is how a great many issuers actually publish their
+# scoreboard. Super League's prospectus lists five named metrics - Always On
+# Venues, Experiences, Conversion Registered Accounts, Engagement
+# Participations, Gameplay Hours - under a heading that says "KPI", with no
+# defining sentence anywhere near them. The definition locators found one
+# candidate in that entire document.
+#
+# That asymmetry matters more than it looks: an over-eager candidate costs the
+# reviewer one keystroke, while a metric that is never located is invisible in
+# the §7.1 denominator forever. So this is deliberately tuned for recall, and
+# the §4 human pass is what supplies the precision.
+#
+# Deterministic on purpose. A language model could read these sections too, but
+# a table row label IS the metric name, the extraction is reproducible without
+# one, and this study's entire claim is that its inputs are checkable by anyone
+# re-running it.
+TABLE_SCAN_CHARS = 2500
+
+#: Numeric cells a ONE-WORD row label must be followed by before it is taken
+#: as a table row rather than a capitalised word in a sentence.
+MIN_ROW_CELLS = 3
+
+#: A row label followed by the first cell of data. The label is 1-6 words,
+#: begins with a capital, and is followed by something numeric - a digit, a
+#: currency symbol, or the parenthesis of a negative.
+TABLE_ROW = re.compile(
+    r"(?<![A-Za-z])"
+    r"((?:[A-Z][A-Za-z''’/&.-]*)(?:\s+(?:[a-z]{1,4}\s+)?[A-Za-z''’/&.()-]+){0,5})"
+    r"\s+(?=[$(]?[\d])"
+)
+
+#: Words a table row label does not end on. A row label is a noun phrase -
+#: "Gameplay Hours", "Recurring Revenue". A capture ending in a verb or a
+#: preposition is a fragment of running prose that happened to precede a
+#: number: "basic and diluted earnings per share WERE 1.42", "c corp
+#: equivalent net income WAS". Without this the locator produced 40 candidates
+#: for one bank, nearly all of them sentence fragments, and precision that bad
+#: makes a reviewer stop reading the evidence.
+_PROSE_TAIL = frozenset(
+    {
+        "was", "were", "is", "are", "be", "been", "had", "has", "have",
+        "of", "in", "to", "at", "on", "for", "from", "by", "with", "as",
+        "and", "or", "the", "a", "an", "than", "that", "which", "we",
+        "contributed", "increased", "decreased", "totaled", "totalled",
+        "represented", "included", "reflects", "reflected", "compared",
+    }
+)
+
+#: Row labels that are structure, not metrics.
+_TABLE_NOISE = frozenset(
+    {
+        "table of contents", "year", "years", "years ended", "year ended",
+        "three months", "six months", "nine months", "twelve months",
+        "as of", "december", "january", "february", "march", "april", "may",
+        "june", "july", "august", "september", "october", "november",
+        "quarter", "fiscal", "total", "note", "notes", "item", "page",
+        "jan", "feb", "mar", "apr", "jun", "jul", "aug", "sep", "sept",
+        "oct", "nov", "dec", "q1", "q2", "q3", "q4",
+        "change", "increase", "decrease", "period", "periods", "actual",
+        "estimated", "company", "peers", "high", "low", "and", "the",
+    }
+)
+
 # A sentence terminator followed by whitespace. The lookahead reduces splits
 # inside abbreviations ("Inc. and", "U.S. GAAP" still split, and that is
 # accepted: the offset is exact either way and the reviewer reads the source).
@@ -347,13 +413,107 @@ def locate_in_document(
     )
 
 
-def locate(
-    documents: Iterable[Document], *, locators: Sequence[Locator] = LOCATORS
+def locate_table_rows(
+    document: Document, *, locators: Sequence[Locator] = _HEADING_LOCATORS
 ) -> tuple[MetricCandidate, ...]:
-    """Candidates across many documents, in a stable published order."""
+    """Candidate metric names taken from table rows beneath a KPI heading.
+
+    Scoped to the region after a heading rather than run over the whole
+    document, because "capitalised phrase followed by a number" matches half of
+    any financial filing. Inside a KPI table it is a row label; outside one it
+    is noise.
+    """
+    text = document.text
+    found: dict[str, MetricCandidate] = {}
+
+    for locator in locators:
+        for heading in locator.pattern.finditer(text):
+            window_start = heading.end()
+            window = text[window_start : window_start + TABLE_SCAN_CHARS]
+
+            for row in TABLE_ROW.finditer(window):
+                raw = row.group(1).strip(" .,:;-")
+                name = clean_metric_name(raw)
+                key = metric_key(name)
+                if not key or key in _TABLE_NOISE:
+                    continue
+                if len(key) > 60:
+                    continue
+
+                # Single-word labels are the hard case. Plenty of real metrics
+                # are one word - Customers, Subscribers, and Super League's
+                # "Experiences" - but so is every capitalised word that happens
+                # to precede a number in running prose.
+                #
+                # The discriminator is the shape of a table row, not the label:
+                # a row carries several periods of data, a sentence carries one
+                # number. So a one-word label must be followed by at least
+                # MIN_ROW_CELLS numeric cells; a phrase needs only one.
+                if len(key.split()) < 2:
+                    tail = window[row.end() : row.end() + 120]
+                    cells = len(re.findall(r"[$(]?\d[\d,.]*%?\)?", tail))
+                    if cells < MIN_ROW_CELLS:
+                        continue
+                words = key.split()
+                if any(token in _TABLE_NOISE for token in (words[0], words[-1])):
+                    continue
+                # A row label is a noun phrase. A prose fragment ends in a verb
+                # or a preposition ("... earnings per share WERE"), and one that
+                # begins with a preposition is a fragment from the middle of a
+                # sentence ("BY their own definition ...").
+                if words[-1] in _PROSE_TAIL or words[0] in _PROSE_TAIL:
+                    continue
+                if len(key) < 4:
+                    continue
+
+                offset = window_start + row.start(1)
+                begin, end = _sentence_span(text, offset, offset + len(raw))
+                candidate = MetricCandidate(
+                    candidate_id=candidate_id(
+                        document.cik, document.accession, document.filename,
+                        "table_row", offset,
+                    ),
+                    cik=document.cik,
+                    accession=document.accession,
+                    form=document.form,
+                    filing_date=document.filing_date.isoformat(),
+                    document=document.filename,
+                    doc_type=document.doc_type,
+                    locator="table_row",
+                    metric_name=name,
+                    defining_sentence=text[begin:end].strip(),
+                    char_offset=offset,
+                    sentence_char_offset=begin,
+                    url=document.url,
+                )
+                found.setdefault(candidate.candidate_id, candidate)
+
+    return tuple(sorted(found.values(), key=lambda c: c.char_offset))
+
+
+def locate(
+    documents: Iterable[Document],
+    *,
+    locators: Sequence[Locator] = LOCATORS,
+    table_documents: Sequence[Document] = (),
+) -> tuple[MetricCandidate, ...]:
+    """Candidates across many documents, in a stable published order.
+
+    `table_documents` names the subset that also gets table-row extraction -
+    the listing document and the first annual report, per METHOD.md §4.
+    """
     candidates: list[MetricCandidate] = []
+    table_scope = {id(d) for d in (table_documents or ())}
     for document in documents:
         candidates.extend(locate_in_document(document, locators=locators))
+        # Table extraction runs ONLY where METHOD.md §4 says candidates are
+        # located: "in the listing document and the first annual report". Run
+        # over the whole corpus it explodes - every 10-Q carries a non-GAAP
+        # heading above a table, and the worklist went from 538 groups to 4,524.
+        # It is also the wrong population: a metric introduced in a later 10-Q
+        # was not a promise made at listing.
+        if id(document) in table_scope:
+            candidates.extend(locate_table_rows(document))
     return tuple(
         sorted(
             candidates,
