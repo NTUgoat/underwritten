@@ -121,6 +121,42 @@
     </section>
     {% endif %}
 
+    {# ------------------- §5 NEVER_REPORTED: the listing-document evidence #}
+    {% if absence and absence.listing_evidence_computed %}
+    <section class="adj-listing {% if absence.never_reported_eligible %}adj-listing--never{% endif %}">
+      <header class="adj-six__head">
+        <h2 class="adj-six__h">METHOD.md §5 — the listing document</h2>
+        <span class="adj-six__status">{% if absence.never_reported_eligible %}NEVER REPORTED — EVIDENCE MET{% else %}NOT ELIGIBLE{% endif %}</span>
+      </header>
+
+      {% if absence.never_reported_eligible %}
+      <p class="adj-listing__headline">The phrase occurs in the listing document and in
+        <strong>0</strong> subsequent documents. It was searched across all
+        {{ absence.n_documents_searched }} documents of the filed corpus and found in none of them.
+        <strong>The issuer defined this metric for itself and has filed nothing containing it since.</strong></p>
+      {% else %}
+      <p class="adj-listing__headline">The phrase occurs in the listing document
+        <strong>{{ 'yes' if absence.in_listing_document else 'no' }}</strong> and in
+        <strong>{{ absence.n_appearances }}</strong> subsequent document{{ '' if absence.n_appearances == 1 else 's' }} of the filed corpus.</p>
+      {% endif %}
+
+      <dl class="adj-six__facts">
+        <div><dt>in the listing document</dt><dd><strong>{{ 'yes' if absence.in_listing_document else 'no' }}</strong></dd></div>
+        <div><dt>appearances afterwards</dt><dd><strong>{{ absence.n_appearances }}</strong> across the whole filed corpus</dd></div>
+      </dl>
+
+      <p class="adj-six__warn">{{ never_reported_trap }}</p>
+    </section>
+    {% elif absence %}
+    <section class="adj-listing adj-six--absent">
+      <header class="adj-six__head">
+        <h2 class="adj-six__h">METHOD.md §5 — the listing document</h2>
+        <span class="adj-six__status">NOT COMPUTED</span>
+      </header>
+      <p class="adj-six__reason">The evidence for this metric was computed before the listing document was searched, so it records neither whether the phrase occurs there nor whether it was ever reported afterwards. Re-run <code>python -m pipeline.build_evidence</code>. <strong><code>NEVER_REPORTED</code> is refused until it exists</strong> — an uncomputed fact is not an established one.</p>
+    </section>
+    {% endif %}
+
     {# ------------------------------------------------- what §4 decided --- #}
     {% if inclusion %}
     <section class="adj-prior">
@@ -187,18 +223,18 @@
         <fieldset class="adj-verdicts">
           <legend>terminal state — exactly one</legend>
           {% for s in states %}
-          {% set blocked = (s == 'DISCONTINUED' and discontinued_blocked) %}
+          {% set blocked = blocked_states.get(s) %}
           <label class="adj-verdict adj-verdict--{{ s|lower }} {% if blocked %}is-blocked{% endif %}"
                  data-verdict="{{ s }}" data-key="{{ state_key[s] }}"
-                 {% if blocked %}data-blocked="{{ discontinued_blocked }}"{% endif %}>
+                 {% if blocked %}data-blocked="{{ blocked }}"{% endif %}>
             <input type="radio" name="state" value="{{ s }}"{% if blocked %} disabled{% endif %}{% if draft.state == s and not blocked %} checked{% endif %}>
             <span class="adj-verdict__key">{{ state_key[s] }}</span>
             <span class="adj-verdict__label"><strong>{{ s }}</strong> — {{ state_label[s] }}</span>
           </label>
           {% endfor %}
-          {% if discontinued_blocked %}
-          <p class="adj-blocked" role="note">{{ discontinued_blocked }}</p>
-          {% endif %}
+          {% for s in states if blocked_states.get(s) %}
+          <p class="adj-blocked" role="note">{{ blocked_states[s] }}</p>
+          {% endfor %}
           <p class="adj-verdicts__hint"><code>NOT_DETERMINABLE</code> is always available and is <strong>never</strong> a soft exclude — METHOD.md §5 publishes it as a state in its own right (§12.4).</p>
         </fieldset>
 
@@ -213,6 +249,24 @@
           <label class="adj-free" for="adj-checked">what I checked — one line, required</label>
           <textarea id="adj-checked" name="state_checked" rows="2" maxlength="400"
                     placeholder="e.g. read Q2 FY2026 EX-99.1 of 2026-08-06; no similarly-shaped metric introduced; no disposal disclosed.">{{ draft.state_checked or '' }}</textarea>
+        </fieldset>
+
+        {# --- NEVER_REPORTED only: the pre-first-report rename guard ----- #}
+        <fieldset class="adj-when" data-show-for="NEVER_REPORTED">
+          <legend>before <code>NEVER_REPORTED</code> — required</legend>
+          <label class="adj-check">
+            <input type="checkbox" name="never_reported_confirmed" value="true"{% if draft.never_reported_confirmed %} checked{% endif %}>
+            <span>I read the <strong>first annual or quarterly report after listing, including any EX-99 exhibit</strong>, looked for a similarly-shaped metric reported in place of this one, and satisfied myself that the phrase is a metric under §4 rather than prospectus boilerplate.</span>
+          </label>
+          <p class="adj-when__note">{{ never_reported_trap }}</p>
+          <label class="adj-free" for="adj-checked-nr">what I checked — one line, required</label>
+          {#- A field of its own, not a second box named `state_checked`: both
+              fieldsets are in the DOM and both post, so sharing the name would
+              let the empty one overwrite the filled one. The handler reads
+              whichever field belongs to the armed state. -#}
+          <textarea id="adj-checked-nr" name="state_checked_never_reported" rows="2" maxlength="400"
+                    placeholder="e.g. read the FY2021 10-K and both EX-99.1 releases of 2021; no similarly-shaped metric reported; the phrase heads a KPI table in the prospectus.">{{ draft.state_checked_never_reported or draft.state_checked or '' }}</textarea>
+          <p class="adj-when__note">A date is required too: give the listing document&rsquo;s date as <strong>first appearance</strong> below. For this state that is also the last appearance, because there is no other — and §7.2 drops a metric it cannot place in time.</p>
         </fieldset>
 
         {# --- RENAMED only: the alias ------------------------------------ #}
@@ -240,7 +294,7 @@
         </fieldset>
 
         {# --- benign cause, §7.4 ----------------------------------------- #}
-        <fieldset class="adj-when" data-show-for="DISCONTINUED REDEFINED">
+        <fieldset class="adj-when" data-show-for="DISCONTINUED REDEFINED NEVER_REPORTED">
           <legend>benign cause — optional label (§7.4)</legend>
           <label class="adj-free" for="adj-benign">a named cause, if the filed record discloses one</label>
           <select id="adj-benign" class="adj-text" name="benign_label">

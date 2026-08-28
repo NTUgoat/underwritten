@@ -999,10 +999,17 @@ def _evidence_row(
     trailing: int = 1,
     vector: list[bool] | None = None,
     required: int = 4,
+    in_listing: bool | None = None,
 ) -> dict:
-    """One row shaped exactly as `pipeline.build_evidence` writes them."""
+    """One row shaped exactly as `pipeline.build_evidence` writes them.
+
+    `in_listing=None` writes the pre-amendment shape: no `in_listing_document`
+    and no `never_reported_eligible`, which is what every row on disk written
+    before 29 August 2026 looks like. That is a distinct case from `False` and
+    the §5 guard has to tell them apart.
+    """
     flags = vector if vector is not None else [True, True, True, True, False]
-    return {
+    row = {
         "cik": cik,
         "issuer": "Synthetic Issuer, Inc.",
         "arm": "IPO",
@@ -1021,6 +1028,28 @@ def _evidence_row(
         "first_appearance": None,
         "last_appearance": None,
     }
+    if in_listing is not None:
+        row["in_listing_document"] = in_listing
+        row["never_reported_eligible"] = bool(in_listing and row["n_appearances"] == 0)
+    return row
+
+
+def _never_reported_row(**overrides) -> dict:
+    """Evidence for a metric promised at listing and never reported since.
+
+    Faithful to what `pipeline.metrics.absence_test` actually returns for such
+    a phrase: NOT_DETERMINABLE, because the §6 test refuses to score a phrase
+    that appears nowhere at all. That is the whole reason §5 needed a state of
+    its own - all 107 of these landed in NOT_DETERMINABLE.
+    """
+    fields = {
+        "status": pipeline_metrics.NOT_DETERMINABLE,
+        "vector": [False, False, False, False, False],
+        "trailing": 5,
+        "in_listing": True,
+    }
+    fields.update(overrides)
+    return _evidence_row(**fields)
 
 
 @pytest.fixture()
@@ -1298,6 +1327,385 @@ def test_the_discontinued_option_is_offered_once_section_6_is_met(
     assert "cannot be committed" not in body
     assert "checked for a rename" in body or "looked for a similarly-shaped" in body
     assert "Nights and Seats Booked" in body
+
+
+# --- the NEVER_REPORTED guard: METHOD.md §5, amended 29 August 2026 ---------
+#
+# The state exists because 107 of 946 candidates appear in the listing document
+# and in nothing filed afterwards, which the §6 absence test cannot describe.
+# It is also the ONE amendment that makes the finding larger, so the guard on it
+# is stricter than the §6 one, not looser: the machine's two facts are read from
+# the evidence file, the reviewer confirms both ways of being wrong, and both a
+# date and the §7.3 direction are constrained.
+
+
+def test_never_reported_is_refused_when_the_phrase_is_not_in_the_listing_document(
+    client: TestClient, workspace: Path, evidence
+) -> None:
+    evidence(_evidence_row(status=pipeline_metrics.NOT_DETERMINABLE, in_listing=False))
+    group = _include(client, "Adjusted Active Consumers")
+
+    response = _state(
+        client,
+        group,
+        state=adjudicate.NEVER_REPORTED,
+        never_reported_confirmed="true",
+        state_checked_never_reported="Read the first 10-K after listing.",
+        first_appearance_date="2019-05-01",
+        rationale="Never reported (§5).",
+    )
+    assert response.status_code == 400
+    error = response.json()["error"]
+    assert "not found in this issuer" in error
+    assert "listing document" in error
+    assert "NOT_DETERMINABLE" in error
+    assert not any(row.get("state") for row in _rows_for(workspace, group))
+
+
+def test_never_reported_is_refused_when_the_phrase_was_reported_afterwards(
+    client: TestClient, workspace: Path, evidence
+) -> None:
+    """And the refusal names how many times, because that is the objection."""
+    evidence(
+        _evidence_row(
+            status=pipeline_metrics.ABSENCE_TEST_NOT_MET,
+            vector=[True, True, True, False],
+            trailing=1,
+            in_listing=True,
+        )
+    )
+    group = _include(client, "Adjusted Active Consumers")
+
+    response = _state(
+        client,
+        group,
+        state=adjudicate.NEVER_REPORTED,
+        never_reported_confirmed="true",
+        state_checked_never_reported="Read the first 10-K after listing.",
+        first_appearance_date="2019-05-01",
+    )
+    assert response.status_code == 400
+    error = response.json()["error"]
+    assert "appears 3 time(s) in the filed corpus afterwards" in error
+    assert "DISCONTINUED" in error
+    assert not any(row.get("state") for row in _rows_for(workspace, group))
+
+
+def test_never_reported_is_refused_when_the_evidence_predates_the_amendment(
+    client: TestClient, workspace: Path, evidence
+) -> None:
+    """A row with no `in_listing_document` field never looked. That is not a pass."""
+    evidence(
+        _evidence_row(status=pipeline_metrics.NOT_DETERMINABLE, vector=[False, False])
+    )
+    group = _include(client, "Adjusted Active Consumers")
+
+    response = _state(
+        client,
+        group,
+        state=adjudicate.NEVER_REPORTED,
+        never_reported_confirmed="true",
+        state_checked_never_reported="Read the first 10-K after listing.",
+        first_appearance_date="2019-05-01",
+    )
+    assert response.status_code == 400
+    error = response.json()["error"]
+    assert "in_listing_document" in error
+    assert "pipeline.build_evidence" in error
+    assert not any(row.get("state") for row in _rows_for(workspace, group))
+
+
+def test_never_reported_is_refused_when_the_evidence_contradicts_itself(
+    client: TestClient, workspace: Path, evidence
+) -> None:
+    """A hand-edited flag does not outrank the two facts it is derived from."""
+    row = _never_reported_row()
+    row["never_reported_eligible"] = False  # contradicts in_listing + 0 appearances
+    evidence(row)
+    group = _include(client, "Adjusted Active Consumers")
+
+    response = _state(
+        client,
+        group,
+        state=adjudicate.NEVER_REPORTED,
+        never_reported_confirmed="true",
+        state_checked_never_reported="Read the FY2020 10-K after listing.",
+        first_appearance_date="2019-05-01",
+    )
+    assert response.status_code == 400
+    assert "inconsistent" in response.json()["error"]
+    assert not any(row.get("state") for row in _rows_for(workspace, group))
+
+
+def test_never_reported_is_refused_when_no_evidence_exists_at_all(
+    client: TestClient, workspace: Path, evidence
+) -> None:
+    evidence()  # an empty evidence file: nothing for this metric
+    group = _include(client, "Adjusted Active Consumers")
+
+    response = _state(
+        client,
+        group,
+        state=adjudicate.NEVER_REPORTED,
+        never_reported_confirmed="true",
+        state_checked_never_reported="Read the first 10-K after listing.",
+        first_appearance_date="2019-05-01",
+    )
+    assert response.status_code == 400
+    assert "no evidence has been computed" in response.json()["error"]
+    assert not any(row.get("state") for row in _rows_for(workspace, group))
+
+
+def test_a_posted_eligibility_cannot_walk_past_the_never_reported_guard(
+    client: TestClient, workspace: Path, evidence
+) -> None:
+    """The two §5 facts are read from the evidence file, never from the request."""
+    evidence(_evidence_row(status=pipeline_metrics.NOT_DETERMINABLE, in_listing=False))
+    group = _include(client, "Adjusted Active Consumers")
+
+    response = _state(
+        client,
+        group,
+        state=adjudicate.NEVER_REPORTED,
+        never_reported_confirmed="true",
+        state_checked_never_reported="Checked.",
+        first_appearance_date="2019-05-01",
+        # Forged: every field the guard reads, posted as the reviewer wishes it
+        # were. None of them reaches `commit_state_ruling`, which has no
+        # parameter for any of them.
+        never_reported_eligible="true",
+        in_listing_document="true",
+        n_appearances="0",
+        listing_evidence_computed="true",
+    )
+    assert response.status_code == 400
+    assert "not found in this issuer" in response.json()["error"]
+    assert not any(row.get("state") for row in _rows_for(workspace, group))
+
+
+def test_never_reported_is_refused_until_the_pre_first_report_check_is_confirmed(
+    client: TestClient, workspace: Path, evidence
+) -> None:
+    evidence(_never_reported_row())
+    group = _include(client, "Adjusted Active Consumers")
+
+    response = _state(
+        client,
+        group,
+        state=adjudicate.NEVER_REPORTED,
+        state_checked_never_reported="Read the first 10-K after listing.",
+        first_appearance_date="2019-05-01",
+    )
+    assert response.status_code == 400
+    error = response.json()["error"]
+    assert "label adopted before the first report" in error
+    assert "Super League" in error
+    assert not any(row.get("state") for row in _rows_for(workspace, group))
+
+
+def test_never_reported_is_refused_without_a_record_of_what_was_checked(
+    client: TestClient, workspace: Path, evidence
+) -> None:
+    evidence(_never_reported_row())
+    group = _include(client, "Adjusted Active Consumers")
+
+    response = _state(
+        client,
+        group,
+        state=adjudicate.NEVER_REPORTED,
+        never_reported_confirmed="true",
+        first_appearance_date="2019-05-01",
+    )
+    assert response.status_code == 400
+    assert "what you checked is required" in response.json()["error"]
+    assert not any(row.get("state") for row in _rows_for(workspace, group))
+
+
+def test_never_reported_is_refused_without_a_date(
+    client: TestClient, workspace: Path, evidence
+) -> None:
+    """It is a §7.2 Mover, and §7.2 drops a Mover it cannot place in time."""
+    evidence(_never_reported_row())
+    group = _include(client, "Adjusted Active Consumers")
+
+    response = _state(
+        client,
+        group,
+        state=adjudicate.NEVER_REPORTED,
+        never_reported_confirmed="true",
+        state_checked_never_reported="Read the first 10-K after listing.",
+    )
+    assert response.status_code == 400
+    assert "A date is required for NEVER_REPORTED" in response.json()["error"]
+    assert not any(row.get("state") for row in _rows_for(workspace, group))
+
+
+def test_never_reported_refuses_a_reported_direction(
+    client: TestClient, workspace: Path, evidence
+) -> None:
+    """§7.3 conditions on the final two REPORTED periods, and there are none."""
+    evidence(_never_reported_row())
+    group = _include(client, "Adjusted Active Consumers")
+
+    response = _state(
+        client,
+        group,
+        state=adjudicate.NEVER_REPORTED,
+        never_reported_confirmed="true",
+        state_checked_never_reported="Read the first 10-K after listing.",
+        first_appearance_date="2019-05-01",
+        direction_at_last_report="DETERIORATING",
+    )
+    assert response.status_code == 400
+    assert "reported* periods" in response.json()["error"]
+    assert not any(row.get("state") for row in _rows_for(workspace, group))
+
+
+def test_never_reported_commits_once_the_listing_evidence_is_met(
+    client: TestClient, workspace: Path, evidence
+) -> None:
+    evidence(_never_reported_row())
+    group = _include(client, "Adjusted Active Consumers")
+
+    response = _state(
+        client,
+        group,
+        state=adjudicate.NEVER_REPORTED,
+        never_reported_confirmed="true",
+        state_checked_never_reported=(
+            "Read the FY2020 10-K and both EX-99.1 releases; no similar metric reported."
+        ),
+        first_appearance_date="2019-05-01",
+        rationale="In the prospectus KPI table; in nothing filed since (§5).",
+    )
+    assert response.status_code == 200
+    assert response.json()["state"] == "NEVER_REPORTED"
+
+    rows = _rows_for(workspace, group)
+    assert len(rows) == 3
+    for row in rows:
+        assert row["state"] == "NEVER_REPORTED"
+        assert row["state_reviewer"] == "JL"
+        assert row["first_appearance_date"] == "2019-05-01"
+        assert row["direction_at_last_report"] == "UNDETERMINED"
+        assert row["state_checked"].startswith("Read the FY2020 10-K")
+        # The §4 ruling underneath is untouched, as with every other state.
+        assert row["include"] == "yes"
+
+
+def test_the_page_shows_the_listing_evidence_and_says_nothing_was_reported(
+    client: TestClient, evidence
+) -> None:
+    evidence(_never_reported_row())
+    group = _include(client, "Adjusted Active Consumers")
+    body = client.get(f"/adjudicate/state/{group.gid}").text
+
+    assert 'value="NEVER_REPORTED" disabled' not in body
+    assert "The phrase occurs in the listing document and in" in body
+    assert "<strong>0</strong> subsequent documents" in body
+    assert "has filed nothing containing it since" in body
+    assert "Super League" in body
+
+
+def test_the_page_blocks_never_reported_and_names_the_reason(
+    client: TestClient, evidence
+) -> None:
+    evidence(
+        _evidence_row(
+            status=pipeline_metrics.ABSENCE_TEST_NOT_MET,
+            vector=[True, True, False],
+            trailing=1,
+            in_listing=True,
+        )
+    )
+    group = _include(client, "Adjusted Active Consumers")
+    body = client.get(f"/adjudicate/state/{group.gid}").text
+
+    assert 'value="NEVER_REPORTED" disabled' in body
+    assert "appears 2 time(s) in the filed corpus afterwards" in body
+    # Every other state is still offered: the two guards are separate, and one
+    # refusing must not disable the other.
+    for state in ("ALIVE", "REDEFINED", "RENAMED", "ABSORBED", "NOT_DETERMINABLE"):
+        assert f'value="{state}"' in body
+
+
+def test_a_never_reported_ruling_reads_back_as_a_mover(
+    client: TestClient, workspace: Path, evidence
+) -> None:
+    """The round trip. A state the analysis cannot read is a ruling thrown away."""
+    evidence(_never_reported_row())
+    group = _include(client, "Adjusted Active Consumers")
+    assert _state(
+        client,
+        group,
+        state=adjudicate.NEVER_REPORTED,
+        never_reported_confirmed="true",
+        state_checked_never_reported="Read the FY2020 10-K; nothing similar reported.",
+        first_appearance_date="2019-05-01",
+        rationale="In the prospectus KPI table; in nothing filed since (§5).",
+    ).status_code == 200
+
+    ledger = pipeline_analysis.read_ledger(workspace / adjudicate.LEDGER_NAME)
+    assert ledger.available is True, ledger.reason
+    assert ledger.invalid == ()
+    assert len(ledger.rows) == 1
+    row = ledger.rows[0]
+    assert row.state == "NEVER_REPORTED"
+    assert row.is_never_reported is True
+    assert row.is_discontinued is False
+    assert row.moved is True
+    assert row.direction == "UNDETERMINED"
+    # The listing document is its first appearance and its last, because there
+    # is no other, so §7.2 can place it in time from that field alone.
+    assert row.move_date.isoformat() == "2019-05-01"
+
+    rates = pipeline_analysis.base_rate(ledger.rows, [])
+    variants = {v["key"]: v for v in rates["variants"]}
+    assert variants["never_reported_as_abandonment"]["abandonment"]["abandoned"] == 1
+    assert variants["never_reported_as_not_determinable"]["abandonment"]["abandoned"] == 0
+    assert rates["difference_pp"] == pytest.approx(100.0)
+
+
+def test_a_benign_label_may_be_recorded_against_never_reported(
+    client: TestClient, workspace: Path, evidence
+) -> None:
+    """§7.4 re-runs the primary with benign moves removed, and this is a move."""
+    evidence(_never_reported_row())
+    group = _include(client, "Adjusted Active Consumers")
+    assert _state(
+        client,
+        group,
+        state=adjudicate.NEVER_REPORTED,
+        never_reported_confirmed="true",
+        state_checked_never_reported="Read the FY2020 10-K; the segment was sold.",
+        first_appearance_date="2019-05-01",
+        benign_label="BENIGN_BUSINESS_DISPOSAL",
+        benign_detail="The measured business was disposed of before the first report.",
+        rationale="In the prospectus; in nothing filed since (§5).",
+    ).status_code == 200
+    for row in _rows_for(workspace, group):
+        assert row["benign"] == "true"
+        assert row["benign_label"] == "BENIGN_BUSINESS_DISPOSAL"
+
+
+def test_the_two_checked_boxes_do_not_overwrite_each_other(
+    client: TestClient, workspace: Path, evidence
+) -> None:
+    """Both fieldsets post. The armed state decides which one is read."""
+    evidence(_never_reported_row())
+    group = _include(client, "Adjusted Active Consumers")
+    response = _state(
+        client,
+        group,
+        state=adjudicate.NEVER_REPORTED,
+        never_reported_confirmed="true",
+        state_checked="",  # the §6 box, untouched by the reviewer
+        state_checked_never_reported="Read the FY2020 10-K after listing.",
+        first_appearance_date="2019-05-01",
+    )
+    assert response.status_code == 200
+    for row in _rows_for(workspace, group):
+        assert row["state_checked"] == "Read the FY2020 10-K after listing."
 
 
 # --- NOT_DETERMINABLE is never a soft exclude ------------------------------

@@ -107,6 +107,18 @@ class AnalysisError(RuntimeError):
     """Raised when a published payload would break a pre-registered rule."""
 
 
+#: METHOD.md §5, added by amendment on 29 August 2026: defined in the listing
+#: document and appearing in no subsequent filing. It is NOT a special case of
+#: DISCONTINUED - a discontinued metric was reported and then stopped, this one
+#: was promised and never reported at all - and the §6 absence test cannot
+#: establish it, because §6 measures absence across reporting periods and needs
+#: a first appearance to measure absence from.
+#:
+#: This is the one amendment that makes the headline LARGER, which is why §7.1
+#: publishes the base rate twice (see `base_rate` and `ABANDONMENT_VARIANTS`).
+NEVER_REPORTED = "NEVER_REPORTED"
+
+
 # ===========================================================================
 # Part 0 - vocabulary
 # ===========================================================================
@@ -119,6 +131,7 @@ TERMINAL_STATES: tuple[str, ...] = (
     "RENAMED",
     "ABSORBED",
     "DISCONTINUED",
+    NEVER_REPORTED,
     "NOT_DETERMINABLE",
 )
 
@@ -471,14 +484,49 @@ class LedgerRow:
         return self.state == "REDEFINED" and self.substantive
 
     @property
+    def is_never_reported(self) -> bool:
+        return self.state == NEVER_REPORTED
+
+    @property
     def moved(self) -> bool:
-        """The §7.2 Mover trigger for a single metric."""
-        return self.is_discontinued or self.is_substantive_redefinition
+        """The §7.2 Mover trigger for a single metric.
+
+        `NEVER_REPORTED` counts, and the decision is recorded here rather than
+        left implicit. METHOD.md §7.2 splits issuers **by their own metric
+        behaviour**: a Keeper is an issuer that discontinued nothing and
+        substantively redefined nothing. An issuer that printed a metric under
+        a KPI heading in its own listing document and then filed nothing
+        containing it has not kept that metric, and putting it in the same arm
+        as an issuer that reported every metric it defined would make the
+        Keeper arm mean two different things at once.
+
+        It is a Mover on the same footing as a discontinuation, never a
+        stronger one: the arm is binary, so one never-reported metric moves the
+        issuer across exactly as one discontinuation does.
+        """
+        return (
+            self.is_discontinued
+            or self.is_substantive_redefinition
+            or self.is_never_reported
+        )
 
     @property
     def move_date(self) -> date | None:
-        """When the move can first be placed in time, or None."""
-        return self.state_change_date or self.last_appearance_date
+        """When the move can first be placed in time, or None.
+
+        For `NEVER_REPORTED` the first appearance is admitted as a third
+        fallback, and only for that state. Such a metric appears exactly once
+        in the record - in the listing document - so its first appearance and
+        its last appearance are the same document, and it is the only date the
+        filed record offers. §7.2 counts adverse filing events *after* the
+        move, so without this the state would carry a date the reviewer wrote
+        into the field the fact actually belongs in and still be dropped from
+        the primary as undatable.
+        """
+        dated = self.state_change_date or self.last_appearance_date
+        if dated is None and self.is_never_reported:
+            return self.first_appearance_date
+        return dated
 
 
 @dataclass(frozen=True)
@@ -878,27 +926,75 @@ def classify_issuers(
 
 
 # ===========================================================================
-# Part 5 - §7.1 the base rate
+# Part 5 - §7.1 the base rate. Published TWICE, and that is the amendment.
 # ===========================================================================
 
+#: The two ways METHOD.md §5 requires §7.1 to be counted, keyed as they are
+#: published. Order is fixed: the first is the study's own reading, the second
+#: is the reading of someone who thinks the state should not exist.
+AS_ABANDONMENT = "never_reported_as_abandonment"
+AS_NOT_DETERMINABLE = "never_reported_as_not_determinable"
 
-def base_rate(
-    rows: Sequence[LedgerRow],
-    cohort: Sequence[CohortRow],
-    *,
-    unavailable_reason: str = LEDGER_ABSENT_REASON,
-) -> dict[str, Any]:
-    """Share of adjudicated metrics in each terminal state, pooled and per issuer."""
-    metrics = [r for r in rows if not r.is_issuer_row]
+VARIANT_LABEL: dict[str, str] = {
+    AS_ABANDONMENT: "NEVER_REPORTED counted as abandonment",
+    AS_NOT_DETERMINABLE: "NEVER_REPORTED counted as NOT_DETERMINABLE",
+}
+
+#: What the §7.1 headline share is a share OF, spelled out so it can be
+#: recomputed from `data/derived/metrics.json` by hand.
+ABANDONMENT_DEFINITION = (
+    "A metric counts towards the abandonment share when it is DISCONTINUED, "
+    "when it is REDEFINED and the reviewer ruled that change substantive, or - "
+    "in the first variant only - when it is NEVER_REPORTED. Every adjudicated "
+    "metric sits in the denominator of both variants, so the two differ only "
+    "in how the NEVER_REPORTED rows are counted."
+)
+
+#: METHOD.md §5, verbatim in substance: this is the mitigation the amendment
+#: was accepted with, and it is published beside the figure rather than left in
+#: the changelog.
+BOTH_WAYS_NOTE = (
+    "METHOD.md §5 requires this figure twice. NEVER_REPORTED was added by "
+    "amendment on 29 August 2026, after the data existed, and it is the one "
+    "amendment that makes the headline larger rather than smaller. So §7.1 is "
+    "published both with NEVER_REPORTED counted as abandonment and with it "
+    "treated as NOT_DETERMINABLE, with the difference stated in percentage "
+    "points. A reader who thinks the state should not exist can read the study "
+    "as though it does not, without recomputing anything."
+)
+
+
+def _abandoned(row: LedgerRow, *, never_reported_counts: bool) -> bool:
+    """Whether one adjudicated metric counts towards the §7.1 headline share."""
+    if row.is_never_reported:
+        return never_reported_counts
+    return row.is_discontinued or row.is_substantive_redefinition
+
+
+def _counted_state(row: LedgerRow, *, fold_never_reported: bool) -> str:
+    """The state this row is counted under in one §7.1 variant.
+
+    Folding is a counting rule and nothing else: the ledger is not rewritten,
+    `metrics.json` still publishes the reviewer's own NEVER_REPORTED ruling,
+    and the fold is undone by reading the other variant.
+    """
+    if fold_never_reported and row.is_never_reported:
+        return "NOT_DETERMINABLE"
+    return row.state
+
+
+def _state_table(
+    metrics: Sequence[LedgerRow], *, fold_never_reported: bool
+) -> list[dict[str, Any]]:
+    """The per-state table of one variant, every state carrying its own n."""
     total = len(metrics)
     counts = {state: 0 for state in TERMINAL_STATES}
     for row in metrics:
-        counts[row.state] += 1
-
-    states = []
+        counts[_counted_state(row, fold_never_reported=fold_never_reported)] += 1
+    table = []
     for state in TERMINAL_STATES:
         proportion = clopper_pearson(counts[state], total)
-        states.append(
+        table.append(
             {
                 "state": state,
                 "n": counts[state],
@@ -908,6 +1004,48 @@ def base_rate(
                 "ci_high": proportion.ci_high,
             }
         )
+    return table
+
+
+def _abandonment_variant(
+    metrics: Sequence[LedgerRow], *, key: str, never_reported_counts: bool
+) -> dict[str, Any]:
+    """One of the two §7.1 readings, with its own n and its own exact interval."""
+    abandoned = sum(
+        1 for row in metrics if _abandoned(row, never_reported_counts=never_reported_counts)
+    )
+    proportion = clopper_pearson(abandoned, len(metrics))
+    return {
+        "key": key,
+        "label": VARIANT_LABEL[key],
+        "abandonment": proportion.as_dict(count_key="abandoned"),
+        "states": _state_table(metrics, fold_never_reported=not never_reported_counts),
+    }
+
+
+def base_rate(
+    rows: Sequence[LedgerRow],
+    cohort: Sequence[CohortRow],
+    *,
+    unavailable_reason: str = LEDGER_ABSENT_REASON,
+) -> dict[str, Any]:
+    """Share of adjudicated metrics in each terminal state, pooled and per issuer.
+
+    Published twice. METHOD.md §5: *"§7.1 publishes the base rate both with
+    NEVER_REPORTED counted as abandonment and with it treated as
+    NOT_DETERMINABLE, and states the difference in percentage points."* Both
+    variants carry their own n and their own Clopper-Pearson interval, and
+    `difference_pp` is the gap between the two headline shares. The top-level
+    `states` table remains the states as the reviewer actually ruled them, so
+    the fold never hides a ruling.
+    """
+    metrics = [r for r in rows if not r.is_issuer_row]
+    total = len(metrics)
+    n_never_reported = sum(1 for row in metrics if row.is_never_reported)
+
+    # As the reviewer ruled them. This table is never folded, whatever the
+    # variants below do with the NEVER_REPORTED rows.
+    states = _state_table(metrics, fold_never_reported=False)
 
     names = {row.cik: row.name for row in cohort}
     by_issuer = []
@@ -933,6 +1071,21 @@ def base_rate(
             }
         )
 
+    variants = [
+        _abandonment_variant(
+            metrics, key=AS_ABANDONMENT, never_reported_counts=True
+        ),
+        _abandonment_variant(
+            metrics, key=AS_NOT_DETERMINABLE, never_reported_counts=False
+        ),
+    ]
+    shares = [variant["abandonment"]["share"] for variant in variants]
+    difference_pp = (
+        None
+        if any(share is None for share in shares)
+        else (shares[0] - shares[1]) * 100.0
+    )
+
     return {
         "available": total > 0,
         "reason": "" if total > 0 else unavailable_reason,
@@ -941,6 +1094,18 @@ def base_rate(
         "interval_method": "Clopper-Pearson exact binomial",
         "states": states,
         "by_issuer": by_issuer,
+        # --- METHOD.md §5: the base rate, both ways --------------------------
+        "n_never_reported": n_never_reported,
+        "abandonment_definition": ABANDONMENT_DEFINITION,
+        "variants": variants,
+        "difference_pp": difference_pp,
+        "difference_pp_measures": (
+            "the gap between the two headline abandonment shares, in "
+            "percentage points: the first variant minus the second. It is "
+            f"{n_never_reported} NEVER_REPORTED metric(s) of {total} "
+            "adjudicated, and nothing else."
+        ),
+        "both_ways_note": BOTH_WAYS_NOTE,
     }
 
 
@@ -1228,6 +1393,7 @@ def counter_test(
     improving = buckets[IMPROVING]
     deteriorating = buckets[DETERIORATING]
     undetermined = buckets[UNDETERMINED]
+    never_reported = [r for r in metrics if r.is_never_reported]
 
     if not improving["n"] or not deteriorating["n"]:
         verdict = "NOT_DETERMINABLE"
@@ -1255,6 +1421,21 @@ def counter_test(
             "last-reported direction the filed record does not settle. They are "
             "published as a third category rather than assigned to either side."
         ),
+        # METHOD.md §5's new state, handled explicitly rather than left to fall
+        # through the direction buckets unremarked.
+        "never_reported": {
+            "n": len(never_reported),
+            "denominator": len(metrics),
+            "treatment": (
+                "A NEVER_REPORTED metric has no reported period at all, so it "
+                "has no last-reported direction to condition on and cannot "
+                "enter either side of this comparison. Every such metric is "
+                "recorded UNDETERMINED at §5 and counted in the third category "
+                "above. §7.3 measures the discontinuation rate, so these "
+                "metrics are in its denominator and never in its numerator; "
+                "the §7.1 both-ways figure is where they are counted."
+            ),
+        },
     }
 
 
@@ -1376,6 +1557,16 @@ def sensitivity(
             "separately under primary_difference_deltas_pp."
         ),
         "n_benign_removed": len(removed),
+        "n_never_reported": sum(1 for r in metrics if r.is_never_reported),
+        "never_reported_note": (
+            "A NEVER_REPORTED metric makes its issuer a §7.2 Mover, so it is "
+            "part of every re-run above. It is not in the numerator of the "
+            "discontinuation share on this panel, which counts DISCONTINUED "
+            "and nothing else; §7.1 publishes the share that includes it, both "
+            "ways. A never-reported metric carrying a hand-written benign "
+            "label leaves this sensitivity exactly as a benign discontinuation "
+            "does."
+        ),
         "benign_labels": sorted({r.benign_label for r in removed if r.benign_label}),
         "runs": {key: run.as_dict() for key, run in runs.items()},
         "primary_difference_deltas_pp": deltas,
@@ -1759,7 +1950,8 @@ def _headline_segments(
     """
     metrics = [r for r in rows if not r.is_issuer_row]
     moved = sum(1 for r in metrics if r.moved)
-    return [
+    never = sum(1 for r in metrics if r.is_never_reported)
+    segments = [
         {"text": "Of the "},
         {"term": f"{len(metrics):,}"},
         {"text": " operating metrics that "},
@@ -1772,8 +1964,36 @@ def _headline_segments(
             )
         },
         {"term": f"{moved:,}"},
-        {"text": f" had been discontinued or substantively redefined by {as_at}."},
     ]
+    # The sentence carries the amendment on its face. A headline that counted
+    # the never-reported metrics silently, and left the reader to find the
+    # mitigation in §7.1, would be the thing METHOD.md §5 exists to prevent.
+    if never:
+        segments.append(
+            {
+                "text": (
+                    " had been discontinued, substantively redefined, or "
+                    f"never reported at all by {as_at} — "
+                )
+            }
+        )
+        segments.append({"term": f"{never:,}"})
+        segments.append(
+            {
+                "text": (
+                    " of them never reported. Counting those as "
+                    "NOT_DETERMINABLE instead, as METHOD.md §5 requires this "
+                    "figure to be published a second way, the count is "
+                )
+            }
+        )
+        segments.append({"term": f"{moved - never:,}"})
+        segments.append({"text": "."})
+        return segments
+    segments.append(
+        {"text": f" had been discontinued or substantively redefined by {as_at}."}
+    )
+    return segments
 
 
 def _fiscal_years(cohort: Sequence[CohortRow], as_at: str) -> list[str]:
@@ -1794,7 +2014,23 @@ def _issuer_cells(
     rather than a guess. In particular a metric contributes to a year's cell
     only from the year it was first defined onwards - a state is a claim about
     that year, and the years before a metric existed are not years it was alive.
+
+    `NEVER_REPORTED` marks exactly one year and no other: the year the metric
+    was defined, as `INTRODUCED`. It is deliberately never drawn as a move.
+    The cell vocabulary this grid publishes (`app/data.py`, CELL_STATES) has
+    six members and DISCONTINUED among them means the §6 four-period absence
+    test - a claim about a metric that was reported and then stopped, which is
+    false of one that was never reported at all. Painting it into that cell to
+    fill the grid would be the study asserting in a graphic what it refuses to
+    assert in prose, so the later years say plainly that the ledger places no
+    state there and name the count.
     """
+    # A never-reported metric is a §7.2 Mover, but it has no move to draw:
+    # nothing was reported, so no year can carry DISCONTINUED or REDEFINED on
+    # its account.
+    movers = [r for r in rows if r.moved and not r.is_never_reported]
+    never = [r for r in rows if r.is_never_reported]
+
     cells: list[dict[str, Any]] = []
     for label in fiscal_years:
         year = int(label[2:])
@@ -1806,7 +2042,7 @@ def _issuer_cells(
         if not dated and listing is not None and year == listing.year:
             introduced = list(rows)
         moved_here = [
-            r for r in rows if r.moved and r.move_date and r.move_date.year == year
+            r for r in movers if r.move_date and r.move_date.year == year
         ]
         if moved_here:
             state = (
@@ -1845,7 +2081,7 @@ def _issuer_cells(
         if alive:
             cells.append({"fy": label, "state": "ALIVE", "n": len(alive), "note": ""})
             continue
-        gone = [r for r in rows if r.moved and r.move_date and r.move_date.year < year]
+        gone = [r for r in movers if r.move_date and r.move_date.year < year]
         if gone:
             cells.append(
                 {
@@ -1860,12 +2096,24 @@ def _issuer_cells(
                 }
             )
             continue
+        outstanding = [
+            r
+            for r in never
+            if r.first_appearance_date is None or r.first_appearance_date.year <= year
+        ]
         cells.append(
             {
                 "fy": label,
                 "state": "NOT_DETERMINABLE",
                 "n": 0,
-                "note": "the ledger does not place a state in this year",
+                "note": (
+                    "the ledger does not place a state in this year; "
+                    f"{len(outstanding)} metric(s) here are ruled "
+                    "NEVER_REPORTED, which this grid marks only in the year "
+                    "the metric was defined"
+                    if outstanding
+                    else "the ledger does not place a state in this year"
+                ),
             }
         )
     return cells
@@ -2168,10 +2416,26 @@ def _spec_runs(finding: Mapping[str, Any]) -> tuple[SpecRun, ...]:
     sens = finding.get("sensitivity", {})
     arm = finding.get("projection_arm", {})
 
+    variants = {v.get("key"): v for v in (rates.get("variants") or [])}
+
+    def _abandonment(key: str) -> Mapping[str, Any]:
+        return (variants.get(key) or {}).get("abandonment") or {}
+
     rate_result, rate_note = _result_of(
         rates,
         f"Terminal state of {rates.get('denominator', 0)} adjudicated metrics, "
-        "exact binomial 95% intervals",
+        "exact binomial 95% intervals; abandonment "
+        f"{_abandonment(AS_ABANDONMENT).get('abandoned')}/"
+        f"{_abandonment(AS_ABANDONMENT).get('n')} with NEVER_REPORTED counted",
+    )
+    # METHOD.md §5 requires the second reading, so it is logged as its own run
+    # rather than folded into the line above. §7.6 counts specifications, and a
+    # counter that under-reports is worth less than one that over-reports.
+    both_ways_result, both_ways_note = _result_of(
+        rates,
+        f"Abandonment {_abandonment(AS_NOT_DETERMINABLE).get('abandoned')}/"
+        f"{_abandonment(AS_NOT_DETERMINABLE).get('n')} with NEVER_REPORTED "
+        f"treated as NOT_DETERMINABLE; difference {rates.get('difference_pp')} pp",
     )
     counter_result, counter_note = _result_of(
         counter, f"Verdict {counter.get('verdict', 'NOT_DETERMINABLE')}"
@@ -2205,6 +2469,12 @@ def _spec_runs(finding: Mapping[str, Any]) -> tuple[SpecRun, ...]:
 
     return (
         SpecRun("§7.1 Terminal-state base rate, pooled and per issuer", "yes (§7.1)", rate_result, rate_note),
+        SpecRun(
+            "§7.1 Base rate re-counted, NEVER_REPORTED treated as NOT_DETERMINABLE",
+            "yes (§5, amended 29 August 2026)",
+            both_ways_result,
+            both_ways_note,
+        ),
         SpecRun("§7.2 Keepers vs Movers, adverse filing events", "yes (#1, the only confirmatory test)", primary_result, primary_note),
         SpecRun("§7.3 Discontinuation by last-reported direction", "yes (§7.3, counter-hypothesis)", counter_result, counter_note),
         SpecRun("§7.4 Primary re-run, hand-labelled benign moves removed", "yes (§7.4)", benign_result, benign_note),

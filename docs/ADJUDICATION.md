@@ -87,6 +87,7 @@ terminal state. Same ledger, same initials, same atomic writes.
 | `m` | RENAMED — you must give the new name, so §6 can be re-run over the alias |
 | `o` | ABSORBED |
 | `d` | DISCONTINUED — guarded, see below |
+| `p` | NEVER_REPORTED — promised at listing, never reported; guarded, see below |
 | `n` | NOT_DETERMINABLE |
 
 Presets on `1`–`9` **do not commit** here, unlike §4: a §5 ruling usually needs a date too.
@@ -98,8 +99,30 @@ checked for a rename and write one line saying what you checked — because Airb
 "Nights and Experiences Booked" meets the test and was merely renamed. The status is read
 from the evidence file inside the handler, never from the page, so it cannot be posted around.
 
-**Benign causes** (§7.4) are recorded as labels on DISCONTINUED and REDEFINED, not folded
-into the rationale, because the primary is re-run with them removed and published both ways.
+**The NEVER_REPORTED guard.** Same shape, different fact. The evidence stage records two
+things per metric: whether the defining phrase occurs in the issuer's listing document, and
+how many times it appears in everything filed afterwards. The tool refuses `NEVER_REPORTED`
+unless the first is true and the second is zero, and the refusal says which of the two
+failed — *not found in the listing document*, or *appears in N later filings*. Both facts
+are read from `data/derived/absence_evidence.json` inside the handler, never from the page.
+Evidence written before the 29 August 2026 amendment carries neither field, and that is
+also a refusal: an uncomputed fact is not an established one. Re-run
+`python -m pipeline.build_evidence`.
+
+When it is permitted you must still tick that you looked for a label the issuer adopted
+*before* its first report, and write one line saying what you checked — the same discipline
+as the rename trap, for the same reason. Several of the 107 eligible phrases are prospectus
+boilerplate and should not have survived §4 at all.
+
+`NEVER_REPORTED` also needs a **date** and takes `UNDETERMINED` as its direction, and the
+tool enforces both. The date is the listing document's, entered as *first appearance*: for
+this state that is also the last appearance, because there is no other, and §7.2 drops a
+Mover it cannot place in time. The direction is undetermined by construction — §7.3
+conditions on the final two *reported* periods and this metric has none.
+
+**Benign causes** (§7.4) are recorded as labels on DISCONTINUED, REDEFINED and
+NEVER_REPORTED, not folded into the rationale, because the primary is re-run with them
+removed and published both ways.
 
 ### The machine's proposal
 
@@ -212,7 +235,32 @@ and a false `NO_METRICS_DEFINED` quietly shrinks the denominator in §7.1.
 | `RENAMED` | Same definition, new label. Trace it; treated as continuous. |
 | `ABSORBED` | The company states a broader metric now subsumes it. |
 | `DISCONTINUED` | Meets the §6 four-period absence test **and** you have ruled out rename, absorption, and benign cause. |
+| `NEVER_REPORTED` | Defined in the listing document, appearing in **no** subsequent filing, **and** you have ruled out a label adopted before the first report and prospectus boilerplate. |
 | `NOT_DETERMINABLE` | The filed record does not settle it. **Use this. It is not a failure.** |
+
+### NEVER_REPORTED is not a kind of DISCONTINUED
+
+A discontinued metric was reported and then stopped. A never-reported metric was promised
+and never reported at all. The §6 absence test cannot tell you about the second: it counts
+absence across reporting periods and needs a first appearance to count absence *from*, so
+every one of these scores `NOT_DETERMINABLE` on the mechanical test. That is why the state
+was added, and it is the only amendment so far that makes the finding **larger** rather
+than smaller — which is why §7.1 publishes the base rate both with it and without it, and
+why the guard on it is strict.
+
+**Super League Enterprise** put five metrics under a heading reading "KPI" in its own
+prospectus — *Always On Venues*, *Experiences*, *Conversion Registered Accounts*,
+*Engagement Participations*, *Gameplay Hours*. Three appear in nothing it has filed since.
+That is the case the state exists for.
+
+Before ruling it:
+
+1. Read the **first** annual or quarterly report after listing, including EX-99 exhibits.
+2. Look for a similarly-shaped metric reported in place of this one — a label the issuer
+   adopted between the prospectus and its first report is `RENAMED`, not this.
+3. Ask whether the phrase is a metric under §4 at all. Prospectus boilerplate that survived
+   the first pass should be sent back to §4, not given a terminal state.
+4. Only then, and only if the filed record is clear, rule `NEVER_REPORTED`.
 
 ### Substantive vs cosmetic
 

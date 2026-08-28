@@ -136,7 +136,10 @@ def main() -> int:
             continue
 
         try:
-            corpus = build_corpus(client, cik, complete_index(client, cik))
+            # Built once and reused: the listing-document search below needs the
+            # same index, and asking for it twice would double the work.
+            index = complete_index(client, cik)
+            corpus = build_corpus(client, cik, index)
         except OfflineCacheMiss:
             skipped.append({"cik": cik, "name": row["name"], "reason": "corpus not built"})
             print(f"[{i:>2}/{len(rows)}] {name:<34} corpus not built - skipped")
@@ -163,7 +166,23 @@ def main() -> int:
             listing_text = " ".join(
                 d.text for d in listing_documents(client, index, row)
             )
-        except Exception:  # noqa: BLE001 - absence of a listing doc is not fatal
+        except (OfflineCacheMiss, OSError, ValueError, KeyError) as exc:
+            # An issuer whose listing document is not in the cache still gets a
+            # row: `in_listing_document` is False, `never_reported_eligible` is
+            # False, and the §5 guard in `app/adjudicate.py` refuses the state
+            # rather than granting it on absent evidence.
+            #
+            # The exception list is narrow ON PURPOSE. It was `except
+            # Exception`, and the name `index` was undefined at this point, so
+            # every issuer raised NameError here, every listing search returned
+            # "", and all 946 rows were written with in_listing_document=False.
+            # Nothing failed and nothing was logged - the same defect this
+            # module's `_appearance` docstring already records once.
+            print(
+                f"    listing document unavailable for CIK {cik}: "
+                f"{type(exc).__name__}: {exc}",
+                flush=True,
+            )
             listing_text = ""
 
         per_issuer: Counter[str] = Counter()

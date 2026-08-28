@@ -147,7 +147,10 @@
             <td class="n">{{ row.n|num }}</td>
             <td class="n">{{ row.share|pct }}</td>
             <td class="n">{% if row.ci_low is not none and row.ci_high is not none %}{{ row.ci_low|pct }} – {{ row.ci_high|pct }}{% else %}{{ PENDING }}{% endif %}</td>
-            <td class="def">{{ CELL_LEGEND.get(row.state, '') }}</td>
+            {#- CELL_LEGEND is the scoreboard's six-cell vocabulary and does not
+                carry §5's NEVER_REPORTED, which is a terminal state and never a
+                grid cell. Its definition is given here rather than left blank. -#}
+            <td class="def">{% if row.state == 'NEVER_REPORTED' %}defined in the listing document, reported in no filing since{% else %}{{ CELL_LEGEND.get(row.state, '') }}{% endif %}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -159,6 +162,39 @@
     </div>
     {% else %}
     {{ m.absent('The base rate is published when the adjudication ledger is complete. Nothing stands in for it in the meantime.', 'data/derived/finding.json') }}
+    {% endif %}
+
+    {# ------------- METHOD.md §5: the same base rate, counted both ways ---- #}
+    {% if base_rate.variants %}
+    <div class="scroller">
+      <table class="table table--rates">
+        <caption class="table__cap">Abandonment share, counted both ways. METHOD.md §5 requires this
+          figure twice: <code>NEVER_REPORTED</code> was added by amendment after the data existed and
+          it is the one amendment that makes the headline larger, so the study publishes the reading
+          of a reader who thinks the state should not exist beside its own.</caption>
+        <thead>
+          <tr><th scope="col">counting rule</th><th scope="col" class="n">abandoned</th>
+            <th scope="col" class="n">n</th><th scope="col" class="n">share</th>
+            <th scope="col" class="n">95% CI</th></tr>
+        </thead>
+        <tbody>
+          {% for variant in base_rate.variants %}
+          {% set a = variant.abandonment or {} %}
+          <tr>
+            <th scope="row">{{ variant.label }}</th>
+            <td class="n">{{ a.abandoned|num }}</td>
+            <td class="n">{{ a.n|num }}</td>
+            <td class="n">{{ a.share|pct }}</td>
+            <td class="n">{% if a.ci_low is not none and a.ci_high is not none %}{{ a.ci_low|pct }} – {{ a.ci_high|pct }}{% else %}{{ PENDING }}{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot><tr><th scope="row">difference</th>
+          <td colspan="4" class="def">{{ base_rate.difference_pp|pp }} — {{ base_rate.difference_pp_measures }}</td></tr></tfoot>
+      </table>
+    </div>
+    <p class="band__note">{{ base_rate.abandonment_definition }}</p>
+    <p class="band__note">{{ base_rate.both_ways_note }}</p>
     {% endif %}
   </div>
 </section>

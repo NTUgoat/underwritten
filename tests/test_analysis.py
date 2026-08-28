@@ -574,6 +574,283 @@ def test_base_rate_without_rulings_is_unavailable(empty_ledger):
 
 
 # ==========================================================================
+# 6b. §7.1 published BOTH WAYS - METHOD.md §5, amended 29 August 2026
+#
+# `NEVER_REPORTED` is the one amendment that makes the headline larger. §5
+# therefore requires §7.1 twice: once counting it as abandonment, once counting
+# it as NOT_DETERMINABLE, with the difference in percentage points. These tests
+# hold the arithmetic of both readings and the fact that neither is hidden.
+# ==========================================================================
+
+
+@pytest.fixture
+def never_reported_ledger(tmp_path):
+    """Four metrics: one discontinued, one never reported, two alive.
+
+    Hand-computable on purpose. Clopper-Pearson at 95%:
+        2 of 4 -> 0.500, [0.067586, 0.932414]
+        1 of 4 -> 0.250, [0.006309, 0.805880]
+        difference 50.0 - 25.0 = 25.0 pp
+    """
+    path = write_ledger(
+        tmp_path / "metrics.csv",
+        [
+            metric(1, "Kept", "ALIVE", direction_at_last_report="IMPROVING"),
+            metric(
+                1,
+                "Promised",
+                "NEVER_REPORTED",
+                direction_at_last_report="UNDETERMINED",
+                first_appearance_date="2020-02-01",
+            ),
+            metric(
+                2,
+                "Dropped",
+                "DISCONTINUED",
+                direction_at_last_report="DETERIORATING",
+                state_change_date="2022-03-01",
+                first_appearance_date="2020-01-01",
+            ),
+            metric(2, "Kept C", "ALIVE", direction_at_last_report="IMPROVING"),
+        ],
+    )
+    return read_ledger(path, cohort_ciks=[1, 2])
+
+
+def test_never_reported_is_a_terminal_state_the_analysis_reads(never_reported_ledger):
+    assert "NEVER_REPORTED" in TERMINAL_STATES
+    row = next(r for r in never_reported_ledger.rows if r.metric_name == "Promised")
+    assert row.state == "NEVER_REPORTED"
+    assert row.is_never_reported is True
+    assert row.is_discontinued is False
+    assert row.is_substantive_redefinition is False
+
+
+def test_the_base_rate_is_published_both_ways_with_the_difference_in_points(
+    never_reported_ledger,
+):
+    rates = base_rate(never_reported_ledger.rows, [cohort_row(1), cohort_row(2)])
+    variants = {variant["key"]: variant for variant in rates["variants"]}
+    assert set(variants) == {
+        "never_reported_as_abandonment",
+        "never_reported_as_not_determinable",
+    }
+
+    counted = variants["never_reported_as_abandonment"]["abandonment"]
+    folded = variants["never_reported_as_not_determinable"]["abandonment"]
+
+    # Hand-computed above, and both carry their own n and their own interval.
+    assert (counted["abandoned"], counted["n"]) == (2, 4)
+    assert counted["share"] == pytest.approx(0.5)
+    assert counted["ci_low"] == pytest.approx(0.067586, abs=5e-6)
+    assert counted["ci_high"] == pytest.approx(0.932414, abs=5e-6)
+    assert counted["interval_method"] == "Clopper-Pearson exact binomial"
+
+    assert (folded["abandoned"], folded["n"]) == (1, 4)
+    assert folded["share"] == pytest.approx(0.25)
+    assert folded["ci_low"] == pytest.approx(0.006309, abs=5e-6)
+    assert folded["ci_high"] == pytest.approx(0.805880, abs=5e-6)
+
+    assert rates["difference_pp"] == pytest.approx(25.0)
+    assert rates["n_never_reported"] == 1
+
+
+def test_the_folded_variant_reads_as_though_the_state_did_not_exist(
+    never_reported_ledger,
+):
+    """METHOD.md §5: a reader who rejects the state can read the whole table."""
+    rates = base_rate(never_reported_ledger.rows, [cohort_row(1), cohort_row(2)])
+    variants = {variant["key"]: variant for variant in rates["variants"]}
+
+    folded = {
+        row["state"]: row
+        for row in variants["never_reported_as_not_determinable"]["states"]
+    }
+    assert folded["NEVER_REPORTED"]["n"] == 0
+    assert folded["NOT_DETERMINABLE"]["n"] == 1
+    assert folded["NOT_DETERMINABLE"]["denominator"] == 4
+
+    # The as-ruled table is never folded: the ruling itself is still published.
+    as_ruled = {row["state"]: row for row in rates["states"]}
+    assert as_ruled["NEVER_REPORTED"]["n"] == 1
+    assert as_ruled["NOT_DETERMINABLE"]["n"] == 0
+
+    counted = {
+        row["state"]: row for row in variants["never_reported_as_abandonment"]["states"]
+    }
+    assert counted["NEVER_REPORTED"]["n"] == 1
+
+    # Every state in every variant still carries a denominator and an interval.
+    for variant in rates["variants"]:
+        for row in variant["states"]:
+            assert row["denominator"] == 4
+            assert row["ci_low"] is not None and row["ci_high"] is not None
+
+
+def test_both_variants_share_a_denominator_so_only_the_numerator_moves(
+    never_reported_ledger,
+):
+    rates = base_rate(never_reported_ledger.rows, [cohort_row(1), cohort_row(2)])
+    counts = [variant["abandonment"]["n"] for variant in rates["variants"]]
+    assert counts == [4, 4] == [rates["denominator"], rates["denominator"]]
+
+
+def test_a_never_reported_metric_makes_its_issuer_a_mover(never_reported_ledger):
+    """§7.2: an issuer that never reported a metric it defined did not keep it."""
+    groups = {b.cik: b.group for b in classify_issuers(never_reported_ledger.rows)}
+    assert groups == {1: MOVER, 2: MOVER}
+
+
+def test_a_never_reported_metric_is_placed_in_time_by_its_first_appearance(
+    never_reported_ledger,
+):
+    row = next(r for r in never_reported_ledger.rows if r.metric_name == "Promised")
+    assert row.state_change_date is None and row.last_appearance_date is None
+    assert row.move_date == date(2020, 2, 1)
+    behaviour = next(
+        b for b in classify_issuers(never_reported_ledger.rows) if b.cik == 1
+    )
+    assert behaviour.datable is True
+    assert behaviour.move_date == date(2020, 2, 1)
+
+
+def test_the_first_appearance_fallback_is_only_for_never_reported(tmp_path):
+    path = write_ledger(
+        tmp_path / "metrics.csv",
+        [metric(9, "Dropped", "DISCONTINUED", first_appearance_date="2020-01-01")],
+    )
+    row = read_ledger(path).rows[0]
+    assert row.first_appearance_date == date(2020, 1, 1)
+    assert row.move_date is None
+
+
+def test_the_counter_test_publishes_the_never_reported_count(never_reported_ledger):
+    """§7.3 conditions on reported periods, and these metrics have none."""
+    counter = counter_test(never_reported_ledger.rows)
+    assert counter["never_reported"]["n"] == 1
+    assert counter["never_reported"]["denominator"] == 4
+    assert counter["undetermined"]["n"] == 1
+    # It is in the denominator of the direction it was recorded under and in the
+    # numerator of neither side of the comparison.
+    assert counter["improving"]["discontinued"] == 0
+    assert counter["deteriorating"]["discontinued"] == 1
+    assert counter["undetermined"]["discontinued"] == 0
+
+
+def test_the_sensitivity_names_the_never_reported_metrics(never_reported_ledger):
+    result = sensitivity(
+        never_reported_ledger.rows,
+        listing_dates={1: date(2020, 1, 1), 2: date(2020, 1, 1)},
+        events={},
+        outcome_available=False,
+        outcome_reason=analysis.OUTCOME_SKIPPED_REASON,
+    )
+    assert result["n_never_reported"] == 1
+    # §7.4's panel counts DISCONTINUED only, and says so rather than folding the
+    # new state in silently.
+    assert result["primary"]["discontinued"] == 1
+    assert result["primary"]["n"] == 4
+
+
+def test_the_scoreboard_never_draws_a_never_reported_metric_as_discontinued(tmp_path):
+    """DISCONTINUED in the grid means the §6 test, which is false of this metric."""
+    path = write_ledger(
+        tmp_path / "metrics.csv",
+        [
+            metric(
+                1,
+                "Promised",
+                "NEVER_REPORTED",
+                direction_at_last_report="UNDETERMINED",
+                first_appearance_date="2020-02-01",
+            )
+        ],
+    )
+    ledger = read_ledger(path, cohort_ciks=[1])
+    analysed = run(
+        make_inputs(cohort=[cohort_row(1, listing="2020-01-01")], ledger=ledger)
+    )
+    board = json.loads(json.dumps(dict(analysed.scoreboard)))
+    cells = {cell["fy"]: cell for cell in board["issuers"][0]["cells"]}
+
+    assert cells["FY2020"]["state"] == "INTRODUCED"
+    for label, cell in cells.items():
+        assert cell["state"] in (
+            "ALIVE",
+            "REDEFINED",
+            "INTRODUCED",
+            "DISCONTINUED",
+            "NOT_DETERMINABLE",
+            "NONE",
+        ), label
+        assert cell["state"] != "DISCONTINUED", label
+    later = cells["FY2021"]
+    assert later["state"] == "NOT_DETERMINABLE"
+    assert "NEVER_REPORTED" in later["note"]
+
+
+def test_the_headline_sentence_states_the_count_both_ways(never_reported_ledger):
+    analysed = run(
+        make_inputs(
+            cohort=[cohort_row(1), cohort_row(2)], ledger=never_reported_ledger
+        )
+    )
+    text = "".join(
+        segment.get("text", "") or segment.get("term", "")
+        for segment in analysed.finding["finding"]["segments"]
+    )
+    assert text.startswith("Of the 4 operating metrics")
+    assert "2 had been discontinued, substantively redefined, or never reported" in text
+    assert "1 of them never reported" in text
+    assert "the count is 1." in text
+
+
+def test_the_headline_is_unchanged_where_no_metric_was_never_reported(split_ledger):
+    analysed = run(
+        make_inputs(cohort=[cohort_row(i) for i in (1, 2, 3, 4, 5)], ledger=split_ledger)
+    )
+    text = "".join(
+        segment.get("text", "") or segment.get("term", "")
+        for segment in analysed.finding["finding"]["segments"]
+    )
+    assert text.endswith("had been discontinued or substantively redefined by 2026-08-28.")
+    assert "never reported" not in text
+
+
+def test_the_spec_log_carries_both_readings_of_the_base_rate(never_reported_ledger):
+    analysed = run(
+        make_inputs(
+            cohort=[cohort_row(1), cohort_row(2)], ledger=never_reported_ledger
+        )
+    )
+    specs = {spec.specification: spec for spec in analysed.spec_runs}
+    folded = next(
+        spec for name, spec in specs.items() if "NEVER_REPORTED treated as" in name
+    )
+    assert "1/4" in folded.result
+    assert "25.0 pp" in folded.result
+    assert folded.preregistered.startswith("yes")
+
+
+def test_the_both_ways_payload_is_serialisable_and_clean(never_reported_ledger):
+    """It is published, so it obeys §7.2's vocabulary rule like everything else."""
+    analysed = run(
+        make_inputs(
+            cohort=[cohort_row(1), cohort_row(2)], ledger=never_reported_ledger
+        )
+    )
+    finding = json.loads(json.dumps(dict(analysed.finding)))
+    assert_no_forbidden_words(finding, "finding.json")
+    assert finding["base_rate"]["both_ways_note"]
+    assert finding["base_rate"]["abandonment_definition"]
+    assert finding["base_rate"]["difference_pp_measures"]
+    assert (
+        json.loads(json.dumps(dict(analysed.metrics)))["metrics"][1]["state"]
+        == "NEVER_REPORTED"
+    )
+
+
+# ==========================================================================
 # 7. §7.2 - the confirmatory test, its timing rule and Amendment 1
 # ==========================================================================
 
@@ -1010,7 +1287,9 @@ def test_spec_log_is_append_only_and_the_numbering_continues(tmp_path):
 
 def test_a_specification_that_produced_nothing_is_still_logged(empty_ledger):
     analysed = run(make_inputs(cohort=[cohort_row(1)], ledger=empty_ledger))
-    assert len(analysed.spec_runs) == 6
+    # Seven since METHOD.md §5 was amended: §7.1 is counted twice, because it
+    # is published twice, and §7.6 counts specifications rather than sections.
+    assert len(analysed.spec_runs) == 7
     assert all("NOT RUN" in spec.result for spec in analysed.spec_runs)
     assert all(spec.preregistered for spec in analysed.spec_runs)
 

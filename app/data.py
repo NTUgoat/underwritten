@@ -35,10 +35,37 @@ repository root. Committed files only - ``data/raw/`` is never read by the app.
       "finding": {"segments": [...]},       # see SEGMENTS below - the headline
       "base_rate": {                        # 7.1, exact binomial interval
         "denominator": 214,
-        "states": [
+        "states": [                         # states as the reviewer ruled them
           {"state": "ALIVE", "n": 118, "share": 0.551,
            "ci_low": 0.483, "ci_high": 0.618}
-        ]
+        ],
+
+        # METHOD.md 5, amended 29 August 2026. NEVER_REPORTED - defined in the
+        # listing document, reported in no subsequent filing - makes the
+        # headline LARGER, so 7.1 publishes the abandonment share twice: once
+        # counting that state as abandonment, once counting it as
+        # NOT_DETERMINABLE. Both variants carry their own n and their own exact
+        # binomial interval, and `difference_pp` is the gap between the two
+        # shares in percentage points. `variants[].states` is the full terminal
+        # state table under that counting rule, so a reader who rejects the
+        # state can read every figure as though it does not exist. The
+        # top-level `states` above is never folded.
+        "n_never_reported": 107,
+        "abandonment_definition": "DISCONTINUED, substantively REDEFINED, ...",
+        "variants": [
+          {"key": "never_reported_as_abandonment",
+           "label": "NEVER_REPORTED counted as abandonment",
+           "abandonment": {"abandoned": 141, "n": 214, "share": 0.659,
+                           "ci_low": 0.592, "ci_high": 0.721,
+                           "confidence": 0.95,
+                           "interval_method": "Clopper-Pearson exact binomial"},
+           "states": [...]},
+          {"key": "never_reported_as_not_determinable", "label": "...",
+           "abandonment": {"abandoned": 34, "n": 214, ...}, "states": [...]}
+        ],
+        "difference_pp": 50.0,
+        "difference_pp_measures": "...",
+        "both_ways_note": "..."
       },
       "counter_test": {                     # 7.3 - sits ABOVE the signal
         "verdict": "WEAKENED" | "SURVIVED" | "NOT_DETERMINABLE",
@@ -85,6 +112,12 @@ repository root. Committed files only - ``data/raw/`` is never read by the app.
     NOT_DETERMINABLE, or NONE (issuer not yet listed / nothing filed that year).
     ``group`` is KEEPER or MOVER per METHOD.md 7.2.
 
+    METHOD.md 5's NEVER_REPORTED is deliberately NOT a cell state. Such a
+    metric marks exactly one year - the year it was defined, as INTRODUCED -
+    and no other, because DISCONTINUED here means the 6 four-period absence
+    test, which is a claim about a metric that was reported and then stopped.
+    Later years say so in the cell's ``note`` and carry NOT_DETERMINABLE.
+
 ``data/derived/metrics.json`` - the ledger behind /cohort, one entry per
 adjudicated metric.
 
@@ -93,7 +126,10 @@ adjudicated metric.
        "cik": 1759546, "issuer": "...", "ticker": "...", "arm": "IPO",
        "sector": "Services-Prepackaged Software", "sic": "7372",
        "name": "Adjusted Active Consumers",
-       "state": "DISCONTINUED",              # METHOD.md 5 terminal state
+       "state": "DISCONTINUED",              # METHOD.md 5 terminal state; one of
+                                             # ALIVE, REDEFINED, RENAMED,
+                                             # ABSORBED, DISCONTINUED,
+                                             # NEVER_REPORTED, NOT_DETERMINABLE
        "direction_at_last_report": "DETERIORATING",   # 7.3
        "first_appearance": <CITATION>,       # verbatim defining sentence
        "definition_changes": [
@@ -213,6 +249,11 @@ METRIC_STATES = (
     "RENAMED",
     "ABSORBED",
     "DISCONTINUED",
+    # METHOD.md §5, Amendment 5. Omitting it here does not merely hide the state
+    # from /cohort's filter - `state_tally` builds its counts from this tuple, so
+    # every NEVER_REPORTED row would drop out of the tally AND out of its own
+    # denominator, quietly changing a published proportion.
+    "NEVER_REPORTED",
     "NOT_DETERMINABLE",
 )
 

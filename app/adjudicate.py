@@ -53,6 +53,25 @@ so a ``DISCONTINUED`` ruling additionally requires the reviewer to confirm they
 looked for a rename and to write one line saying what they checked. That line is
 stored in its own column, not folded into the rationale.
 
+**The NEVER_REPORTED guard.** METHOD.md §5, amended 29 August 2026. The state is
+*defined in the listing document, appearing in no subsequent filing*, and the §6
+absence test cannot establish it: §6 measures absence across reporting periods
+and needs a first appearance to measure absence from, so every one of these
+scores ``NOT_DETERMINABLE`` on the mechanical test. The evidence stage therefore
+computes two narrower facts — ``in_listing_document`` and the appearance count
+across the corpus — and :func:`never_reported_block_reason` refuses the state
+unless the first is true and the second is zero, naming which one failed.
+Evidence written before the amendment carries neither field, and that is a
+refusal too. Beyond eligibility the ruling requires a confirmed check for a
+label the issuer adopted before its first report, a written record of what was
+checked, a date (it is a §7.2 Mover, and §7.2 drops what it cannot place in
+time), and the §7.3 direction ``UNDETERMINED``, which is the only one a metric
+with no reported period can carry.
+
+This is the one amendment that makes the study's own finding larger. That is why
+the guard on it is stricter than the §6 one rather than looser, and why §7.1
+publishes the base rate both ways.
+
 **Where it writes.** ``data/adjudication/metrics.csv``, in exactly the schema of
 ``pipeline.metrics.LEDGER_FIELDS``, plus an append-only audit log beside it.
 Nothing else, ever: every write target is ``<adjudication dir>/<literal
@@ -295,6 +314,13 @@ REDEFINED = "REDEFINED"
 RENAMED = "RENAMED"
 ABSORBED = "ABSORBED"
 DISCONTINUED = "DISCONTINUED"
+#: Added by amendment on 29 August 2026. Defined in the listing document and
+#: appearing in NO subsequent filing. Not a special case of DISCONTINUED: that
+#: metric was reported and then stopped, this one was promised and never
+#: reported at all, and the §6 absence test cannot describe it because §6
+#: measures absence across periods and needs a first appearance to measure
+#: absence from.
+NEVER_REPORTED = "NEVER_REPORTED"
 # NOT_DETERMINABLE is the §4 constant above, reused deliberately: METHOD.md
 # spells the deferral the same way in both sections, and it is published under
 # that name in both.
@@ -309,6 +335,7 @@ TERMINAL_STATES: tuple[str, ...] = (
     RENAMED,
     ABSORBED,
     DISCONTINUED,
+    NEVER_REPORTED,
     NOT_DETERMINABLE,
 )
 
@@ -318,6 +345,7 @@ STATE_LABEL: dict[str, str] = {
     RENAMED: "same definition, new label",
     ABSORBED: "subsumed by a broader metric",
     DISCONTINUED: "gone — meets the §6 absence test",
+    NEVER_REPORTED: "promised at listing, never reported since",
     NOT_DETERMINABLE: "can’t tell from the filed record",
 }
 
@@ -329,6 +357,10 @@ STATE_KEY: dict[str, str] = {
     RENAMED: "m",
     ABSORBED: "o",
     DISCONTINUED: "d",
+    # "p" for promised-and-never-reported. Free of the six letters already
+    # taken here (a e m o d n) and of the navigation keys (s b r t ?), which a
+    # test asserts rather than trusts.
+    NEVER_REPORTED: "p",
     NOT_DETERMINABLE: "n",
 }
 
@@ -377,6 +409,20 @@ STATE_RATIONALE_PRESETS: dict[str, tuple[str, ...]] = {
             "disposed of and the disposal is disclosed (§6, §7.4)."
         ),
     ),
+    NEVER_REPORTED: (
+        (
+            "Defined in the listing document and appearing in no subsequent "
+            "filing; the phrase was searched across the whole filed corpus (§5)."
+        ),
+        (
+            "Published under a KPI heading in the listing document and never "
+            "reported in any filing since (§5)."
+        ),
+        (
+            "No later filing uses this phrase and no successor metric is "
+            "identifiable, so this is not a rename before the first report (§5)."
+        ),
+    ),
     NOT_DETERMINABLE: (
         "The filed record does not settle what happened to this metric (§5).",
         (
@@ -400,6 +446,7 @@ STATE_KEYBOARD_MAP: tuple[tuple[str, str], ...] = (
     ("m", "arm RENAMED"),
     ("o", "arm ABSORBED"),
     ("d", "arm DISCONTINUED — refused unless §6 is met"),
+    ("p", "arm NEVER_REPORTED — refused unless the listing evidence says so"),
     ("n", "arm NOT_DETERMINABLE"),
     ("1…9", "pick a rationale preset for the armed state (does not commit)"),
     ("Enter", "commit the armed state with everything filled in"),
@@ -425,8 +472,14 @@ BENIGN_LABELS: tuple[tuple[str, str], ...] = (
 
 BENIGN_CODES: frozenset[str] = frozenset(code for code, _ in BENIGN_LABELS)
 
-#: §7.4 only asks the question of the two states that can hide one.
-BENIGN_APPLIES_TO: frozenset[str] = frozenset({DISCONTINUED, REDEFINED})
+#: §7.4 only asks the question of the states that can hide one. NEVER_REPORTED
+#: joins them because it is a §7.2 Mover trigger like the other two, and §7.4
+#: re-runs the primary with hand-labelled benign moves removed: a metric
+#: promised at listing whose business was disposed of before the first report
+#: has to be removable there on the same terms as a benign discontinuation.
+BENIGN_APPLIES_TO: frozenset[str] = frozenset(
+    {DISCONTINUED, REDEFINED, NEVER_REPORTED}
+)
 
 IMPROVING = "IMPROVING"
 DETERIORATING = "DETERIORATING"
@@ -1316,6 +1369,102 @@ def discontinued_block_reason(absence: dict[str, Any] | None) -> str:
     )
 
 
+def never_reported_block_reason(absence: dict[str, Any] | None) -> str:
+    """Why ``NEVER_REPORTED`` may not be committed here, or "" when it may.
+
+    METHOD.md §5: the state is *"defined in the listing document and appearing
+    in no subsequent filing"*. The machine's evidence for that is deliberately
+    narrow and purely factual — ``in_listing_document`` and the count of
+    appearances across the filed corpus, both computed by
+    ``pipeline.build_evidence`` — and this refuses the state wherever that pair
+    of facts does not hold. The refusal names which of the two failed, because
+    "the phrase is not in the listing document" and "the phrase is in eleven
+    later filings" are different objections and a reviewer fixes them
+    differently.
+
+    Four cases are refusals rather than silence, on the same reasoning as the
+    §6 guard: no evidence at all; evidence that predates the amendment and so
+    never looked at the listing document; evidence that looked and found the
+    phrase reported afterwards; and evidence whose two facts contradict its own
+    conclusion. An uncomputed test is not a passed one.
+
+    The wording deliberately does not reuse the §6 guard's sentence. A reviewer
+    reading two refusals on one page has to be able to tell which state each
+    one is about.
+    """
+    if not absence:
+        return (
+            f"{NEVER_REPORTED} is refused: METHOD.md §5 requires that the "
+            "phrase occur in the listing document and in no subsequent filing, "
+            "and no evidence has been computed for this metric at all — "
+            "neither fact is known. Run `python -m pipeline.build_evidence` "
+            f"first. Where the record does not settle it, the state is "
+            f"{NOT_DETERMINABLE}."
+        )
+    if not absence.get("listing_evidence_computed"):
+        return (
+            f"{NEVER_REPORTED} is refused: the evidence for this metric was "
+            "computed before the listing document was searched, so it does not "
+            "record whether the phrase occurs there. It carries no "
+            "`in_listing_document` field. Re-run "
+            "`python -m pipeline.build_evidence`, which writes it; an "
+            "uncomputed fact is not an established one."
+        )
+    appearances = absence.get("n_appearances")
+    try:
+        appearances = int(appearances)
+    except (TypeError, ValueError):
+        appearances = None
+    if not absence.get("in_listing_document"):
+        return (
+            f"{NEVER_REPORTED} is refused: the phrase was not found in this "
+            "issuer's listing document, and METHOD.md §5 defines the state as "
+            "a metric *defined in the listing document* and never reported "
+            "afterwards. Without the promise there is nothing to have been "
+            f"broken. Where the record does not settle it, the state is "
+            f"{NOT_DETERMINABLE}."
+        )
+    if appearances != 0:
+        counted = "an unrecorded number of" if appearances is None else str(appearances)
+        return (
+            f"{NEVER_REPORTED} is refused: the phrase does occur in the listing "
+            f"document, but it also appears {counted} time(s) in the filed "
+            "corpus afterwards, so this metric was reported. METHOD.md §5 "
+            "distinguishes the two: a metric reported and then stopped is "
+            f"{DISCONTINUED} on the §6 test, and one promised and never "
+            f"reported at all is {NEVER_REPORTED}."
+        )
+    # Both underlying facts now say yes. The stage's own conclusion is checked
+    # against them rather than trusted alone: the two can only disagree if the
+    # evidence file was edited by hand, and where they disagree the state is
+    # refused rather than resolved.
+    if not absence.get("never_reported_eligible"):
+        return (
+            f"{NEVER_REPORTED} is refused: the evidence for this metric is "
+            "inconsistent. It records the phrase as occurring in the listing "
+            "document and nowhere afterwards, yet `never_reported_eligible` is "
+            "not set. Re-run `python -m pipeline.build_evidence` rather than "
+            "ruling against evidence that contradicts itself."
+        )
+    return ""
+
+
+#: Shown beside the confirmation, and quoted in the refusal on the page. The
+#: §5 counterpart of RENAME_TRAP, and the case CHANGELOG.md records as the
+#: reason the state exists at all.
+NEVER_REPORTED_TRAP = (
+    "Super League Enterprise published five metrics under a heading reading "
+    "“KPI” in its own prospectus — Always On Venues, Experiences, Conversion "
+    "Registered Accounts, Engagement Participations, Gameplay Hours — and "
+    "three of them appear in no document it has filed since. That is the case "
+    "this state exists for. It is also the shape of the mistake: the issuer "
+    "may have adopted a different label before its first report, or the phrase "
+    "may never have been a metric at all, and neither of those is "
+    "NEVER_REPORTED. The machine establishes only that the phrase occurs in "
+    "the listing document and nowhere afterwards; the state is your ruling."
+)
+
+
 #: Shown beside the confirmation, and quoted in the refusal. This is the exact
 #: case ``docs/ADJUDICATION.md`` records as "the single most likely way to
 #: publish a false finding", and the guard exists because of it.
@@ -1355,6 +1504,7 @@ def commit_state_ruling(
     renamed_to: str = "",
     checked: str = "",
     rename_confirmed: str = "",
+    never_reported_confirmed: str = "",
     direction: str = "",
     state_change_date: str = "",
     last_appearance_date: str = "",
@@ -1421,6 +1571,37 @@ def commit_state_ruling(
                 f"What you checked must be {MAX_DETAIL_CHARS} characters or fewer."
             )
 
+    # --- the §5 NEVER_REPORTED guard, in the same shape as the §6 one ------
+    #
+    # The eligibility is read from `absence`, which the route fills from
+    # `absence_evidence_for(group)` — the machine's own computation over the
+    # cached corpus. It is never read from the request. A posted
+    # `never_reported_eligible` or `in_listing_document` reaches this function
+    # nowhere: `commit_state_ruling` has no parameter for either, and the only
+    # value of `absence` is the one the handler looked up.
+    if state == NEVER_REPORTED:
+        blocked = never_reported_block_reason(absence)
+        if blocked:
+            raise ValueError(blocked)
+        if _boolean(never_reported_confirmed) is not True:
+            raise ValueError(
+                "Confirm that you checked for a label adopted before the first "
+                f"report, and that this phrase is a metric at all, before "
+                f"committing {NEVER_REPORTED}. " + NEVER_REPORTED_TRAP
+            )
+        if not checked:
+            raise ValueError(
+                "A one-line record of what you checked is required for "
+                f"{NEVER_REPORTED}: the first annual or quarterly report after "
+                "listing including any EX-99 exhibit, any similarly-shaped "
+                "metric reported in place of this one, and whether the phrase "
+                "is a metric rather than prospectus boilerplate (§4, §5)."
+            )
+        if len(checked) > MAX_DETAIL_CHARS:
+            raise ValueError(
+                f"What you checked must be {MAX_DETAIL_CHARS} characters or fewer."
+            )
+
     if state == RENAMED and not renamed_to:
         raise ValueError(
             "RENAMED needs the new name. §6 tests the defining phrase *and every "
@@ -1454,11 +1635,34 @@ def commit_state_ruling(
             "so give state_change_date, or last_appearance_date if that is the "
             "only date the filed record settles."
         )
+    # NEVER_REPORTED is a §7.2 Mover too, so it needs a date for the same
+    # reason. It gets a third acceptable field: such a metric appears exactly
+    # once, in the listing document, so its first appearance IS its last, and
+    # `pipeline.analysis.LedgerRow.move_date` reads that field for this state.
+    if state == NEVER_REPORTED and not (stamped_change or stamped_last or stamped_first):
+        raise ValueError(
+            f"A date is required for {NEVER_REPORTED}: METHOD.md §7.2 counts "
+            "adverse filing events only after the move, and a metric with no "
+            "date takes no part in the primary. Give the listing document's "
+            "date as first_appearance_date — for this state that is also the "
+            "last appearance, because there is no other."
+        )
 
     direction = (direction or "").strip().upper() or UNDETERMINED
     if direction not in DIRECTIONS:
         raise ValueError(
             f"direction_at_last_report must be one of {', '.join(DIRECTIONS)} (§7.3)."
+        )
+    # §7.3 conditions on the metric's own direction over its final two REPORTED
+    # periods. A metric that was never reported has none, so IMPROVING or
+    # DETERIORATING here would be a figure read out of a filing that does not
+    # exist. UNDETERMINED is the only answer the record can support.
+    if state == NEVER_REPORTED and direction != UNDETERMINED:
+        raise ValueError(
+            f"{NEVER_REPORTED} carries direction {UNDETERMINED} and nothing "
+            "else: METHOD.md §7.3 conditions on the metric's direction over "
+            "its final two *reported* periods, and this metric has none. It is "
+            "published in §7.3's third category, which is a real answer."
         )
 
     if benign_label and benign_label not in BENIGN_CODES:
@@ -1553,6 +1757,15 @@ def commit_state_ruling(
                 "trailing_absent_periods": absence_periods or None,
                 "required_periods": (absence or {}).get("required_periods"),
                 "presence_vector": (absence or {}).get("vector"),
+                # The §5 NEVER_REPORTED facts, logged for every state and not
+                # only that one: what the machine knew when the ruling was made
+                # is the record, whichever way the ruling went.
+                "n_appearances": (absence or {}).get("n_appearances"),
+                "in_listing_document": (absence or {}).get("in_listing_document"),
+                "never_reported_eligible": (absence or {}).get("never_reported_eligible"),
+                "listing_evidence_computed": (absence or {}).get(
+                    "listing_evidence_computed"
+                ),
             },
             "fields": {key: value for key, value in written.items() if value},
         }
@@ -1898,6 +2111,7 @@ def register(app, templates) -> None:
             "direction_label": DIRECTION_LABEL,
             "required_periods": pipeline_config.DISCONTINUATION_PERIODS,
             "rename_trap": RENAME_TRAP,
+            "never_reported_trap": NEVER_REPORTED_TRAP,
             "ledger_display": _relative(ledger_path()),
             "log_display": _relative(log_path()),
             "candidates_display": _relative(candidates_path()),
@@ -2025,11 +2239,21 @@ def register(app, templates) -> None:
         board = _state_board(request)
         group, position = _locate_state(board, gid)
         fields, wants_json = await _payload(request)
+        posted_state = (fields.get("state") or "").strip().upper()
+        # Two fieldsets ask "what did you check", one for §6 and one for §5,
+        # and both are in the posted form. The one that belongs to the armed
+        # state is the one read; sharing a field name would let the untouched
+        # box blank the filled one.
+        checked_field = (
+            "state_checked_never_reported"
+            if posted_state == NEVER_REPORTED
+            else "state_checked"
+        )
 
         try:
             commit = commit_state_ruling(
                 group=group,
-                state=(fields.get("state") or "").strip().upper(),
+                state=posted_state,
                 reviewer=fields.get("reviewer") or "",
                 rationale=fields.get("rationale") or "",
                 rationale_source=(fields.get("rationale_source") or "").strip(),
@@ -2039,8 +2263,9 @@ def register(app, templates) -> None:
                 absence=absence_evidence_for(group),
                 substantive=fields.get("substantive") or "",
                 renamed_to=fields.get("renamed_to") or "",
-                checked=fields.get("state_checked") or "",
+                checked=fields.get(checked_field) or "",
                 rename_confirmed=fields.get("rename_confirmed") or "",
+                never_reported_confirmed=fields.get("never_reported_confirmed") or "",
                 direction=fields.get("direction_at_last_report") or "",
                 state_change_date=fields.get("state_change_date") or "",
                 last_appearance_date=fields.get("last_appearance_date") or "",
@@ -2180,6 +2405,7 @@ def _state_context(
     following = board.groups[position + 1] if position + 1 < board.total else None
     absence = absence_evidence_for(group)
     blocked = discontinued_block_reason(absence)
+    never_blocked = never_reported_block_reason(absence)
     return {
         "group": group,
         "position": position,
@@ -2188,6 +2414,18 @@ def _state_context(
         "n_ruled": board.n_ruled,
         "absence": absence,
         "discontinued_blocked": blocked,
+        "never_reported_blocked": never_blocked,
+        # One mapping the template loops over, so a state that is refused and a
+        # state that is offered are the same two lines of markup whichever
+        # state it is.
+        "blocked_states": {
+            state: reason
+            for state, reason in (
+                (DISCONTINUED, blocked),
+                (NEVER_REPORTED, never_blocked),
+            )
+            if reason
+        },
         "order": board.order,
         "suffix": suffix,
         # The §4 ruling this metric got, shown so the §5 reviewer can see what
@@ -2307,6 +2545,14 @@ def absence_evidence_for(group: Group) -> dict | None:
         **row,
         "vector": "".join("1" if x else "0" for x in vector),
         "n_present": sum(1 for x in vector if x),
+        # METHOD.md §5's two facts, normalised to real booleans so a template
+        # and a guard read the same thing. `listing_evidence_computed` records
+        # whether the evidence stage looked at all: an evidence file written
+        # before the 29 August 2026 amendment carries neither field, and
+        # "not computed" must not read as "not in the listing document".
+        "listing_evidence_computed": "never_reported_eligible" in row,
+        "in_listing_document": bool(row.get("in_listing_document")),
+        "never_reported_eligible": bool(row.get("never_reported_eligible")),
     }
 
 
@@ -2339,6 +2585,7 @@ __all__ = [
     "ledger_path",
     "load_board",
     "load_state_board",
+    "never_reported_block_reason",
     "normalise_name",
     "propose",
     "read_candidates",

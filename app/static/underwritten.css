@@ -116,6 +116,10 @@ hr { border: 0; }
 }
 .band__sub { color: var(--ink-2); max-width: 42rem; margin-bottom: 0; }
 .band__sub--warn { color: var(--flag); font-size: 0.9rem; margin-top: 0.6rem; }
+.band__note {
+  color: var(--ink-3); font-size: 0.82rem; line-height: 1.55;
+  max-width: 46rem; margin: 0.8rem 0 0;
+}
 .sub-h {
   font-family: var(--sans); font-size: 0.78rem; letter-spacing: 0.08em;
   text-transform: uppercase; color: var(--ink-3);
@@ -382,6 +386,12 @@ hr { border: 0; }
 .table .hash { font-family: var(--mono); font-size: 0.72rem; color: var(--ink-2); }
 .table .muted { color: var(--ink-3); font-family: var(--mono); font-size: 0.78rem; }
 .table--manifest th[scope="row"] { max-width: 26rem; word-break: break-all; font-weight: 400; }
+.table__cap {
+  caption-side: top; text-align: left; color: var(--ink-2);
+  font-size: 0.82rem; line-height: 1.5; max-width: 46rem;
+  padding-bottom: 0.6rem;
+}
+.table__cap code { font-family: var(--mono); font-size: 0.76rem; }
 .table--ledger tbody tr.is-selected { background: var(--paper-3); }
 .ledger__link { text-decoration-color: var(--rule-2); }
 
@@ -443,6 +453,14 @@ hr { border: 0; }
 .tick.s-introduced { background: transparent; border: 1.5px solid var(--ink); }
 .tick.s-discontinued { background: var(--flag); border-color: var(--flag); }
 .tick.s-not-determinable { background: transparent; border: 1px dotted var(--ink-3); }
+/* METHOD.md §5, added 29 August 2026. Never drawn in the scoreboard grid - a
+   metric that was never reported marks only the year it was defined, as
+   INTRODUCED - but the class exists because the same swatch vocabulary labels
+   the /cohort table, where the state is shown. */
+.tick.s-never-reported {
+  background: repeating-linear-gradient(45deg, var(--flag) 0 1px, transparent 1px 3px);
+  border-color: var(--flag);
+}
 .tick.s-none {
   border: 0; width: 0.18rem; height: 0.18rem; border-radius: 50%;
   background: var(--rule-2); vertical-align: 0.22rem;
@@ -454,6 +472,10 @@ hr { border: 0; }
 .swatch.s-absorbed { background: var(--ink-3); border-color: var(--ink-3); }
 .swatch.s-introduced { background: transparent; border-width: 1.5px; border-color: var(--ink); }
 .swatch.s-discontinued { background: var(--flag); border-color: var(--flag); }
+.swatch.s-never-reported {
+  background: repeating-linear-gradient(45deg, var(--flag) 0 1px, transparent 1px 3px);
+  border-color: var(--flag);
+}
 .swatch.s-not-determinable { border-style: dotted; background: transparent; }
 .swatch.s-none { border-color: var(--rule-2); background: transparent; }
 
@@ -525,6 +547,7 @@ hr { border: 0; }
 }
 .badge.s-discontinued { color: var(--flag); border-color: var(--flag-line); background: var(--flag-tint); }
 .badge.s-alive { color: var(--ink); border-color: var(--ink); }
+.badge.s-never-reported { color: var(--flag); border-color: var(--flag-line); background: var(--flag-tint); }
 .badge.benign { color: var(--ink-2); }
 .badge--open { color: var(--ink); border-color: var(--ink); }
 .badge--held { color: var(--ink-2); }

@@ -416,6 +416,26 @@
 }
 .adj-noproposal__why { margin: 0; font-size: 0.8rem; line-height: 1.5; color: var(--ink-3); }
 
+/* METHOD.md §5 NEVER_REPORTED — the listing-document evidence, second only to
+   §6 in the evidence column and carrying the same chrome so the two read as
+   one pair of mechanical facts rather than two unrelated panels. */
+
+.adj-listing {
+  border: 1px solid var(--rule-2); background: var(--paper-2);
+  padding: 1rem 1.1rem; margin: -0.9rem 0 1.6rem;
+}
+.adj-listing--never { border-color: var(--flag); }
+.adj-listing--never .adj-six__status {
+  border-color: var(--flag); color: var(--flag); background: var(--flag-tint);
+}
+.adj-listing__headline {
+  margin: 0 0 0.8rem; font-family: var(--serif); font-size: 0.95rem;
+  line-height: 1.55; color: var(--ink);
+}
+.adj-listing__headline strong {
+  font-family: var(--mono); font-variant-numeric: tabular-nums;
+}
+
 /* --- the refused option -------------------------------------------------- */
 
 .adj-verdict.is-blocked {
@@ -424,6 +444,8 @@
 .adj-verdict.is-blocked .adj-verdict__key { color: var(--ink-3); }
 .adj-verdict--discontinued.is-armed { border-color: var(--flag); }
 .adj-verdict--discontinued.is-armed .adj-verdict__key { background: var(--flag); border-color: var(--flag); }
+.adj-verdict--never_reported.is-armed { border-color: var(--flag); }
+.adj-verdict--never_reported.is-armed .adj-verdict__key { background: var(--flag); border-color: var(--flag); }
 .adj-verdict__label strong { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.03em; }
 
 .adj-blocked {
