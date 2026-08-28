@@ -59,11 +59,12 @@ import logging
 import os
 import re
 import urllib.parse
+from collections.abc import Sequence
 from dataclasses import dataclass
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any
 
 from fastapi import HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
@@ -188,27 +189,39 @@ VERDICT_KEY: dict[str, str] = {INCLUDE: "i", EXCLUDE: "x", NOT_DETERMINABLE: "n"
 #: is a human act; the machine never picks one, and never pre-fills the field.
 RATIONALE_PRESETS: dict[str, tuple[str, ...]] = {
     INCLUDE: (
-        "Quantitative, company-defined, and presented as a measure of the "
-        "issuer's own operating performance (§4).",
+        (
+            "Quantitative, company-defined, and presented as a measure of the "
+            "issuer's own operating performance (§4)."
+        ),
         "Non-GAAP measure for which the company supplies its own definition (§4).",
-        "Reported as a number in the issuer's own key-metrics section, and "
-        "attributed to its own operations (§4).",
+        (
+            "Reported as a number in the issuer's own key-metrics section, and "
+            "attributed to its own operations (§4)."
+        ),
     ),
     EXCLUDE: (
         "GAAP/IFRS measure, not defined by the company (§4).",
         "Not quantitative — no number or rate is reported for it (§4).",
         "Market-size or industry statistic, not the issuer's own operations (§4).",
-        "Risk-factor statistic or one-off disclosure, not a measure of operating "
-        "performance (§4).",
+        (
+            "Risk-factor statistic or one-off disclosure, not a measure of "
+            "operating performance (§4)."
+        ),
         "The located span is a section heading, not a metric (§4).",
     ),
     NOT_DETERMINABLE: (
-        "The filed record does not settle whether this is a company-defined "
-        "operating metric (§5).",
-        "The defining sentence is truncated or unreadable in the filed document; "
-        "it cannot be ruled on from the record (§5, §12).",
-        "The definition differs across filings and the filed record does not "
-        "settle which one governs (§5).",
+        (
+            "The filed record does not settle whether this is a company-defined "
+            "operating metric (§5)."
+        ),
+        (
+            "The defining sentence is truncated or unreadable in the filed "
+            "document; it cannot be ruled on from the record (§5, §12)."
+        ),
+        (
+            "The definition differs across filings and the filed record does not "
+            "settle which one governs (§5)."
+        ),
     ),
 }
 
@@ -230,7 +243,7 @@ MAX_RATIONALE_CHARS = 400
 MAX_REVIEWER_CHARS = 12
 MAX_BODY_BYTES = 64 * 1024
 
-_REVIEWER_OK = re.compile(r"^[A-Za-z][A-Za-z .'\-]{0,%d}$" % (MAX_REVIEWER_CHARS - 1))
+_REVIEWER_OK = re.compile(rf"^[A-Za-z][A-Za-z .'\-]{{0,{MAX_REVIEWER_CHARS - 1}}}$")
 _SOURCE_OK = re.compile(r"^(free_text|preset:[0-9]{1,2})$")
 
 
@@ -321,11 +334,13 @@ class Variant:
 
     @property
     def first_date(self) -> str:
-        return min(o.filing_date for o in self.occurrences if o.filing_date) or ""
+        dates = [o.filing_date for o in self.occurrences if o.filing_date]
+        return min(dates) if dates else ""
 
     @property
     def last_date(self) -> str:
-        return max(o.filing_date for o in self.occurrences if o.filing_date) or ""
+        dates = [o.filing_date for o in self.occurrences if o.filing_date]
+        return max(dates) if dates else ""
 
 
 @dataclass(frozen=True)
@@ -412,7 +427,7 @@ def _display_name(occurrences: Sequence[Occurrence]) -> str:
     counts: dict[str, int] = {}
     for occurrence in occurrences:
         counts[occurrence.metric_name] = counts.get(occurrence.metric_name, 0) + 1
-    return sorted(counts.items(), key=lambda kv: (-kv[1], -len(kv[0]), kv[0]))[0][0]
+    return min(counts.items(), key=lambda kv: (-kv[1], -len(kv[0]), kv[0]))[0]
 
 
 def _variants(occurrences: Sequence[Occurrence]) -> tuple[Variant, ...]:
@@ -678,7 +693,8 @@ def surrounding_context(occurrence: Occurrence) -> dict[str, str]:
     except ValueError:
         anchor = 0
 
-    start = text.find(sentence, max(0, anchor - _OFFSET_SLACK), anchor + len(sentence) + _OFFSET_SLACK)
+    window = (max(0, anchor - _OFFSET_SLACK), anchor + len(sentence) + _OFFSET_SLACK)
+    start = text.find(sentence, window[0], window[1])
     if start < 0:
         start = text.find(sentence)
     if start < 0:
@@ -819,7 +835,10 @@ def commit_ruling(
     if not _SOURCE_OK.match(rationale_source or ""):
         rationale_source = "free_text"
 
-    stamped = review_date or date.today().isoformat()
+    # The reviewer's own calendar date, deliberately naive. METHOD.md §4 records
+    # "the date" a human ruled, which is a local date on a signature line, not an
+    # instant. The UTC timestamp of the write is kept in the audit log below.
+    stamped = review_date or date.today().isoformat()  # noqa: DTZ011
     ruling = {
         "include": LEDGER_VALUE[verdict],
         "reviewer": reviewer,
@@ -851,7 +870,7 @@ def commit_ruling(
     _atomic_write_rows(path, rows)
     _append_log(
         {
-            "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "ts": datetime.now(UTC).isoformat(timespec="seconds"),
             "group_id": group.gid,
             "cik": group.cik,
             "metric_name": group.display_name,

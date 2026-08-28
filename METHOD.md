@@ -372,6 +372,20 @@ details and a hard rate limit of 10 requests/second.
    is pre-registered rather than optional.
 6. **2019–2021 is one cohort in one market.** Nothing here generalises to other vintages
    or other jurisdictions, and no attempt is made to claim otherwise.
+7. **The four-period test is not equally strict across filers, and this is not corrected.**
+   Reporting periods are anchored on the issuer's own periodic reports. A domestic filer
+   reports quarterly, so four consecutive absent periods is roughly **one year**. A
+   foreign private issuer files a 20-F annually, so the same four periods is roughly
+   **four years** — ZIM Integrated Shipping has 267 filed documents but only 6 reporting
+   periods in total. A foreign issuer therefore needs far longer to reach
+   `DISCONTINUED`, and some cannot reach it at all within the study window.
+   The direction of this bias is stated rather than adjusted: it **under-counts**
+   discontinuation among foreign private issuers, so it makes the headline smaller, not
+   larger. Anchoring on calendar quarters instead would have been the alternative, but it
+   would manufacture empty periods for issuers that never report in them, and an empty
+   period reads as absence — which is the failure this method is built to avoid. Where
+   the arm split matters to a published figure, the domestic and foreign counts are
+   reported separately.
 
 ---
 

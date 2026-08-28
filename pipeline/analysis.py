@@ -844,7 +844,7 @@ def primary_test(
             n_movers=len(movers),
             n_keepers=len(keepers),
         )
-    median_offset = int(round(statistics.median(offsets)))
+    median_offset = round(statistics.median(offsets))
 
     thresholds: dict[int, date] = {}
     skipped: list[dict[str, Any]] = []
@@ -1203,7 +1203,12 @@ class Projection:
 
 
 def read_projections(path: Path = PROJECTIONS_PATH) -> tuple[Projection, ...]:
-    """Hand-transcribed projections, or an empty tuple. Never parsed from a filing."""
+    """Hand-transcribed projections, or an empty tuple. Never parsed from a filing.
+
+    A row this cannot read is skipped and logged at WARNING with its row number,
+    and it lowers the published coverage rate rather than vanishing: §7.5
+    publishes coverage precisely so an incomplete transcription is visible.
+    """
     if not path.is_file():
         return ()
     try:
@@ -1216,16 +1221,29 @@ def read_projections(path: Path = PROJECTIONS_PATH) -> tuple[Projection, ...]:
         ) from exc
 
     out: list[Projection] = []
-    for raw in raw_rows:
+    for offset, raw in enumerate(raw_rows, start=2):
         clean = {k: (v or "").strip() for k, v in raw.items() if k}
         cik = clean.get("cik", "")
         value = clean.get("projected_revenue", "").replace(",", "")
         year = clean.get("fiscal_year", "")
         if not cik.isdigit() or not year:
+            logger.warning(
+                "%s row %d: cik or fiscal_year is missing, so the row is skipped "
+                "and the §7.5 coverage rate falls accordingly",
+                _relative(path),
+                offset,
+            )
             continue
         try:
             projected = float(value)
         except ValueError:
+            logger.warning(
+                "%s row %d: projected_revenue %r is not a number, so the row is "
+                "skipped and the §7.5 coverage rate falls accordingly",
+                _relative(path),
+                offset,
+                value,
+            )
             continue
         out.append(
             Projection(
@@ -1415,7 +1433,13 @@ def spec_line(total: int) -> str:
 def walk_strings(
     payload: Any, *, skip_verbatim: bool, path: str = "$"
 ) -> list[tuple[str, str]]:
-    """Every string in a payload, as `(json path, string)`, keys included."""
+    """Every string in a payload, as `(json path, string)`, keys included.
+
+    With `skip_verbatim`, a key named in `VERBATIM_SUBTREES` or `VERBATIM_KEYS`
+    is skipped along with everything under it. The key itself is skipped and not
+    only its values, because `cause_of_death` - the schema `app/data.py`
+    documents and `app/templates/cohort.html` reads - is one of them.
+    """
     found: list[tuple[str, str]] = []
     if isinstance(payload, str):
         found.append((path, payload))
@@ -1423,9 +1447,9 @@ def walk_strings(
         for key, value in payload.items():
             key_text = str(key)
             child = f"{path}.{key_text}"
-            found.append((f"{child}<key>", key_text))
             if skip_verbatim and (key_text in VERBATIM_SUBTREES or key_text in VERBATIM_KEYS):
                 continue
+            found.append((f"{child}<key>", key_text))
             found.extend(walk_strings(value, skip_verbatim=skip_verbatim, path=child))
     elif isinstance(payload, (list, tuple)):
         for index, value in enumerate(payload):
@@ -1736,6 +1760,26 @@ def build_scoreboard_payload(
     }
 
 
+def _publishable(block: Mapping[str, Any], fallback_reason: str) -> dict[str, Any]:
+    """A specification block as it is published. Returns a new dictionary.
+
+    A payload the template would render as a table of zeros is worse than an
+    absent one, so an unavailable specification is reduced to its availability
+    and its reason and carries no figure keys at all.
+    """
+    if block.get("available"):
+        return dict(block)
+    reduced: dict[str, Any] = {
+        "available": False,
+        "reason": block.get("reason") or fallback_reason or LEDGER_ABSENT_REASON,
+    }
+    if "power_note" in block:  # the §7.2 arm sizes and the power statement stay
+        reduced["power_note"] = POWER_NOTE
+        reduced["n_keepers"] = block.get("n_keepers")
+        reduced["n_movers"] = block.get("n_movers")
+    return reduced
+
+
 def run(inputs: AnalysisInputs) -> Analysis:
     """Compute every pre-registered specification and assemble what is published."""
     ledger = inputs.ledger
@@ -1793,10 +1837,10 @@ def run(inputs: AnalysisInputs) -> Analysis:
             ),
             "n_issuers_adjudicated": len(behaviours) if ledger.available else None,
         },
-        "base_rate": rates,
-        "counter_test": counter,
-        "sensitivity": sensitivities,
-        "primary_test": primary.as_dict(),
+        "base_rate": _publishable(rates, ledger.reason),
+        "counter_test": _publishable(counter, ledger.reason),
+        "sensitivity": _publishable(sensitivities, ledger.reason),
+        "primary_test": _publishable(primary.as_dict(), ledger.reason),
         "projection_arm": arm,
         "exclusions_applied": _exclusions_applied(
             inputs.events, outcome_available=inputs.outcome_available
@@ -1809,40 +1853,37 @@ def run(inputs: AnalysisInputs) -> Analysis:
         },
         "ledger": ledger.as_dict(),
         "limitations": [
-            "n is small. At n = 50 the study is underpowered for anything but a "
-            "large effect, and no directional claim is made.",
-            "The corpus is the SEC-filed record only. Investor decks and "
-            "transcripts are outside it.",
-            "Companies that delisted early file less and are structurally "
-            "under-represented in later periods.",
-            "Adjudication is one human's judgment, recorded row by row so it can "
-            "be disagreed with.",
-            "A discontinuation is not proof of intent, which is why §7.4 is "
-            "pre-registered rather than optional.",
+            (
+                "n is small. At n = 50 the study is underpowered for anything but "
+                "a large effect, and no directional claim is made."
+            ),
+            (
+                "The corpus is the SEC-filed record only. Investor decks and "
+                "transcripts are outside it."
+            ),
+            (
+                "Companies that delisted early file less and are structurally "
+                "under-represented in later periods."
+            ),
+            (
+                "Adjudication is one human's judgment, recorded row by row so it "
+                "can be disagreed with."
+            ),
+            (
+                "A discontinuation is not proof of intent, which is why §7.4 is "
+                "pre-registered rather than optional."
+            ),
             "2019-2021 is one cohort in one market and nothing here generalises.",
         ],
     }
-    if ledger.available:
+    # The headline is a sentence about adjudicated metrics. With none in hand
+    # it is omitted, so the front page shows its pending marker rather than a
+    # grammatical sentence built out of zeros.
+    if ledger.available and ledger.metric_rows:
         finding["finding"] = {
             "segments": _headline_segments(rows, behaviours, inputs.as_at),
             "basis": ledger.path,
         }
-
-    # A payload the template would render as a table of zeros is worse than an
-    # absent one, so an unavailable specification carries no figure keys at all.
-    for key in ("base_rate", "counter_test", "sensitivity", "primary_test"):
-        block = finding[key]
-        if isinstance(block, dict) and not block.get("available"):
-            finding[key] = {
-                "available": False,
-                "reason": block.get("reason") or ledger.reason or LEDGER_ABSENT_REASON,
-                **(
-                    {"power_note": POWER_NOTE, "n_keepers": block.get("n_keepers"),
-                     "n_movers": block.get("n_movers")}
-                    if key == "primary_test"
-                    else {}
-                ),
-            }
 
     spec_runs = _spec_runs(finding)
     return Analysis(

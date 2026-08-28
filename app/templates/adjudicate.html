@@ -35,8 +35,11 @@
 
   <div class="adj-bar__who">
     <label for="adj-reviewer">reviewer</label>
-    <input id="adj-reviewer" name="reviewer" type="text" spellcheck="false" autocomplete="off"
-           maxlength="12" value="{{ draft.reviewer or default_reviewer }}"
+    {# form="adj-form" so the field submits with the ruling even though it sits
+       in the header, which keeps the no-JavaScript post working. #}
+    <input id="adj-reviewer" name="reviewer" form="adj-form" type="text"
+           spellcheck="false" autocomplete="off" maxlength="12"
+           value="{{ draft.reviewer or default_reviewer }}"
            placeholder="initials" aria-describedby="adj-reviewer-why">
     <span id="adj-reviewer-why" class="u-sr">Written into every row this session commits, with today's date.</span>
     <a class="adj-bar__done" href="{{ done_url }}">summary</a>
@@ -144,7 +147,6 @@
       <p class="adj-error" role="alert" id="adj-error" hidden></p>
 
       <form class="adj-form" id="adj-form" method="post" action="{{ post_url }}">
-        <input type="hidden" name="reviewer" id="adj-reviewer-mirror" value="{{ draft.reviewer or default_reviewer }}">
         <input type="hidden" name="rationale_source" id="adj-source" value="free_text">
 
         <fieldset class="adj-verdicts">

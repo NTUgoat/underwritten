@@ -28,7 +28,7 @@ import argparse
 import json
 import sys
 import warnings
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from bs4 import XMLParsedAsHTMLWarning
@@ -199,7 +199,7 @@ def main(argv: list[str] | None = None) -> int:
 
     inputs = AnalysisInputs(
         as_at=config.AS_AT_DATE,
-        generated=datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+        generated=datetime.now(UTC).replace(microsecond=0).isoformat(),
         cohort=cohort,
         ledger=ledger,
         events=events,

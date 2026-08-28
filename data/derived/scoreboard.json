@@ -1,0 +1,7 @@
+{
+  "as_at": "2026-08-28",
+  "available": false,
+  "reason": "The adjudication ledger data/adjudication/metrics.csv has not been written yet. METHOD.md \u00a74 requires every candidate to be ruled on by hand and \u00a75 makes the terminal state a human ruling, so no state is inferred here and no figure is published in its place.",
+  "fiscal_years": [],
+  "issuers": []
+}

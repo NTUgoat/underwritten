@@ -1,0 +1,78 @@
+{
+  "as_at": "2026-08-28",
+  "generated": "2026-08-28T13:26:11+00:00",
+  "available": false,
+  "reason": "The adjudication ledger data/adjudication/metrics.csv has not been written yet. METHOD.md \u00a74 requires every candidate to be ruled on by hand and \u00a75 makes the terminal state a human ruling, so no state is inferred here and no figure is published in its place.",
+  "cohort": {
+    "n_issuers": 50,
+    "target_n": 50,
+    "floor_n": 25,
+    "floor_met": true,
+    "n_metrics": null,
+    "n_keepers": null,
+    "n_movers": null,
+    "n_no_metrics_defined": null,
+    "n_issuers_adjudicated": null
+  },
+  "base_rate": {
+    "available": false,
+    "reason": "The adjudication ledger data/adjudication/metrics.csv has not been written yet. METHOD.md \u00a74 requires every candidate to be ruled on by hand and \u00a75 makes the terminal state a human ruling, so no state is inferred here and no figure is published in its place."
+  },
+  "counter_test": {
+    "available": false,
+    "reason": "The adjudication ledger data/adjudication/metrics.csv has not been written yet. METHOD.md \u00a74 requires every candidate to be ruled on by hand and \u00a75 makes the terminal state a human ruling, so no state is inferred here and no figure is published in its place."
+  },
+  "sensitivity": {
+    "available": false,
+    "reason": "The adjudication ledger data/adjudication/metrics.csv has not been written yet. METHOD.md \u00a74 requires every candidate to be ruled on by hand and \u00a75 makes the terminal state a human ruling, so no state is inferred here and no figure is published in its place."
+  },
+  "primary_test": {
+    "available": false,
+    "reason": "The adjudication ledger data/adjudication/metrics.csv has not been written yet. METHOD.md \u00a74 requires every candidate to be ruled on by hand and \u00a75 makes the terminal state a human ruling, so no state is inferred here and no figure is published in its place.",
+    "power_note": "At n = 50 this study is underpowered for anything but a large effect. The reported quantity is an association with an interval, and the interval is wide. No claim of direction between metric behaviour and later filing events is made or implied.",
+    "n_keepers": null,
+    "n_movers": null
+  },
+  "projection_arm": {
+    "available": false,
+    "reason": "No hand-transcribed projections at data/adjudication/projections.csv. METHOD.md \u00a77.5 transcribes the S-4/F-4 prospective financial information by hand rather than parsing it, so coverage is 0 until that work is done.",
+    "coverage": {
+      "n_despac_issuers": 26,
+      "n_with_transcribed_projections": 0,
+      "rate": 0.0
+    },
+    "realisation": {
+      "n_pairs": 0,
+      "median_ratio": null,
+      "mean_ratio": null
+    },
+    "per_projection": []
+  },
+  "exclusions_applied": {},
+  "outcome_variable": {
+    "available": false,
+    "reason": "The adverse-event extraction was not run because the adjudication ledger is absent: with no Keeper/Mover split there is nothing to score events against.",
+    "n_issuers_with_a_filing_index": 0,
+    "errors": []
+  },
+  "ledger": {
+    "path": "data/adjudication/metrics.csv",
+    "available": false,
+    "reason": "The adjudication ledger data/adjudication/metrics.csv has not been written yet. METHOD.md \u00a74 requires every candidate to be ruled on by hand and \u00a75 makes the terminal state a human ruling, so no state is inferred here and no figure is published in its place.",
+    "n_rows": 0,
+    "n_metric_rows": 0,
+    "n_issuers_no_metrics_defined": 0,
+    "n_invalid_rows": 0,
+    "n_rows_outside_cohort": 0,
+    "invalid_rows": [],
+    "rows_outside_cohort": []
+  },
+  "limitations": [
+    "n is small. At n = 50 the study is underpowered for anything but a large effect, and no directional claim is made.",
+    "The corpus is the SEC-filed record only. Investor decks and transcripts are outside it.",
+    "Companies that delisted early file less and are structurally under-represented in later periods.",
+    "Adjudication is one human's judgment, recorded row by row so it can be disagreed with.",
+    "A discontinuation is not proof of intent, which is why \u00a77.4 is pre-registered rather than optional.",
+    "2019-2021 is one cohort in one market and nothing here generalises."
+  ]
+}

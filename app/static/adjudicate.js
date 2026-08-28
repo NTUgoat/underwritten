@@ -30,7 +30,6 @@
   var form = document.getElementById("adj-form");
   var rationale = document.getElementById("adj-rationale");
   var reviewer = document.getElementById("adj-reviewer");
-  var mirror = document.getElementById("adj-reviewer-mirror");
   var source = document.getElementById("adj-source");
   var errorBox = document.getElementById("adj-error");
   var presetHost = document.getElementById("adj-presets");
@@ -221,10 +220,8 @@
   if (reviewer) {
     var stored = readStore(window.localStorage, REVIEWER_KEY);
     if (!reviewer.value && stored) reviewer.value = stored;
-    if (mirror) mirror.value = reviewer.value;
     reviewer.addEventListener("input", function () {
       reviewer.classList.remove("is-missing");
-      if (mirror) mirror.value = reviewer.value;
       writeStore(window.localStorage, REVIEWER_KEY, reviewer.value.trim());
     });
   }
