@@ -26,6 +26,31 @@ Then open <http://127.0.0.1:8000/adjudicate>.
 **The flag is never set on the deployed site.** With it unset the tool registers zero
 routes — the public site cannot reach it, which is checked by a test rather than assumed.
 
+### Run the first sweep in `?order=name`
+
+Open <http://127.0.0.1:8000/adjudicate?order=name> rather than the default.
+
+It sorts by metric name rather than by issuer, so identical phrases arrive
+**consecutively**. `non-GAAP financial measures` appears for 23 different issuers;
+`key metrics` for 21; `non-GAAP measures` for 20. Ruling them back to back takes
+seconds each, because the evidence is the same and you are not re-deciding
+anything — whereas in issuer order those same 23 rulings are scattered across the
+whole session and each one costs you a fresh read.
+
+Measured on the real worklist: **946 groups become 705 consecutive runs.** A
+quarter of the session is a repeat of the phrase you just ruled on.
+
+There is deliberately **no "apply to all issuers" button**, and it would be a
+mistake to add one. It is safe for a section heading, whose ruling cannot vary by
+issuer — but 117 repeated groups are `company_defined` proposals like
+`adjusted EBITDA`, and §4 admits a non-GAAP measure *only where that company
+supplies its own definition*. The ruling genuinely differs by issuer, and a bulk
+action would quietly flatten that distinction across a dozen companies. Ordering
+gives you the speed without the failure mode.
+
+Switch back to `?order=issuer` for the §5 pass, where you want one company's
+whole filing history in your head at once.
+
 ### What to expect
 
 - Roughly **550 groups** across the cohort, one decision each. A group is one issuer and
