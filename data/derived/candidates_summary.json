@@ -1,13 +1,13 @@
 {
   "as_at": "2026-08-28",
-  "issuers_measured": 31,
-  "complete": false,
-  "issuers_skipped": 19,
-  "occurrences": 14377,
-  "groups_to_rule": 946,
+  "issuers_measured": 50,
+  "complete": true,
+  "issuers_skipped": 0,
+  "occurrences": 22397,
+  "groups_to_rule": 1374,
   "by_arm": {
-    "IPO": 13,
-    "DESPAC": 18
+    "IPO": 24,
+    "DESPAC": 26
   },
   "per_issuer": [
     {
@@ -254,163 +254,162 @@
       "cik": 1725882,
       "name": "INX Ltd",
       "arm": "IPO",
-      "documents": 209,
-      "occurrences": 37,
+      "documents": 220,
+      "occurrences": 43,
       "groups": 9
-    }
-  ],
-  "skipped": [
+    },
     {
       "cik": 1726445,
       "name": "Seer, Inc.",
-      "reason": "corpus incomplete",
-      "documents": 0,
-      "expected_filings": 83,
-      "gaps": 199
+      "arm": "IPO",
+      "documents": 123,
+      "occurrences": 32,
+      "groups": 6
     },
     {
       "cik": 1728190,
       "name": "HUYA Inc.",
-      "reason": "corpus incomplete",
-      "documents": 0,
-      "expected_filings": 85,
-      "gaps": 239
+      "arm": "IPO",
+      "documents": 162,
+      "occurrences": 422,
+      "groups": 8
     },
     {
       "cik": 1731289,
       "name": "Nikola Corp",
-      "reason": "corpus incomplete",
-      "documents": 1,
-      "expected_filings": 157,
-      "gaps": 404
+      "arm": "DESPAC",
+      "documents": 231,
+      "occurrences": 410,
+      "groups": 18
     },
     {
       "cik": 1733298,
       "name": "Qutoutiao Inc.",
-      "reason": "corpus incomplete",
-      "documents": 0,
-      "expected_filings": 40,
-      "gaps": 106
+      "arm": "IPO",
+      "documents": 77,
+      "occurrences": 282,
+      "groups": 21
     },
     {
       "cik": 1734722,
       "name": "UiPath, Inc.",
-      "reason": "corpus incomplete",
-      "documents": 0,
-      "expected_filings": 65,
-      "gaps": 153
+      "arm": "IPO",
+      "documents": 94,
+      "occurrences": 424,
+      "groups": 14
     },
     {
       "cik": 1737806,
       "name": "PDD Holdings Inc.",
-      "reason": "corpus incomplete",
-      "documents": 0,
-      "expected_filings": 77,
-      "gaps": 215
+      "arm": "IPO",
+      "documents": 145,
+      "occurrences": 671,
+      "groups": 20
     },
     {
       "cik": 1739566,
       "name": "Utz Brands, Inc.",
-      "reason": "corpus incomplete",
-      "documents": 0,
-      "expected_filings": 116,
-      "gaps": 282
+      "arm": "DESPAC",
+      "documents": 218,
+      "occurrences": 1786,
+      "groups": 55
     },
     {
       "cik": 1742927,
       "name": "REVIVA PHARMACEUTICALS HOLDINGS, INC.",
-      "reason": "corpus incomplete",
-      "documents": 0,
-      "expected_filings": 132,
-      "gaps": 326
+      "arm": "DESPAC",
+      "documents": 203,
+      "occurrences": 45,
+      "groups": 5
     },
     {
       "cik": 1743102,
       "name": "Jiayin Group Inc.",
-      "reason": "corpus incomplete",
-      "documents": 0,
-      "expected_filings": 63,
-      "gaps": 175
+      "arm": "IPO",
+      "documents": 122,
+      "occurrences": 62,
+      "groups": 21
     },
     {
       "cik": 1743907,
       "name": "Sun Country Airlines Holdings, LLC",
-      "reason": "corpus incomplete",
-      "documents": 0,
-      "expected_filings": 99,
-      "gaps": 251
+      "arm": "IPO",
+      "documents": 143,
+      "occurrences": 652,
+      "groups": 52
     },
     {
       "cik": 1744494,
       "name": "ADVENT TECHNOLOGIES HOLDINGS, INC.",
-      "reason": "corpus incomplete",
-      "documents": 0,
-      "expected_filings": 145,
-      "gaps": 377
+      "arm": "DESPAC",
+      "documents": 209,
+      "occurrences": 265,
+      "groups": 8
     },
     {
       "cik": 1746618,
       "name": "Revolve Group, Inc.",
-      "reason": "corpus incomplete",
-      "documents": 0,
-      "expected_filings": 77,
-      "gaps": 173
+      "arm": "IPO",
+      "documents": 113,
+      "occurrences": 988,
+      "groups": 30
     },
     {
       "cik": 1747748,
       "name": "Qualtrics International Inc.",
-      "reason": "corpus incomplete",
-      "documents": 0,
-      "expected_filings": 45,
-      "gaps": 115
+      "arm": "IPO",
+      "documents": 67,
+      "occurrences": 257,
+      "groups": 30
     },
     {
       "cik": 1750153,
       "name": "Canoo Inc.",
-      "reason": "corpus incomplete",
-      "documents": 0,
-      "expected_filings": 126,
-      "gaps": 330
+      "arm": "DESPAC",
+      "documents": 182,
+      "occurrences": 173,
+      "groups": 14
     },
     {
       "cik": 1750593,
       "name": "Fangdd Network Group Ltd.",
-      "reason": "corpus incomplete",
-      "documents": 0,
-      "expected_filings": 90,
-      "gaps": 252
+      "arm": "IPO",
+      "documents": 188,
+      "occurrences": 194,
+      "groups": 19
     },
     {
       "cik": 1751008,
       "name": "AppLovin Corp",
-      "reason": "corpus incomplete",
-      "documents": 0,
-      "expected_filings": 80,
-      "gaps": 196
+      "arm": "IPO",
+      "documents": 131,
+      "occurrences": 883,
+      "groups": 58
     },
     {
       "cik": 1752474,
       "name": "KLDiscovery Inc.",
-      "reason": "corpus incomplete",
-      "documents": 0,
-      "expected_filings": 85,
-      "gaps": 209
+      "arm": "DESPAC",
+      "documents": 129,
+      "occurrences": 214,
+      "groups": 19
     },
     {
       "cik": 1752828,
       "name": "Celularity Inc",
-      "reason": "corpus incomplete",
-      "documents": 0,
-      "expected_filings": 149,
-      "gaps": 387
+      "arm": "DESPAC",
+      "documents": 208,
+      "occurrences": 19,
+      "groups": 9
     },
     {
       "cik": 1753539,
       "name": "BlackSky Technology Inc.",
-      "reason": "corpus incomplete",
-      "documents": 0,
-      "expected_filings": 99,
-      "gaps": 227
+      "arm": "DESPAC",
+      "documents": 153,
+      "occurrences": 235,
+      "groups": 21
     }
-  ]
+  ],
+  "skipped": []
 }
