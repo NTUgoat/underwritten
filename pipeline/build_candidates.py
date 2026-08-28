@@ -23,10 +23,11 @@ from collections import Counter
 from bs4 import XMLParsedAsHTMLWarning
 
 from . import config
+from .corpus import _filing_documents
 from .corpus import build as build_corpus
 from .edgar import EdgarClient, OfflineCacheMiss
 from .filings import complete_index
-from .metrics import clean_metric_name, locate, write_candidates
+from .metrics import locate, metric_key, write_candidates
 
 warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
 
@@ -45,6 +46,33 @@ def _cohort_rows() -> list[dict[str, str]]:
         )
     with path.open(encoding="utf-8", newline="") as handle:
         return list(csv.DictReader(handle))
+
+
+def listing_documents(client: EdgarClient, index, row: dict[str, str]) -> tuple:
+    """The issuer's listing document, for candidate LOCATION only.
+
+    METHOD.md §4 locates candidates in the listing document; §6 measures the
+    filed record after listing. Those are different corpora and conflating them
+    breaks one or the other - a registration statement inside the §6 period
+    vector would read as a reporting period that never existed.
+
+    So this is fetched separately and handed only to the locator. Preference is
+    the exact accession the cohort was frozen on, falling back to the earliest
+    registration statement on file.
+    """
+    wanted = (row.get("listing_accession") or "").strip()
+    forms = {"S-1", "F-1", "S-4", "F-4", "S-1/A", "F-1/A", "S-4/A", "F-4/A"}
+    candidates = [f for f in index if f.form.upper() in forms]
+    if not candidates:
+        return ()
+
+    chosen = next((f for f in candidates if f.accession == wanted), None) or min(
+        candidates, key=lambda f: (f.filing_date, f.accession)
+    )
+    documents, _failures = _filing_documents(
+        client, chosen, include_exhibits=False, exhibit_forms=()
+    )
+    return documents
 
 
 def main() -> int:
@@ -69,7 +97,24 @@ def main() -> int:
         try:
             index = complete_index(client, cik)
             corpus = build_corpus(client, cik, index)
-            found = locate(corpus.documents)
+            # METHOD.md §4: "Candidate spans are located in THE LISTING DOCUMENT
+            # and the first annual report."
+            #
+            # config.CORPUS_FORMS deliberately excludes registration statements,
+            # because §6's absence test measures the filed record AFTER listing.
+            # But that made the listing document invisible to the locator too, so
+            # the study was grading promises made at listing while never reading
+            # a listing document: Lemonade's corpus is 109 documents, 82 of them
+            # 8-Ks, and not one S-1. A metric defined in the prospectus and
+            # dropped before the first annual report - precisely the case this
+            # study exists to find - could not be located at all.
+            #
+            # The two corpora are therefore separate and stay separate: the
+            # listing document is added for LOCATION only, and never enters the
+            # §6 absence corpus, where a pre-listing document would corrupt the
+            # period vector.
+            listing_docs = listing_documents(client, index, row)
+            found = locate((*listing_docs, *corpus.documents))
         except OfflineCacheMiss:
             skipped.append(
                 {"cik": cik, "name": row["name"], "reason": "corpus not built yet"}
@@ -114,7 +159,7 @@ def main() -> int:
 
         all_candidates.extend(found)
         groups = {
-            (c.cik, clean_metric_name(c.metric_name).lower().strip()) for c in found
+            (c.cik, metric_key(c.metric_name)) for c in found
         }
         covered.append(
             {

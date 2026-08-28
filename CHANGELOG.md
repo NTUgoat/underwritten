@@ -258,3 +258,57 @@ with a January 2019 listing measured to August 2026.
 
 n = 50 (target met), 26 de-SPAC and 24 IPO, listing dates 2019-01-04 to 2021-11-01.
 Funnel: 116 candidates rejected — C0 87, C1b 15, C3 9, C1c 4, C2 1.
+
+---
+
+## 2026-08-28 — Correction: the study was not reading its own listing documents
+
+**Applies to:** METHOD.md §4 (candidate location). No amendment to the method —
+the method was right and the code did not implement it.
+**Status:** before any ruling. The candidate worklist is regenerated.
+
+### What was wrong
+
+METHOD.md §4 states that "Candidate spans are located in the listing document and
+the first annual report." The pipeline located candidates over `corpus.documents`,
+and `config.CORPUS_FORMS` contains no S-1, F-1, S-4, F-4 or 424B4 — it is the §6
+absence corpus, which is deliberately restricted to the filed record *after*
+listing so that a registration statement can never appear inside a reporting
+period.
+
+The two uses were conflated, so the listing document was invisible to the
+locator. Lemonade's corpus is **109 documents — 82 8-Ks, 19 10-Qs, 6 10-Ks, and
+not one S-1**. The study was grading promises made in listing documents while
+never reading a listing document.
+
+### Why it matters more than it sounds
+
+The candidate population was "metrics defined in post-listing filings", not
+"metrics defined at listing". A metric that a company defined in its prospectus
+and then dropped **before its first annual report** could not be located at all —
+and that is the most complete form of the behaviour this study exists to measure.
+The bias runs in one direction: it removes the strongest cases from the
+numerator.
+
+### The fix
+
+The two corpora stay separate, because merging them would break §6. Listing
+documents are fetched by a new stage (`pipeline.fetch_listings`, roughly one
+request per issuer) and handed to the locator only; they never enter the absence
+corpus. `pipeline.build_candidates` now locates over
+`(listing documents, corpus documents)`.
+
+### Also corrected
+
+`build_candidates` was still grouping on a third normalisation of its own
+(`clean_metric_name(...).lower().strip()`) while the evidence stage and the
+adjudication tool had been unified onto `metrics.metric_key`. Three definitions
+of "the same metric" is how a denominator quietly differs from a numerator; it
+now uses `metric_key` like everything else.
+
+### How this was found
+
+Not by review. A recall check — reading the "Key Operating Metrics" section of
+real listing documents to see whether the locator was missing metrics presented
+in tables rather than in "we define X as" sentences — returned zero issuers
+examined, because no listing document was in the cache to read.
