@@ -31,19 +31,37 @@
       {% endif %}
     </h1>
 
+    {# The realised n is a count of the committed frozen cohort, so it is
+       publishable before any analysis has run. The metric count is not. #}
+    {% set realised_n = cohort.n_issuers if cohort.n_issuers else frozen_n %}
     <p class="realised">
       <span class="realised__item"><span class="realised__k">realised n</span>
-        <span class="realised__v">{{ cohort.n_issuers|num }}</span> issuers</span>
+        <span class="realised__v">{{ realised_n|num }}</span> issuers</span>
       <span class="realised__item"><span class="realised__k">metrics adjudicated</span>
         <span class="realised__v">{{ cohort.n_metrics|num }}</span></span>
       <span class="realised__item"><span class="realised__k">pre-registered target</span>
-        <span class="realised__v">50</span></span>
+        <span class="realised__v">{{ funnel.target_n|default(50, true) }}</span></span>
       <span class="realised__item"><span class="realised__k">floor</span>
-        <span class="realised__v">25</span></span>
-      {% if cohort.floor_met is defined and cohort.floor_met is not none %}
-      <span class="realised__item realised__item--flag">{{ 'floor met' if cohort.floor_met else 'floor NOT met — published as a null result' }}</span>
+        <span class="realised__v">{{ funnel.floor_n|default(25, true) }}</span></span>
+      {% if funnel.met_floor is defined and funnel.met_floor is not none %}
+      <span class="realised__item{{ '' if funnel.met_floor else ' realised__item--flag' }}">{{ 'floor met' if funnel.met_floor else 'floor NOT met — published as a null result' }}</span>
       {% endif %}
     </p>
+
+    {% if funnel.candidates_enumerated %}
+    <p class="realised realised--funnel">
+      <span class="realised__item"><span class="realised__k">candidates enumerated</span>
+        <span class="realised__v">{{ funnel.candidates_enumerated|num }}</span></span>
+      <span class="realised__item"><span class="realised__k">accepted</span>
+        <span class="realised__v">{{ funnel.accepted|num }}</span></span>
+      <span class="realised__item"><span class="realised__k">rejected on a stated criterion</span>
+        <span class="realised__v">{{ funnel.rejected|num }}</span></span>
+      {% if funnel.accepted_by_arm %}
+      <span class="realised__item"><span class="realised__k">by arm</span>
+        {% for arm, count in funnel.accepted_by_arm.items() %}<span class="realised__v">{{ count|num }}</span> {{ arm|lower }}{% if not loop.last %}, {% endif %}{% endfor %}</span>
+      {% endif %}
+    </p>
+    {% endif %}
 
     <hr class="rule">
 

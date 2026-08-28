@@ -93,6 +93,36 @@
     restatements restored. <a href="/changelog">The amendment, with the four filings it
     was confirmed against</a>.</p>
 
+    <h3 class="sub-h">The funnel, candidates to cohort</h3>
+    {% if funnel.candidates_enumerated %}
+    <div class="scroller">
+      <table class="table">
+        <thead><tr><th scope="col">stage</th><th scope="col" class="n">n</th><th scope="col">note</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">candidates enumerated</th><td class="n">{{ funnel.candidates_enumerated|num }}</td>
+            <td class="def">full-text search over the locator phrases, deduplicated by CIK, ordered by CIK ascending</td></tr>
+          <tr><th scope="row">accepted into the cohort</th><td class="n">{{ funnel.accepted|num }}</td>
+            <td class="def">{% if funnel.accepted_by_arm %}{% for arm, count in funnel.accepted_by_arm.items() %}{{ count }} {{ arm|lower }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}</td></tr>
+          <tr><th scope="row">rejected</th><td class="n">{{ funnel.rejected|num }}</td>
+            <td class="def">every rejection carries the criterion it failed and the detail behind it</td></tr>
+          {% if funnel.rejected_by_criterion %}
+          {% for criterion, count in funnel.rejected_by_criterion.items() %}
+          <tr><th scope="row" class="def">failed {{ criterion }}</th><td class="n">{{ count|num }}</td><td class="def"></td></tr>
+          {% endfor %}
+          {% endif %}
+        </tbody>
+        <tfoot>
+          <tr><th scope="row">target / floor</th>
+            <td class="n">{{ funnel.target_n|num }} / {{ funnel.floor_n|num }}</td>
+            <td class="def">{{ 'target met' if funnel.met_target else 'target not met' }};
+              {{ 'floor met' if funnel.met_floor else 'floor not met — published as a null result' }}</td></tr>
+        </tfoot>
+      </table>
+    </div>
+    {% else %}
+    {{ m.absent('The funnel from candidates to cohort is published as soon as enumeration has run.', 'data/derived/cohort_funnel.json') }}
+    {% endif %}
+
     <h3 class="sub-h">Cohort exclusions, C1–C5</h3>
     {% if exclusion_rows %}
     <div class="scroller">

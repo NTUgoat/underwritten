@@ -208,13 +208,22 @@ def register(app, templates) -> None:
     """Attach every route. Kept in one place so the route table is readable."""
 
     def render(name: str, context: dict[str, Any]) -> HTMLResponse:
-        return templates.TemplateResponse(name, context)
+        # Current Starlette takes the Request first. Every context built by
+        # _context() carries it, so the handlers stay free of the plumbing.
+        return templates.TemplateResponse(context["request"], name, context)
+
+    @app.get("/healthz")
+    def healthz() -> JSONResponse:
+        """Liveness probe. Touches no file and renders no template deliberately:
+        the deployment must be promotable before any data has been written."""
+        return JSONResponse({"status": "ok"})
 
     @app.get("/", response_class=HTMLResponse)
     def index(request: Request) -> HTMLResponse:
         finding = data.finding()
         board = data.scoreboard()
         cohort = data.cohort_frozen()
+        funnel = data.cohort_funnel()
         return render(
             "index.html",
             _context(
@@ -224,7 +233,11 @@ def register(app, templates) -> None:
                 finding=finding.payload if isinstance(finding.payload, dict) else {},
                 board=board.payload if isinstance(board.payload, dict) else {},
                 cohort_rows=cohort.rows,
-                sources=_sources(finding, board, cohort),
+                # The realised n is a count of committed rows, not an estimate,
+                # so it can be published before any analysis has run.
+                frozen_n=len(cohort.rows) if cohort.available else None,
+                funnel=funnel.payload if isinstance(funnel.payload, dict) else {},
+                sources=_sources(finding, board, cohort, funnel),
             ),
         )
 
@@ -316,6 +329,7 @@ def register(app, templates) -> None:
         body, toc = render_markdown(document.payload or "")
         specs = data.spec_log()
         exclusions = data.cohort_exclusions()
+        funnel = data.cohort_funnel()
         finding = data.finding()
         applied = finding.get("exclusions_applied") if finding.available else None
         return render(
@@ -332,7 +346,8 @@ def register(app, templates) -> None:
                 exclusion_rows=exclusions.rows,
                 exclusions_available=exclusions.available,
                 exclusions_applied=applied if isinstance(applied, dict) else {},
-                sources=_sources(document, specs, exclusions, finding),
+                funnel=funnel.payload if isinstance(funnel.payload, dict) else {},
+                sources=_sources(document, specs, exclusions, funnel, finding),
             ),
         )
 
