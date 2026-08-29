@@ -29,10 +29,9 @@ author: Jex Lin
     * The risk-free line is the US 10-year on 2026-08-29 (4.73%). It moves.
       Restamp it whenever you republish and re-sum every hurdle.
     * `opened=` says 2026-09-06. Change it to the day you actually open.
-    * Royal Gold's country risk line uses the US premium as a FLOOR. Its
-      revenue spans Canada, Chile, the Dominican Republic and Botswana, and an
-      honest hurdle weights the premia by segment revenue from the 10-K. This
-      is the weakest line in the file and the one to fix next.
+    * Royal Gold's country risk premium is now weighted on Note 18 regional
+      revenue from the 2025 10-K. Re-derive it when the next 10-K lands: the
+      regional mix moves, and Kansanshi in Zambia carries an 11.66% premium.
     * A position is graded by pipeline/watch.py against incoming filings, on a
       schedule, without you. Do not resolve a kill criterion by hand here.
   ========================================================================
@@ -237,25 +236,35 @@ ownable. The macro view is the reason to look; it is not the reason to hold.
 ### hurdle
 
 Cost of equity. Royal Gold carries negligible debt, so the Precious Metals industry
-unlevered beta of 0.79 is used directly rather than the levered 0.84, which embeds a
-7.28% industry debt-to-equity the company does not have.
+unlevered beta of 0.79 is used directly rather than the levered 0.84, which embeds a 7.28%
+industry debt-to-equity the company does not have.
 
-Note the result: at 825 bps this is the lowest of the three hurdles, because precious
-metals betas are low. That is counter-intuitive for a position motivated by a macro view
-and is worth saying out loud.
+The country risk premium is revenue-weighted, and how it is weighted is worth stating,
+because the filed record does not settle it cleanly. Note 18 of the 2025 Form 10-K
+(accession 0000085535-26-000008, filed 2026-02-19) reports revenue by **region**, not by
+country: North America $704.1m, EMEA $139.5m, South and Central America $145.6m, Australia
+Pacific $41.4m, on total revenue of $1,030.5m. Country premia are then assigned within each
+region from the properties the same filing names - Mount Milligan in Canada, Pueblo Viejo in
+the Dominican Republic and Cortez in the United States within North America; Kansanshi in
+Zambia within EMEA, with the residual carried at Botswana's premium for Khoemacau; Andacollo
+in Chile within South and Central America.
 
-The country risk line below is the weakest part of this build and is marked as such.
-Royal Gold's revenue is spread across Canada, the United States, Chile, the Dominican
-Republic and Botswana, and an honest hurdle weights the country premia by revenue from
-the segment disclosure in the latest 10-K. The figure below uses the US premium as a
-floor and will rise once weighted.
+That assignment is an assumption, not a disclosure. Roughly half of revenue sits in lines
+the filing calls "Other" and does not attribute to a country, so a true country weighting is
+not derivable from the filed record and is not claimed here. The regional weights are filed;
+the within-region premia are inferred and stated.
+
+The result matters. Pueblo Viejo alone is more than a tenth of revenue and sits inside
+"North America", so that region is not the low-risk block its name suggests. The weighted
+premium comes to 1.58%, against the 0.23% United States floor this hurdle previously used,
+and the hurdle rises by 107 basis points as a result.
 
 | line | bps | source |
 | risk-free rate, US 10-year Treasury | 473 | US Treasury daily par yield curve, 2026-08-29 |
 | mature-market ERP 4.23% x unlevered beta 0.79 | 334 | Damodaran industry betas, January 2026, Precious Metals |
-| country risk premium x beta 0.79, US floor pending revenue weighting | 18 | Damodaran country premia, January 2026 (US, Moody's Aa1) |
+| revenue-weighted country risk premium 1.58% x beta 0.79 | 125 | Damodaran country premia January 2026, weighted on Note 18 regional revenue, Royal Gold 10-K accession 0000085535-26-000008 |
 
-total: 825
+total: 932
 edition: Damodaran, NYU Stern, January 2026
 
 ### expected spread
@@ -263,13 +272,14 @@ edition: Damodaran, NYU Stern, January 2026
 Expected return, expressed as a spread over the hurdle above and in basis points, never
 as a price.
 
-central = 500 bps, low = 50 bps, high = 950 bps
+central = 393 bps, low = -57 bps, high = 843 bps
 
-The central case has Royal Gold earning roughly five hundred basis points above its cost of
-equity, a total return near thirteen per cent. The band is deliberately the widest of the
-three: royalty economics pass a metal price through, so the dispersion of outcomes is wider
-than for either software business even though the beta is lower. The low case barely clears
-the hurdle, which is the honest floor for a position whose motivating view is macro.
+These are the same total-return expectations as before - roughly thirteen per cent central,
+just under nine at the low end, near eighteen at the high - restated against a hurdle that
+has risen by a hundred and seven basis points now that the country risk premium is weighted
+on filed revenue rather than floored at the United States. The view did not change; the
+thing it is measured against did. The low case now sits below the hurdle, which is the
+honest consequence of pricing the jurisdictions this revenue actually comes from.
 
 ### downside
 

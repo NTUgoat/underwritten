@@ -255,7 +255,7 @@
         }
       ],
       "hurdle": {
-        "total_bps": 825,
+        "total_bps": 932,
         "edition": "Damodaran, NYU Stern, January 2026",
         "lines": [
           {
@@ -269,16 +269,16 @@
             "source": "Damodaran industry betas, January 2026, Precious Metals"
           },
           {
-            "label": "country risk premium x beta 0.79, US floor pending revenue weighting",
-            "bps": 18,
-            "source": "Damodaran country premia, January 2026 (US, Moody's Aa1)"
+            "label": "revenue-weighted country risk premium 1.58% x beta 0.79",
+            "bps": 125,
+            "source": "Damodaran country premia January 2026, weighted on Note 18 regional revenue, Royal Gold 10-K accession 0000085535-26-000008"
           }
         ]
       },
       "expected_spread_bps": {
-        "central": 500,
-        "low": 50,
-        "high": 950,
+        "central": 393,
+        "low": -57,
+        "high": 843,
         "basis": "spread over the hurdle above"
       },
       "downside": {
