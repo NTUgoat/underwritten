@@ -224,6 +224,10 @@ def register(app, templates) -> None:
         # front page otherwise reads as an empty result rather than a complete
         # instrument whose reading has not started.
         status = data.study_status()
+        # The one thing on the site that moves without the author. The front
+        # page carries its headline figure so the study does not read as
+        # something that finished and stopped.
+        watch = data.watch_status()
         return render(
             "index.html",
             _context(
@@ -238,7 +242,10 @@ def register(app, templates) -> None:
                 frozen_n=len(cohort.rows) if cohort.available else None,
                 funnel=funnel.payload if isinstance(funnel.payload, dict) else {},
                 status=status,
-                sources=_sources(finding, board, cohort, funnel, *status["sources"]),
+                watch=watch,
+                sources=_sources(
+                    finding, board, cohort, funnel, *status["sources"], *watch["sources"]
+                ),
             ),
         )
 
@@ -336,6 +343,29 @@ def register(app, templates) -> None:
                 page_title="Resolved cases",
                 cases=payload.get("cases") or [],
                 sources=_sources(dataset),
+            ),
+        )
+
+    @app.get("/watch", response_class=HTMLResponse)
+    def watch(request: Request) -> HTMLResponse:
+        """The only page on this site that moves without the author.
+
+        ``pipeline.watch`` runs weekly under GitHub Actions, re-reads every
+        cohort issuer's filing index, classifies anything adverse under
+        METHOD.md §7.2 and commits what it found. This handler renders that
+        committed report and computes nothing from it.
+        """
+        status = data.watch_status()
+        frozen = data.cohort_frozen()
+        return render(
+            "watch.html",
+            _context(
+                request,
+                page_id="watch",
+                page_title="The watch",
+                watch=status,
+                cohort_n=len(frozen.rows) if frozen.available else None,
+                sources=_sources(*status["sources"], frozen),
             ),
         )
 

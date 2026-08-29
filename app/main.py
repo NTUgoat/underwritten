@@ -38,6 +38,18 @@ SITE: dict[str, Any] = {
         "Do companies keep reporting the performance measures "
         "they invented for themselves when they listed?"
     ),
+    #: Why this exists, in the first person and without a claim that is not
+    #: true. The author holds no position in any cohort company; what he has is
+    #: the decision this study is built to inform. Stating the motive as
+    #: self-interest rather than as scholarship is the honest version, and a
+    #: reader can weigh a self-interested question on its merits.
+    "why": (
+        "I invest my own money. None of it is in these fifty companies — but the "
+        "next time I look at one that has recently listed, I want to know "
+        "something its prospectus will not tell me: when a company invents a "
+        "measure to be judged by, does it go on reporting it? Nobody publishes "
+        "that, so I measured it."
+    ),
     "author": "Jex Lin",
     "preregistered": "28 August 2026",
     "preregistration_tag": "preregistration-v1",
@@ -60,6 +72,8 @@ NAV: tuple[dict[str, str], ...] = (
      "blurb": "Three live names, priced as a spread over a hurdle"},
     {"href": "/resolved", "label": "Resolved", "id": "resolved", "tier": "study",
      "blurb": "Cases the public record has already settled"},
+    {"href": "/watch", "label": "Watch", "id": "watch", "tier": "study",
+     "blurb": "What the cohort has filed since, checked every Monday"},
     {"href": "/method", "label": "Method", "id": "method", "tier": "receipts",
      "blurb": "The pre-registration in full"},
     {"href": "/provenance", "label": "Provenance", "id": "provenance", "tier": "receipts",

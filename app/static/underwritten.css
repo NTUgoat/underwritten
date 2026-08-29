@@ -1104,3 +1104,61 @@ hr { border: 0; }
   font-size: 0.94rem; color: var(--ink-2);
 }
 .notice--lead .notice__mark { display: block; }
+
+/* ------------------------------------------------------- the live surface -- */
+
+/* A finding of nothing. "No cohort issuer has filed anything since X" is a
+   reading and is set as one — not as a greyed-out empty state, which would
+   read as a page that failed to load. */
+.quiet {
+  border-left: 2px solid var(--ink); padding-left: 1rem;
+  max-width: 44rem; margin: 0; color: var(--ink-2); font-size: 0.98rem;
+}
+.quiet__mark {
+  display: block; font-family: var(--sans); font-size: 0.66rem;
+  letter-spacing: 0.13em; text-transform: uppercase; color: var(--ink);
+  margin-bottom: 0.35rem;
+}
+
+/* The operating rules of the scheduled job, as a definition list of sorts. */
+.rules { list-style: none; margin: 0 0 var(--step); padding: 0; display: grid; gap: 0; max-width: 52rem; }
+.rules__item {
+  display: grid; gap: 0.15rem 1.5rem; grid-template-columns: 1fr;
+  padding: 0.7rem 0; border-top: 1px solid var(--rule);
+}
+.rules__item:first-child { border-top: 1px solid var(--ink); }
+@media (min-width: 42rem) { .rules__item { grid-template-columns: 11rem minmax(0, 1fr); } }
+.rules__k {
+  font-family: var(--sans); font-size: 0.68rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-3); padding-top: 0.12rem;
+}
+.rules__v { font-size: 0.92rem; color: var(--ink-2); line-height: 1.55; }
+
+/* The live strip on the front page: the one line that says this still moves. */
+.live {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 1.1rem;
+  border-top: 1px solid var(--ink); border-bottom: 1px solid var(--rule);
+  padding: 0.6rem 0; margin: 0 0 var(--step);
+  font-family: var(--sans); font-size: 0.8rem; color: var(--ink-2);
+}
+.live__mark {
+  font-size: 0.64rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink); border: 1px solid var(--ink); padding: 0.1rem 0.4rem;
+}
+.live__v { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--ink); }
+.live__go { margin-left: auto; }
+
+/* Why the study exists, in the author's own voice. Set apart from the
+   pre-registration language around it, because it is a different kind of
+   claim: a motive, not a method. */
+.why {
+  max-width: 42rem; margin: 0 0 calc(var(--step) * 1.1);
+  padding-left: 1rem; border-left: 2px solid var(--rule-2);
+  font-size: 0.98rem; color: var(--ink-2); line-height: 1.6;
+}
+.why__k {
+  display: block; font-family: var(--sans); font-size: 0.64rem;
+  letter-spacing: 0.13em; text-transform: uppercase; color: var(--ink-3);
+  margin-bottom: 0.35rem;
+}
+.why__sign { font-family: var(--sans); font-size: 0.74rem; color: var(--ink-3); }

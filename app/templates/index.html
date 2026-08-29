@@ -31,6 +31,16 @@
       and grades what became of the measures they chose.</p>
     {% endif %}
 
+    {# Why this exists. It is a motive, not a method, so it is set apart from
+       the pre-registration language around it. It claims no holding: the author
+       has no position in any cohort company, and says so here rather than
+       leaving a reader to wonder. #}
+    <p class="why">
+      <span class="why__k">Why I built it</span>
+      {{ site.why }}
+      <span class="why__sign">— {{ site.author }}</span>
+    </p>
+
     {# The realised n is a count of the committed frozen cohort, so it is
        publishable before any analysis has run. The metric count is not. #}
     {% set realised_n = cohort.n_issuers if cohort.n_issuers else frozen_n %}
@@ -56,6 +66,17 @@
         <dd class="figures__note">{% if status.written %}of {{ status.groups|num }}{% else %}none yet. The reading is the study{% endif %}</dd>
       </div>
     </dl>
+
+    {% if watch.available %}
+    <p class="live">
+      <span class="live__mark">Live</span>
+      <span>Last checked <span class="live__v">{{ watch.checked_on|longdate }}</span></span>
+      <span><span class="live__v">{{ watch.issuers_tracked|num }}</span> issuers re-read</span>
+      <span><span class="live__v">{{ watch.accessions_tracked|num }}</span> filings on the mark</span>
+      <span><span class="live__v">{{ watch.adverse|length|num }}</span> adverse events since</span>
+      <a class="live__go" href="/watch">The watch, and what it may not touch →</a>
+    </p>
+    {% endif %}
 
     {% if funnel.candidates_enumerated %}
     <p class="fold__funnel">
@@ -304,6 +325,9 @@
       <a class="onward__item" href="/resolved">
         <span class="onward__k">Resolved</span>
         <span class="onward__d">Adverse conclusions, and only where the outcome is already on the public record.</span></a>
+      <a class="onward__item" href="/watch">
+        <span class="onward__k">The watch</span>
+        <span class="onward__d">What the cohort has filed since, re-read every Monday by a job the author does not run.</span></a>
       <a class="onward__item" href="/method">
         <span class="onward__k">Method</span>
         <span class="onward__d">The pre-registration in full, the specification counter, and the exclusion table.</span></a>

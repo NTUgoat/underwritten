@@ -13,6 +13,12 @@ Both can be abandoned at will, and abandoning them costs nothing.
 
 This study asks what happened to them.
 
+**Why I built it.** I invest my own money. None of it is in these fifty companies — but the
+next time I look at one that has recently listed, I want to know something its prospectus
+will not tell me: when a company invents a measure to be judged by, does it go on reporting
+it? Nobody publishes that, so I measured it. The method below is what it took to answer the
+question in a way I would still trust after I had put money behind it.
+
 > Across US companies that listed between 2019 and 2021, what proportion of the operating
 > metrics they defined for themselves in their own listing documents were later
 > discontinued or substantively redefined — and is discontinuation associated with
@@ -180,13 +186,27 @@ best-effort and a no-op where certifi already works, such as on Railway's Linux 
 Deployment — the Docker image, the Railway configuration, and what the site does and does
 not serve — is in **[`docs/DEPLOY.md`](docs/DEPLOY.md)**.
 
-**Continuous re-reading.** `.github/workflows/watch.yml` runs weekly and on demand. Its job
-is to re-check the cohort's CIKs for new filings, re-evaluate open kill criteria against
-them, and append what it finds to a public changelog. It reads `SEC_CONTACT` from a
-repository secret of the same name (*Settings → Secrets and variables → Actions*), which
-must be set before the job can do anything at all. **The workflow is currently a
-placeholder**: the pipeline entry points it will call have not been written, so it installs
-the environment, imports the modules that do exist, prints what it will do, and exits.
+**Continuous re-reading.** [`.github/workflows/watch.yml`](.github/workflows/watch.yml) runs
+**every Monday at 06:17 UTC**, and on demand. It re-reads all 50 issuers' complete EDGAR
+filing indexes, diffs them against a committed per-issuer high-water mark of accessions
+already seen, classifies anything new as an adverse event under `METHOD.md` §7.2 — with
+Amendment 1's two exclusions applied, so a warrant-wave restatement or a mechanical de-SPAC
+delisting raises no alarm — reports any kill criterion whose date has passed, and commits
+the new state and report. It reads `SEC_CONTACT` from a repository secret of the same name
+(*Settings → Secrets and variables → Actions*), and it refuses to run without one.
+
+What it is allowed to write is `data/derived/watch_state.json` and
+`data/derived/watch_report.json`, and nothing else. It never edits `METHOD.md`, the frozen
+cohort, or the adjudication ledger — those are the study, and a scheduled job has no
+business touching them.
+
+The result is published at **`/watch`**. Two things follow from running it, and they are the
+reason it exists: the public record accrues whether or not the author touches this project,
+and a position is graded by a machine reading filings rather than by its author deciding
+whether he still believes it, which is what `METHOD.md` §9 means by *"evaluated by a
+scheduled job … without the author's involvement"*. A changelog that keeps moving is
+evidence the work was not theatre; one that stops the day something was submitted is
+evidence that it was.
 
 ---
 
@@ -210,7 +230,10 @@ the environment, imports the modules that do exist, prints what it will do, and 
 | `data/raw/` | The cached EDGAR corpus. Gitignored, excluded from the image, reproducible from the manifest. |
 | `Dockerfile`, `.dockerignore`, `.railway/railway.ts` | The deployed image and its Railway configuration. |
 | `docs/DEPLOY.md` | How the site is built and deployed. |
-| `.github/workflows/watch.yml` | The weekly re-read. Placeholder; see above. |
+| `.github/workflows/watch.yml` | The weekly re-read. Runs Mondays 06:17 UTC. |
+| `pipeline/watch.py` | The job itself: diff against the high-water mark, classify, report. |
+| `data/derived/watch_state.json` | Accessions already seen, per issuer. Committed by the job. |
+| `data/derived/watch_report.json` | What the last run found. Rendered at `/watch`. |
 
 ---
 

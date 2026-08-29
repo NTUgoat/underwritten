@@ -535,6 +535,75 @@ def study_status() -> dict[str, Any]:
     }
 
 
+def watch_report() -> Dataset:
+    """What last Monday's re-read of the cohort found. METHOD.md §9.
+
+    The report is written by ``pipeline.watch`` on a schedule and committed by
+    the workflow, so the site reads it exactly as the job left it. A run that
+    found nothing is a result and is published as one: silence here means the
+    cohort filed nothing adverse that week, not that nobody looked.
+    """
+    return load_json("derived/watch_report.json")
+
+
+def watch_state() -> Dataset:
+    """The per-issuer high-water mark of accessions the watch has already seen.
+
+    Published because it is the difference between "nothing new" and "nothing
+    checked". A reader can count what is under watch.
+    """
+    return load_json("derived/watch_state.json")
+
+
+#: The schedule in .github/workflows/watch.yml, stated so the page can say when
+#: the next run is without guessing. Changing the cron means changing this.
+WATCH_SCHEDULE = {
+    "cron": "17 6 * * 1",
+    "human": "Mondays, 06:17 UTC",
+    "workflow": ".github/workflows/watch.yml",
+}
+
+
+def watch_status() -> dict[str, Any]:
+    """The live state of the study, as at the last committed run.
+
+    Every figure is read out of a committed artifact or counted from one. The
+    job is the only part of this project that moves without the author, which is
+    the whole reason the page exists, so nothing here is inferred from today's
+    date - it reports when the run last happened and what it saw.
+    """
+    report = watch_report()
+    state = watch_state()
+
+    seen = state.get("seen_accessions") or {}
+    tracked = (
+        sum(len(v) for v in seen.values() if isinstance(v, list))
+        if isinstance(seen, dict)
+        else 0
+    )
+
+    new_filings = report.get("new_filings") or []
+    adverse = report.get("new_adverse_events") or []
+    due = report.get("kill_criteria_due") or []
+    errors = report.get("errors") or []
+
+    return {
+        "available": report.available,
+        "checked_on": report.get("checked_on"),
+        "baseline_established": bool(report.get("baseline_established")),
+        "issuers_checked": report.get("issuers_checked"),
+        "issuers_tracked": len(seen) if isinstance(seen, dict) else 0,
+        "accessions_tracked": tracked,
+        "new_filings": new_filings if isinstance(new_filings, list) else [],
+        "adverse": adverse if isinstance(adverse, list) else [],
+        "kill_criteria_due": due if isinstance(due, list) else [],
+        "errors": errors if isinstance(errors, list) else [],
+        "open_positions": report.get("open_positions"),
+        "schedule": WATCH_SCHEDULE,
+        "sources": [report, state],
+    }
+
+
 def manifest() -> Dataset:
     """Every manifest in data/manifest/, merged and deduplicated by URL.
 
