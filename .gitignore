@@ -28,3 +28,6 @@ tm.json
 
 # Runtime lock, not part of the study
 data/derived/corpus_build.lock
+
+# Private working notes. The repo is public; execution planning is not part of the study.
+*.local.md

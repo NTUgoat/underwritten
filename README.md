@@ -36,20 +36,30 @@ is a question about disclosure behaviour rather than about the market.
 
 ## What it found
 
-> **PLACEHOLDER — NOTHING HAS BEEN FOUND YET.**
+> **No finding yet. The instrument is complete; the reading is not.**
 >
-> The study has not been run. No metric has been extracted, no terminal state assigned,
-> and no statistic computed. This section is reserved and will be filled in only from
-> pipeline output.
+> As at 28 August 2026: the cohort is frozen at **50 of 50** issuers, the corpus is
+> complete at **9,016 documents** with none unreadable, and pattern search has located
+> **1,374 candidate metrics** from 22,397 occurrences. **Zero have been ruled on.**
 >
-> When it is filled in, it will state: the realised **n** and how it compares with the
-> pre-registered target of 50 and floor of 25; the share of included metrics in each
-> terminal state with an exact binomial 95% interval; the Keeper/Mover comparison with a
-> bootstrap interval and the n in each arm; the result of the pre-registered
-> counter-hypothesis; and the sensitivity with hand-labelled benign causes removed.
+> That last number is the study. `METHOD.md` §4 reserves every inclusion decision for a
+> human, and §5 makes every terminal state a human ruling, so
+> `data/adjudication/metrics.csv` does not exist until a person writes it. Nothing is
+> inferred in the meantime and no figure stands in for one: `build_analysis` reports every
+> section unavailable, and the site publishes the absence.
+>
+> When it is filled in, from pipeline output only, it will state: the realised **n**
+> against the pre-registered target of 50 and floor of 25; the share of included metrics
+> in each terminal state with an exact binomial 95% interval, published under both
+> `NEVER_REPORTED` counting rules; the Keeper/Mover comparison with a bootstrap interval
+> and the n in each arm; the result of the pre-registered counter-hypothesis; and the
+> sensitivity with hand-labelled benign causes removed.
 >
 > A weak result, a null result, or a shortfall against the floor is the publication. See
 > [`METHOD.md`](METHOD.md) §0 and §7.
+>
+> Live progress, and the weekly re-read of the cohort that runs regardless:
+> [`/watch`](https://underwritten-production.up.railway.app/watch).
 
 ---
 
@@ -77,6 +87,20 @@ adverse by construction. Every specification run against the data is logged and 
 including the ones that produced nothing, and at n=50 the study is underpowered for
 anything but a large effect, so it reports an association with a wide interval and makes
 no causal claim.
+
+### Why US filings, and not Singapore ones
+
+Because the method has to be checkable by someone who does not trust it, and EDGAR is the
+only filings corpus in the world that makes that possible for free: a complete bulk
+submissions archive, full-text search across every filer, a machine-readable `items`
+taxonomy that classifies corporate events without anyone hand-labelling them, and a
+published fair-access policy that says exactly how fast a stranger may re-fetch what this
+study read. SGX offers no equivalent. The same study on Singapore filings could be argued
+for but not *audited*, and an unauditable version of this study is not worth doing.
+
+The question is jurisdiction-agnostic — whether management goes on reporting the yardstick
+it chose for itself is not a US phenomenon. The evidence is not. This is one cohort in one
+market, and `METHOD.md` §12.6 says so rather than implying otherwise.
 
 The full pre-registration, including the inclusion rule, the event taxonomy, the
 discontinuation test, the publication rules and the stated limitations, is in
@@ -239,15 +263,20 @@ evidence that it was.
 
 ## Licence
 
-Intended: **code MIT**, **prose and research findings CC BY 4.0** — take the machinery and
-do what you like with it; quote and build on the findings with attribution.
+**Code: MIT** — [`LICENSE`](LICENSE). Covers `pipeline/`, `app/`, `tests/`, the
+`Dockerfile`, `.railway/` and `.github/workflows/`. Take the machinery and do what you
+like with it.
 
-**No `LICENSE` file exists in this repository yet, so nothing above is currently in force.**
-Until the author adds `LICENSE` (MIT, for `pipeline/`, `app/` and the deployment
-configuration) and `LICENSE-CONTENT` (CC BY 4.0, for `METHOD.md`, `CHANGELOG.md`, the
-adjudication ledger and the published prose), and states the split in this section, the
-default applies and all rights are reserved. This is a to-do, recorded here rather than
-left unsaid.
+**Research content: CC BY 4.0** — [`LICENSE-CONTENT`](LICENSE-CONTENT). Covers `METHOD.md`,
+`CHANGELOG.md`, this file, `docs/`, everything under `data/` including the adjudication
+ledger, and all published prose. Quote it and build on it with attribution.
+
+The SEC filings this study reads are public records and are not covered by either licence.
+What is licensed here is the selection, the adjudication and the writing about them.
+
+One request that is not a condition: **if you quote a finding, quote its interval.** Every
+published figure carries an explicit uncertainty, and a point estimate reproduced without
+one says something this study does not.
 
 ---
 
