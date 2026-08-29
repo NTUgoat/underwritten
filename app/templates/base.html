@@ -6,7 +6,7 @@
 <title>{% block title %}{{ page_title }} — {{ site.name }}{% endblock %}</title>
 <meta name="description" content="{{ site.tagline }}. Pre-registered {{ site.preregistered }}.">
 <meta name="author" content="{{ site.author }}">
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="light only">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
@@ -17,15 +17,42 @@
 
 <header class="masthead">
   <div class="wrap masthead__inner">
-    <a class="masthead__name" href="/">{{ site.name }}</a>
-    <p class="masthead__tagline">{{ site.tagline }}</p>
+    <div class="masthead__id">
+      <a class="masthead__name" href="/">{{ site.name }}</a>
+      <p class="masthead__tagline">{{ site.tagline }}</p>
+    </div>
+    {#- The sections a reader came for. The apparatus that backs them sits on
+        the quieter rule below, so the two are never weighed against each
+        other at a glance. -#}
     <nav class="masthead__nav" aria-label="Sections">
       <ul>
-        {% for item in nav %}
-        <li><a href="{{ item.href }}"{% if item.id == page_id %} aria-current="page"{% endif %}>{{ item.label }}</a></li>
+        {% for item in nav if item.tier == 'study' %}
+        <li><a href="{{ item.href }}"{% if item.id == page_id %} aria-current="page"{% endif %}
+               title="{{ item.blurb }}">{{ item.label }}</a></li>
         {% endfor %}
       </ul>
     </nav>
+  </div>
+
+  <div class="subhead">
+    <div class="wrap subhead__inner">
+      <p class="subhead__meta">
+        <span>Pre-registered {{ site.preregistered }}</span>
+        <span class="subhead__dot">·</span>
+        <span>as at {{ as_at }}</span>
+        <span class="subhead__dot">·</span>
+        <span>{{ site.corpus }}</span>
+      </p>
+      <nav class="subhead__nav" aria-label="Evidence">
+        <span class="subhead__label">Check it</span>
+        <ul>
+          {% for item in nav if item.tier == 'receipts' %}
+          <li><a href="{{ item.href }}"{% if item.id == page_id %} aria-current="page"{% endif %}
+                 title="{{ item.blurb }}">{{ item.label }}</a></li>
+          {% endfor %}
+        </ul>
+      </nav>
+    </div>
   </div>
 </header>
 

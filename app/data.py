@@ -432,6 +432,109 @@ def corpus_coverage() -> Dataset:
     return load_json("derived/corpus_coverage.json")
 
 
+def candidates_summary() -> Dataset:
+    """How many candidate metrics the locator found, and how many groups remain.
+
+    METHOD.md §4: pattern search is a locator and decides nothing. This file is
+    the size of the reading job it created, which is publishable before a single
+    ruling exists and is the honest answer to "how much of this is done".
+    """
+    return load_json("derived/candidates_summary.json")
+
+
+def study_status() -> dict[str, Any]:
+    """The four stages of the instrument, and which of them are finished.
+
+    Nothing here is computed: every figure is a count of committed rows or a key
+    read out of a committed artifact. The stage that matters is the last one,
+    because METHOD.md §4 reserves it for a human and the site must never imply
+    the machine did it.
+    """
+    coverage = corpus_coverage()
+    candidates = candidates_summary()
+    funnel = cohort_funnel()
+    frozen = cohort_frozen()
+    ledger = adjudication_ledger()
+
+    accepted = funnel.get("accepted")
+    target = funnel.get("target_n")
+    documents = coverage.get("documents_read")
+    failed = coverage.get("documents_failed")
+    groups = candidates.get("groups_to_rule")
+    occurrences = candidates.get("occurrences")
+
+    # A ruling exists only where a human wrote one. An unwritten ledger is zero
+    # rulings, never "unknown" - the distinction the reader needs is between
+    # nothing-ruled and some-ruled, and both are knowable from the file itself.
+    written = sum(1 for row in ledger.rows if (row.get("reviewer") or "").strip())
+
+    stages = [
+        {
+            "key": "cohort",
+            "label": "Cohort frozen",
+            "figure": len(frozen.rows) if frozen.available else None,
+            "of": target,
+            "unit": "issuers",
+            "detail": (
+                "Enumerated in CIK order from EDGAR, filtered on five stated "
+                "criteria, committed before any metric was extracted."
+            ),
+            "done": bool(frozen.available and accepted and len(frozen.rows) >= accepted),
+            "by": "machine",
+        },
+        {
+            "key": "corpus",
+            "label": "Corpus read",
+            "figure": documents,
+            "of": None,
+            "unit": "documents",
+            "detail": (
+                "Every document each issuer has filed or furnished since listing, "
+                "earnings-release exhibits included, each hashed as it was read."
+            ),
+            "done": bool(coverage.available and documents and failed == 0),
+            "by": "machine",
+        },
+        {
+            "key": "candidates",
+            "label": "Candidates located",
+            "figure": groups,
+            "of": None,
+            "unit": "to rule on",
+            "detail": (
+                "Definitional phrasing found in the listing documents and grouped. "
+                "Locating a candidate decides nothing about it."
+            ),
+            "done": bool(candidates.available and groups),
+            "by": "machine",
+        },
+        {
+            "key": "rulings",
+            "label": "Rulings written",
+            "figure": written,
+            "of": groups,
+            "unit": "adjudicated by hand",
+            "detail": (
+                "One human reading the filing behind each candidate and recording "
+                "a decision, with initials, date, the verbatim sentence and a reason."
+            ),
+            "done": bool(groups and written >= groups),
+            "by": "human",
+        },
+    ]
+
+    return {
+        "stages": stages,
+        "written": written,
+        "groups": groups,
+        "occurrences": occurrences,
+        "documents": documents,
+        "failed": failed,
+        "issuers": len(frozen.rows) if frozen.available else None,
+        "sources": [coverage, candidates, funnel, frozen, ledger],
+    }
+
+
 def manifest() -> Dataset:
     """Every manifest in data/manifest/, merged and deduplicated by URL.
 

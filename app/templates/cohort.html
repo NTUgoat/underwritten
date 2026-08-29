@@ -1,6 +1,60 @@
 {% extends "base.html" %}
 {% import "macros.html" as m %}
 
+{# The frozen cohort renders in one of two places. While the ledger is empty it is
+   the only browsable thing on the page and leads; once rulings exist it follows
+   them, because then the rulings are what a reader came for. #}
+{% macro frozen_cohort() %}
+<section class="band band--alt" id="cohort">
+  <div class="wrap">
+    <h2 class="band__h">The cohort, as frozen</h2>
+    <p class="band__sub">Committed before any metric was extracted. Companies later found
+    to fail C1–C3 are removed with the reason recorded; no company is ever removed for
+    its result.</p>
+    {% if cohort_rows %}
+    <div class="scroller">
+      <table class="table table--cohort">
+        <thead>
+          <tr>
+            <th scope="col">issuer</th>
+            <th scope="col">arm</th>
+            <th scope="col">sector (SIC)</th>
+            <th scope="col">listing document</th>
+            <th scope="col" class="n">listed</th>
+            <th scope="col" class="n">annual reports since</th>
+            <th scope="col" class="n">corpus filings</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in cohort_rows %}
+          <tr>
+            <th scope="row">
+              {{ row.name }}
+              {% if row.ticker %}<span class="muted">{{ row.ticker }}</span>
+              {% else %}<span class="muted">no ticker on file</span>{% endif %}
+            </th>
+            <td>{{ row.arm|lower }}</td>
+            <td>{{ row.sic_description }} <span class="muted">{{ row.sic }}</span></td>
+            <td><a href="https://www.sec.gov/Archives/edgar/data/{{ row.cik }}/{{ row.listing_accession|replace('-', '') }}/{{ row.listing_accession }}-index.htm" rel="noopener nofollow">{{ row.listing_form }}</a>
+              <span class="muted">{{ row.listing_accession }}</span></td>
+            <td class="n">{{ row.listing_date }}</td>
+            <td class="n">{{ row.n_annual_reports_after_listing|num }}</td>
+            <td class="n">{{ row.n_corpus_filings|num }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% elif cohort_available %}
+    <p class="case__none">No issuer matches those filters. <a href="/cohort#ledger">Clear them</a>.</p>
+    {% else %}
+    {{ m.absent('The frozen company list is committed before extraction begins.', 'data/cohort/cohort_frozen.csv') }}
+    {% endif %}
+  </div>
+</section>
+{% endmacro %}
+
+
 {% block content %}
 <section class="band band--head">
   <div class="wrap">
@@ -11,12 +65,23 @@
     </p>
     <h1 class="page-title">Every metric, and what became of it</h1>
     <p class="page-lede">Candidate metrics are located by pattern search. Pattern search
-    decides nothing. Every candidate below was ruled on by hand, and every ruling carries
+    decides nothing. Every candidate is ruled on by hand, and every ruling carries
     the reviewer's initials, the date, the verbatim defining sentence, the accession
     number and a one-line rationale. This ledger is the study; disagree with it row by
     row.</p>
+    {% if not ledger_available %}
+    <p class="notice notice--lead">
+      <span class="notice__mark">No ruling has been written yet</span>
+      The ledger is the one part of this study a machine is not allowed to produce, so it
+      is empty until a human fills it. What is on this page today is the
+      <a href="#cohort">frozen cohort</a>: the fifty companies the study will grade, each
+      linked to the listing document it will be graded against.
+    </p>
+    {% endif %}
   </div>
 </section>
+
+{% if not ledger_available %}{{ frozen_cohort() }}{% endif %}
 
 {# ------------------------------------------------------------ the matrix #}
 <section class="band">
@@ -207,57 +272,15 @@
     {% elif ledger_available %}
     <p class="case__none">No metric matches those filters. <a href="/cohort#ledger">Clear them</a>.</p>
     {% else %}
-    {{ m.absent('Every included metric appears here with its life history once the adjudication ledger is committed. Nothing is shown in its place.', 'data/derived/metrics.json') }}
+    {{ m.absent('Each included metric appears here with its whole life history: the sentence that defined it, every period it was reported in, and the terminal state a reviewer assigned it.', 'data/derived/metrics.json', 'Waiting on: the first ruling. This is not a filter that excluded everything — the ledger has not been started.') }}
     {% endif %}
   </div>
 </section>
 
-{# ------------------------------------------------------- the frozen cohort #}
+{% if ledger_available %}{{ frozen_cohort() }}{% endif %}
+
 <section class="band band--alt">
   <div class="wrap">
-    <h2 class="band__h">The cohort, as frozen</h2>
-    <p class="band__sub">Committed before any metric was extracted. Companies later found
-    to fail C1–C3 are removed with the reason recorded; no company is ever removed for
-    its result.</p>
-    {% if cohort_rows %}
-    <div class="scroller">
-      <table class="table table--cohort">
-        <thead>
-          <tr>
-            <th scope="col">issuer</th>
-            <th scope="col">arm</th>
-            <th scope="col">sector (SIC)</th>
-            <th scope="col">listing document</th>
-            <th scope="col" class="n">listed</th>
-            <th scope="col" class="n">annual reports since</th>
-            <th scope="col" class="n">corpus filings</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for row in cohort_rows %}
-          <tr>
-            <th scope="row">
-              {{ row.name }}
-              {% if row.ticker %}<span class="muted">{{ row.ticker }}</span>
-              {% else %}<span class="muted">no ticker on file</span>{% endif %}
-            </th>
-            <td>{{ row.arm|lower }}</td>
-            <td>{{ row.sic_description }} <span class="muted">{{ row.sic }}</span></td>
-            <td><a href="https://www.sec.gov/Archives/edgar/data/{{ row.cik }}/{{ row.listing_accession|replace('-', '') }}/{{ row.listing_accession }}-index.htm" rel="noopener nofollow">{{ row.listing_form }}</a>
-              <span class="muted">{{ row.listing_accession }}</span></td>
-            <td class="n">{{ row.listing_date }}</td>
-            <td class="n">{{ row.n_annual_reports_after_listing|num }}</td>
-            <td class="n">{{ row.n_corpus_filings|num }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    {% elif cohort_available %}
-    <p class="case__none">No issuer matches those filters. <a href="/cohort#ledger">Clear them</a>.</p>
-    {% else %}
-    {{ m.absent('The frozen company list is committed before extraction begins.', 'data/cohort/cohort_frozen.csv') }}
-    {% endif %}
     {{ m.provenance_strip(sources) }}
   </div>
 </section>

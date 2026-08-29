@@ -220,6 +220,10 @@ def register(app, templates) -> None:
         board = data.scoreboard()
         cohort = data.cohort_frozen()
         funnel = data.cohort_funnel()
+        # What has actually been done, in four stages. Published because the
+        # front page otherwise reads as an empty result rather than a complete
+        # instrument whose reading has not started.
+        status = data.study_status()
         return render(
             "index.html",
             _context(
@@ -233,7 +237,8 @@ def register(app, templates) -> None:
                 # so it can be published before any analysis has run.
                 frozen_n=len(cohort.rows) if cohort.available else None,
                 funnel=funnel.payload if isinstance(funnel.payload, dict) else {},
-                sources=_sources(finding, board, cohort, funnel),
+                status=status,
+                sources=_sources(finding, board, cohort, funnel, *status["sources"]),
             ),
         )
 
@@ -261,6 +266,12 @@ def register(app, templates) -> None:
         frozen = data.cohort_frozen()
 
         rows = data.metric_list(ledger)
+        # "Available" on the Dataset means the file parsed, not that anyone has
+        # ruled on anything: build_analysis writes metrics.json with an empty
+        # list and available=false while the adjudication ledger is unwritten.
+        # The page needs the second question, because an empty ledger and a
+        # filter that excluded everything are different things to tell a reader.
+        has_rulings = bool(rows)
         sector = _query(request, "sector")
         arm = _query(request, "arm")
         state = _query(request, "state")
@@ -280,7 +291,7 @@ def register(app, templates) -> None:
                 request,
                 page_id="cohort",
                 page_title="The ledger",
-                ledger_available=ledger.available,
+                ledger_available=has_rulings,
                 rows=filtered,
                 total_rows=len(rows),
                 facets=data.merge_facets(

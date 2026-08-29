@@ -10,56 +10,59 @@
 {% set primary = finding.primary_test or {} %}
 
 {# ---------------------------------------------------------------- the fold #}
+{# A reader who has never seen this site does not yet know what a listing
+   document is, and the finding does not exist yet. So the question leads until
+   there is a finding to lead with, and the finding takes the slot the moment
+   the pipeline writes one. #}
 <section class="fold">
   <div class="wrap">
-    <p class="kicker">
-      <span>Pre-registered {{ site.preregistered }}</span>
-      <span class="kicker__sep">/</span>
-      <span>as at {{ finding.as_at|default(as_at, true) }}</span>
-      <span class="kicker__sep">/</span>
-      <span>specification&nbsp;#1 of the pre-registration</span>
-    </p>
-
-    <h1 class="finding">
-      {% if finding.finding and finding.finding.segments %}
-        {{ m.prose(finding.finding.segments) }}
-      {% else %}
-        Of the {{ m.pending() }} operating metrics that {{ m.pending() }} US issuers
-        defined for themselves in their {{ site.listing_window }} listing documents,
-        {{ m.pending() }} had been discontinued or substantively redefined by
-        {{ finding.as_at|default(as_at, true) }}.
-      {% endif %}
-    </h1>
+    {% if finding.finding and finding.finding.segments %}
+    <p class="fold__eyebrow">The finding</p>
+    <h1 class="finding">{{ m.prose(finding.finding.segments) }}</h1>
+    {% else %}
+    <p class="fold__eyebrow">The question</p>
+    <h1 class="finding finding--question">{{ site.question }}</h1>
+    <p class="fold__plain">{{ site.plain }}</p>
+    <p class="fold__gloss">A company listing on a US exchange writes its own scoreboard into
+      its prospectus — Lemonade defined <span class="term">in force premium</span>, Nu Holdings
+      <span class="term">monthly active customers</span>, ZIM <span class="term">average freight
+      rate per TEU</span>. Nobody is obliged to keep reporting any of them. This study reads
+      every document {{ funnel.accepted|default(50, true) }} such companies have filed since,
+      and grades what became of the measures they chose.</p>
+    {% endif %}
 
     {# The realised n is a count of the committed frozen cohort, so it is
        publishable before any analysis has run. The metric count is not. #}
     {% set realised_n = cohort.n_issuers if cohort.n_issuers else frozen_n %}
-    <p class="realised">
-      <span class="realised__item"><span class="realised__k">realised n</span>
-        <span class="realised__v">{{ realised_n|num }}</span> issuers</span>
-      <span class="realised__item"><span class="realised__k">metrics adjudicated</span>
-        <span class="realised__v">{{ cohort.n_metrics|num }}</span></span>
-      <span class="realised__item"><span class="realised__k">pre-registered target</span>
-        <span class="realised__v">{{ funnel.target_n|default(50, true) }}</span></span>
-      <span class="realised__item"><span class="realised__k">floor</span>
-        <span class="realised__v">{{ funnel.floor_n|default(25, true) }}</span></span>
-      {% if funnel.met_floor is defined and funnel.met_floor is not none %}
-      <span class="realised__item{{ '' if funnel.met_floor else ' realised__item--flag' }}">{{ 'floor met' if funnel.met_floor else 'floor NOT met — published as a null result' }}</span>
-      {% endif %}
-    </p>
+    <dl class="figures">
+      <div class="figures__item">
+        <dt>Issuers</dt>
+        <dd class="figures__v">{{ realised_n|num }}</dd>
+        <dd class="figures__note">frozen before extraction. Target {{ funnel.target_n|default(50, true) }}, floor {{ funnel.floor_n|default(25, true) }}{% if funnel.met_floor is defined and funnel.met_floor is not none %}{{ ', floor met' if funnel.met_floor else ', floor NOT met — published as a null result' }}{% endif %}</dd>
+      </div>
+      <div class="figures__item">
+        <dt>Documents read</dt>
+        <dd class="figures__v">{{ status.documents|num }}</dd>
+        <dd class="figures__note">{% if status.failed == 0 %}every one of them. None unreadable{% else %}{{ status.failed|num }} could not be read{% endif %}</dd>
+      </div>
+      <div class="figures__item">
+        <dt>Candidates to rule on</dt>
+        <dd class="figures__v">{{ status.groups|num }}</dd>
+        <dd class="figures__note">grouped from {{ status.occurrences|num }} occurrences</dd>
+      </div>
+      <div class="figures__item{{ '' if status.written else ' figures__item--open' }}">
+        <dt>Ruled by hand</dt>
+        <dd class="figures__v">{{ status.written|num }}</dd>
+        <dd class="figures__note">{% if status.written %}of {{ status.groups|num }}{% else %}none yet. The reading is the study{% endif %}</dd>
+      </div>
+    </dl>
 
     {% if funnel.candidates_enumerated %}
-    <p class="realised realised--funnel">
-      <span class="realised__item"><span class="realised__k">candidates enumerated</span>
-        <span class="realised__v">{{ funnel.candidates_enumerated|num }}</span></span>
-      <span class="realised__item"><span class="realised__k">accepted</span>
-        <span class="realised__v">{{ funnel.accepted|num }}</span></span>
-      <span class="realised__item"><span class="realised__k">rejected on a stated criterion</span>
-        <span class="realised__v">{{ funnel.rejected|num }}</span></span>
-      {% if funnel.accepted_by_arm %}
-      <span class="realised__item"><span class="realised__k">by arm</span>
-        {% for arm, count in funnel.accepted_by_arm.items() %}<span class="realised__v">{{ count|num }}</span> {{ arm|lower }}{% if not loop.last %}, {% endif %}{% endfor %}</span>
-      {% endif %}
+    <p class="fold__funnel">
+      {{ funnel.candidates_enumerated|num }} companies enumerated from EDGAR in CIK order,
+      {{ funnel.rejected|num }} rejected on a stated criterion,
+      {{ funnel.accepted|num }} accepted{% if funnel.accepted_by_arm %} ({% for arm, count in funnel.accepted_by_arm.items() %}{{ count|num }} {{ arm|lower }}{% if not loop.last %}, {% endif %}{% endfor %}){% endif %}.
+      <a href="/method">Read every criterion, and what it rejected</a>.
     </p>
     {% endif %}
 
@@ -122,6 +125,22 @@
   </div>
 </section>
 
+{# ------------------------------------------------------- the worked example #}
+{{ m.specimen_trace(specimen) }}
+
+{# ------------------------------------------------------------- the progress #}
+<section class="band" id="progress">
+  <div class="wrap">
+    <header class="band__head">
+      <h2 class="band__h">Where this is up to</h2>
+      <p class="band__sub">Four stages. A machine does the first three and can do nothing
+        about the fourth: METHOD.md §4 reserves every inclusion decision for a human, because
+        a machine ruling on its own candidates would be grading its own pattern search.</p>
+    </header>
+    {{ m.stage_track(status.stages) }}
+  </div>
+</section>
+
 {# ------------------------------------------------------- the base rate, 7.1 #}
 <section class="band">
   <div class="wrap">
@@ -161,7 +180,7 @@
       </table>
     </div>
     {% else %}
-    {{ m.absent('The base rate is published when the adjudication ledger is complete. Nothing stands in for it in the meantime.', 'data/derived/finding.json') }}
+    {{ m.absent('The base rate is the share of adjudicated metrics in each terminal state. It is published once the ledger is complete, and nothing stands in for it in the meantime.', 'data/derived/finding.json', 'Waiting on: the ' ~ (status.groups|num) ~ ' rulings above.') }}
     {% endif %}
 
     {# ------------- METHOD.md §5: the same base rate, counted both ways ---- #}
@@ -234,7 +253,7 @@
         <span class="stats__v">{% if primary.mann_whitney %}U = {{ primary.mann_whitney.u }}, p = {{ primary.mann_whitney.p }}{% else %}{{ PENDING }}{% endif %}</span></li>
     </ul>
     {% else %}
-    {{ m.absent('The confirmatory test is published when the outcome extraction has run against the frozen cohort.', 'data/derived/finding.json') }}
+    {{ m.absent('The confirmatory test compares issuers who kept their own measures against issuers who did not, on later restatements, auditor changes, late filings and delistings.', 'data/derived/finding.json', 'Waiting on: the rulings, which decide which issuers are keepers and which are movers.') }}
     {% endif %}
 
     <p class="caveat">
@@ -262,7 +281,7 @@
     {% if board.issuers and board.fiscal_years %}
     {{ m.scoreboard_grid(board) }}
     {% else %}
-    {{ m.absent('The scoreboard renders once the cohort is frozen and every metric has a terminal state. Until then the legend below is the only part of it that is true.', 'data/derived/scoreboard.json') }}
+    {{ m.absent('Fifty rows, one per issuer, each carrying a mark for every fiscal year since it listed. It is the one dense graphic in the study, and it is the fastest way to see which issuers kept their own metrics and which did not.', 'data/derived/scoreboard.json', 'Waiting on: a terminal state for every metric. The legend below is the only part of this section that is true today.') }}
     {% endif %}
 
     {{ m.legend() }}

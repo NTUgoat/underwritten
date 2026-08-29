@@ -130,11 +130,14 @@
 
 
 {#- A labelled absence. Used wherever a whole section has no data yet. -#}
-{%- macro absent(what, path='') -%}
+{%- macro absent(what, path='', next='') -%}
 <div class="absent">
-  <p class="absent__mark">{{ PENDING }}</p>
+  <p class="absent__mark">Not published yet</p>
   <p class="absent__what">{{ what }}</p>
-  {% if path %}<p class="absent__path">expects <code>{{ path }}</code></p>{% endif %}
+  {% if next %}<p class="absent__next">{{ next }}</p>{% endif %}
+  {% if path %}<p class="absent__path">This section is rendered from <code>{{ path }}</code>,
+    which the pipeline has not written. Nothing stands in for it: the site shows the
+    absence rather than a figure you could not check.</p>{% endif %}
 </div>
 {%- endmacro -%}
 
@@ -164,4 +167,132 @@
   {% endfor %}
   <span class="strip__item"><a href="/provenance">SHA-256 manifest</a></span>
 </p>
+{%- endmacro -%}
+
+
+{#- ONE candidate carried through the instrument, on the front page.
+
+    This is the only place on the site where the method is shown rather than
+    described, and it exists because the definitions in METHOD.md 4 and 6 are
+    unreadable to someone meeting the study for the first time. It shows a real
+    sentence from a real filing, where that phrase turned up afterwards, and the
+    ruling that has not been made.
+
+    It asserts no terminal state. Everything shown is a fact about documents:
+    a verbatim quotation and a count of occurrences. METHOD.md 8.2. -#}
+{%- macro specimen_trace(s) -%}
+<section class="band band--alt trace" id="how-it-works" aria-labelledby="trace-h">
+  <div class="wrap">
+    <header class="band__head">
+      <h2 class="band__h" id="trace-h">How one measure is graded</h2>
+      <p class="band__sub">A worked example, not a result. The candidate below has
+        <strong>not</strong> been ruled on: what you can see is the evidence a human is given
+        before deciding, which is the whole of what the machine is allowed to do.</p>
+    </header>
+
+    <ol class="trace__steps">
+      <li class="trace__step">
+        <p class="trace__n" aria-hidden="true">01</p>
+        <div class="trace__body">
+          <h3 class="trace__h">The promise</h3>
+          <p class="trace__lede">A company writes its own measure into its listing document.</p>
+          <figure class="specimen">
+            <figcaption class="specimen__who">
+              <span class="specimen__issuer">{{ s.issuer }}</span>
+              {% if s.ticker %}<span class="specimen__ticker">{{ s.ticker }}</span>{% endif %}
+              <span class="specimen__doc">{{ s.form }}, filed {{ s.filed|longdate }}</span>
+            </figcaption>
+            <blockquote class="specimen__quote">{{ s.quote }}</blockquote>
+            <p class="specimen__acc">
+              <a href="{{ s.url }}" rel="noopener nofollow">{{ s.accession }}</a>
+              <span class="specimen__sep">·</span>
+              <span>read the sentence on sec.gov</span>
+            </p>
+          </figure>
+        </div>
+      </li>
+
+      <li class="trace__step">
+        <p class="trace__n" aria-hidden="true">02</p>
+        <div class="trace__body">
+          <h3 class="trace__h">The corpus</h3>
+          <p class="trace__lede">Every document that company has filed or furnished since,
+            not only its annual reports.</p>
+          <p class="trace__facts">
+            <span class="trace__fact"><strong>{{ s.documents|num }}</strong> documents</span>
+            <span class="trace__fact"><strong>{{ s.periods|num }}</strong> reporting periods</span>
+            <span class="trace__fact"><strong>{{ s.occurrences|num }}</strong> occurrences of <em>{{ s.phrase }}</em></span>
+          </p>
+        </div>
+      </li>
+
+      <li class="trace__step">
+        <p class="trace__n" aria-hidden="true">03</p>
+        <div class="trace__body">
+          <h3 class="trace__h">Where it turned up</h3>
+          <p class="trace__lede">The measure survives, but mostly outside the annual report.</p>
+          {% set top = s.where | map(attribute='n') | max %}
+          <ul class="bars">
+            {% for row in s.where %}
+            <li class="bars__row">
+              <span class="bars__label">{{ row.label }}{% if row.note %} <span class="bars__note">{{ row.note }}</span>{% endif %}</span>
+              <span class="bars__track"><span class="bars__fill" style="width: {{ (row.n / top * 100) | round(1) }}%"></span></span>
+              <span class="bars__n">{{ row.n }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+          <p class="trace__point">A study that read only annual reports would have found
+            <strong>{{ s.annual_report_occurrences }}</strong>
+            of these {{ s.occurrences }} and called the rest absence. That is the single
+            objection this method is built to defeat, and it is why
+            <a href="/method">METHOD.md §6</a> counts furnished exhibits as part of the corpus.</p>
+        </div>
+      </li>
+
+      <li class="trace__step trace__step--open">
+        <p class="trace__n" aria-hidden="true">04</p>
+        <div class="trace__body">
+          <h3 class="trace__h">The ruling <span class="trace__tag">a human, or nothing</span></h3>
+          <p class="trace__lede">Is it a company-defined operating measure at all? Is it still
+            reported? Was it renamed, redefined, or dropped? The machine does not answer this
+            and cannot be made to.</p>
+          <p class="trace__await">Not yet ruled. When it is, this row carries the reviewer's
+            initials, the date, the verbatim sentence, the accession number and a one-line
+            reason — and you will be able to disagree with it.</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+{%- endmacro -%}
+
+
+{#- The four stages of the instrument and which of them are finished.
+
+    The point of publishing this is that stages one to three are machine work and
+    stage four is not. A reader who cannot see the split has no way to tell what
+    the author actually did. -#}
+{%- macro stage_track(stages) -%}
+<ol class="stages">
+  {% for stage in stages %}
+  <li class="stage{{ ' is-done' if stage.done else ' is-open' }}">
+    <p class="stage__state">{{ 'Complete' if stage.done else 'In progress' }}</p>
+    <h3 class="stage__h">{{ stage.label }}</h3>
+    <p class="stage__figure">
+      <span class="stage__v">{{ stage.figure|num }}</span>
+      {% if stage.of %}<span class="stage__of">of {{ stage.of|num }}</span>{% endif %}
+      <span class="stage__unit">{{ stage.unit }}</span>
+    </p>
+    {% if stage.of %}
+    {% set share = (stage.figure / stage.of * 100) if stage.figure is number and stage.of else 0 %}
+    <span class="stage__track" role="img"
+          aria-label="{{ stage.figure }} of {{ stage.of }} {{ stage.unit }}">
+      <span class="stage__fill" style="width: {{ share | round(1) }}%"></span>
+    </span>
+    {% endif %}
+    <p class="stage__detail">{{ stage.detail }}</p>
+    <p class="stage__by">{{ 'Done by the machine' if stage.by == 'machine' else 'Done by hand — METHOD.md §4' }}</p>
+  </li>
+  {% endfor %}
+</ol>
 {%- endmacro -%}

@@ -28,22 +28,6 @@
   --step: 1.62rem;           /* the vertical rhythm unit */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --paper:     #131311;
-    --paper-2:   #191917;
-    --paper-3:   #222119;
-    --ink:       #e9e6dd;
-    --ink-2:     #b3aea2;
-    --ink-3:     #857f73;
-    --rule:      #2d2c27;
-    --rule-2:    #46443c;
-    --flag:      #df705a;
-    --flag-tint: rgba(223, 112, 90, 0.12);
-    --flag-line: rgba(223, 112, 90, 0.40);
-  }
-}
-
 /* -------------------------------------------------------------- baseline -- */
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -100,7 +84,17 @@ hr { border: 0; }
 /* ---------------------------------------------------------------- layout -- */
 
 .wrap { width: 100%; max-width: 72rem; margin: 0 auto; padding: 0 var(--gutter); }
-.wrap--reading { max-width: calc(var(--measure) + 2 * var(--gutter)); }
+/* A reading measure that still starts on the page margin.
+   Previously this narrowed the whole container and centred it, so prose on
+   /note, /positions and /resolved began a hundred pixels right of the page
+   title above it and read as a misalignment. The container now matches every
+   other .wrap exactly; the measure is imposed on the prose inside it. */
+.wrap--reading { max-width: 72rem; margin: 0 auto; }
+.wrap--reading > * { max-width: var(--measure); }
+/* Anything that carries its own width - a wide table, the grid - keeps it. */
+.wrap--reading > .scroller,
+.wrap--reading > .table,
+.wrap--reading > .strip { max-width: none; }
 .wrap--doc { max-width: 62rem; }
 
 .band { padding: calc(var(--step) * 2.2) 0; border-top: 1px solid var(--rule); }
@@ -813,3 +807,300 @@ hr { border: 0; }
   .cite__card { display: none; }
   .band { border-top: 1px solid #ccc; padding: 1rem 0; }
 }
+
+/* ==========================================================================
+   ORIENTATION LAYER
+
+   Added because the site was unreadable to someone meeting it for the first
+   time: the finding does not exist yet, so every page opened on a pending mark
+   and the reader had no way to tell what the study was, what it had done, or
+   where to start.
+
+   Nothing here introduces a colour. The accent is still spent entirely on the
+   discontinued state, so progress is carried by rule weight and type, not hue —
+   which is also how a printed factsheet does it.
+   ========================================================================== */
+
+/* ----------------------------------------------------- masthead, two tiers - */
+
+.masthead__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 2.5rem;
+  padding-top: 1rem;
+  padding-bottom: 0.85rem;
+}
+.masthead__id { display: flex; flex-direction: column; gap: 0.12rem; }
+.masthead__name { font-size: 1.22rem; }
+.masthead__nav { margin: 0; }
+.masthead__nav ul { gap: 0 1.35rem; }
+.masthead__nav a { font-size: 0.76rem; letter-spacing: 0.09em; }
+
+/* The apparatus rule. Metadata on the left, the pages that let a reader check
+   the study on the right, both quieter than the sections above them. */
+.subhead { border-top: 1px solid var(--rule); background: var(--paper-2); }
+.subhead__inner {
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  justify-content: space-between; gap: 0.3rem 2rem;
+  padding-top: 0.42rem; padding-bottom: 0.42rem;
+}
+.subhead__meta {
+  margin: 0; font-family: var(--mono); font-size: 0.68rem;
+  letter-spacing: 0.03em; color: var(--ink-3);
+  display: flex; flex-wrap: wrap; gap: 0 0.45rem;
+}
+.subhead__dot { color: var(--rule-2); }
+.subhead__nav { display: flex; align-items: baseline; gap: 0.7rem; }
+.subhead__label {
+  font-family: var(--sans); font-size: 0.62rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--rule-2);
+}
+.subhead__nav ul {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 0 1rem;
+}
+.subhead__nav a {
+  font-family: var(--sans); font-size: 0.68rem; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--ink-3); text-decoration: none;
+}
+.subhead__nav a:hover { color: var(--ink); }
+.subhead__nav a[aria-current="page"] { color: var(--ink); box-shadow: inset 0 -1px 0 var(--ink); }
+
+/* --------------------------------------------------------------- the fold - */
+
+.fold { min-height: 0; padding-bottom: calc(var(--step) * 2); }
+
+.fold__eyebrow {
+  font-family: var(--sans); font-size: 0.7rem; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ink-3);
+  margin: 0 0 0.7rem; padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--rule); max-width: 12rem;
+}
+
+/* The question runs wider than a finding would: it is a sentence to be read
+   straight through, not a figure to be taken in at a glance. Set at the
+   finding size it stacked seven lines deep and swallowed the first screen. */
+.finding--question {
+  max-width: 26ch; letter-spacing: -0.016em;
+  font-size: clamp(1.5rem, 3.2vw, 2.5rem);
+}
+@media (min-width: 60rem) {
+  .finding--question { max-width: 27ch; font-size: clamp(2rem, 2.9vw, 2.6rem); }
+}
+
+.fold__plain {
+  font-size: 1.14rem; color: var(--ink); max-width: 40rem;
+  margin: 0 0 0.9rem; line-height: 1.5;
+}
+.fold__gloss {
+  font-size: 0.94rem; color: var(--ink-2); max-width: 42rem;
+  margin: 0 0 calc(var(--step) * 1.2); line-height: 1.6;
+}
+.fold__funnel {
+  font-family: var(--sans); font-size: 0.78rem; color: var(--ink-3);
+  max-width: 46rem; margin: 0 0 var(--step); line-height: 1.55;
+}
+.fold__funnel a { color: var(--ink-2); }
+
+/* --------------------------------------------------- key figures, factsheet */
+
+.figures {
+  display: grid; gap: 0; margin: 0 0 1.2rem;
+  grid-template-columns: 1fr;
+  border-top: 1px solid var(--ink);
+}
+@media (min-width: 34rem) { .figures { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 62rem) { .figures { grid-template-columns: repeat(4, 1fr); } }
+
+.figures__item {
+  padding: 0.75rem 1.1rem 0.85rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+@media (min-width: 34rem) {
+  .figures__item { border-bottom: 0; border-right: 1px solid var(--rule); padding-left: 1.1rem; }
+  .figures__item:first-child { padding-left: 0; }
+  .figures__item:last-child { border-right: 0; }
+}
+@media (min-width: 62rem) { .figures__item { padding-left: 1.3rem; } }
+
+.figures__item dt {
+  font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 0.3rem;
+}
+.figures__v {
+  margin: 0; font-family: var(--mono); font-size: 1.6rem; font-weight: 500;
+  font-variant-numeric: tabular-nums; letter-spacing: -0.02em; line-height: 1.1;
+}
+.figures__note {
+  margin: 0.25rem 0 0; font-family: var(--sans); font-size: 0.7rem;
+  color: var(--ink-3); line-height: 1.45;
+}
+/* The stage nobody has started. Marked by rule weight, never by colour: the
+   accent belongs to the discontinued state and to nothing else. */
+.figures__item--open .figures__v { color: var(--ink-3); }
+.figures__item--open .figures__note { color: var(--ink-2); }
+
+/* ------------------------------------------------- the worked example, 01-04 */
+
+.trace__steps { list-style: none; margin: 0; padding: 0; }
+
+.trace__step {
+  display: grid; grid-template-columns: 1fr; gap: 0.2rem 1.6rem;
+  padding: calc(var(--step) * 0.95) 0;
+  border-top: 1px solid var(--rule-2);
+}
+.trace__step:first-child { border-top: 1px solid var(--ink); }
+@media (min-width: 44rem) { .trace__step { grid-template-columns: 3.5rem minmax(0, 1fr); } }
+
+/* The numbering is a real sequence — these are the pipeline's own stages in the
+   order they run — so it is allowed to be visible. */
+.trace__n {
+  margin: 0; font-family: var(--mono); font-size: 0.82rem;
+  color: var(--rule-2); letter-spacing: 0.06em; padding-top: 0.15rem;
+}
+.trace__body { min-width: 0; max-width: 46rem; }
+.trace__h {
+  font-size: 1.06rem; margin-bottom: 0.25rem;
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.6rem;
+}
+.trace__tag {
+  font-family: var(--sans); font-size: 0.62rem; letter-spacing: 0.11em;
+  text-transform: uppercase; color: var(--ink-3); font-weight: 400;
+  border: 1px solid var(--rule-2); padding: 0.1rem 0.4rem;
+}
+.trace__lede { color: var(--ink-2); font-size: 0.94rem; margin: 0 0 0.8rem; }
+.trace__point {
+  font-size: 0.88rem; color: var(--ink-2); margin: 0.85rem 0 0;
+  padding-left: 0.85rem; border-left: 2px solid var(--ink);
+  line-height: 1.55; max-width: 40rem;
+}
+.trace__await {
+  font-family: var(--sans); font-size: 0.82rem; color: var(--ink-2);
+  margin: 0; padding: 0.7rem 0.9rem; border: 1px dashed var(--rule-2);
+  background: var(--paper); line-height: 1.5;
+}
+.trace__facts { display: flex; flex-wrap: wrap; gap: 0.3rem 1.8rem; margin: 0; }
+.trace__fact { font-family: var(--sans); font-size: 0.8rem; color: var(--ink-3); }
+.trace__fact strong {
+  font-family: var(--mono); font-size: 1.05rem; font-variant-numeric: tabular-nums;
+  color: var(--ink); font-weight: 500; margin-right: 0.28rem;
+}
+
+/* the quoted sentence, as it appears in the filing */
+.specimen { margin: 0; padding: 0; border-left: 2px solid var(--ink); padding-left: 1rem; }
+.specimen__who {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.7rem;
+  margin-bottom: 0.45rem;
+}
+.specimen__issuer { font-weight: 600; font-size: 0.98rem; }
+.specimen__ticker {
+  font-family: var(--mono); font-size: 0.7rem; color: var(--ink-3);
+  border: 1px solid var(--rule-2); padding: 0.05rem 0.32rem;
+}
+.specimen__doc { font-family: var(--sans); font-size: 0.74rem; color: var(--ink-3); }
+.specimen__quote {
+  margin: 0 0 0.5rem; font-size: 1.06rem; line-height: 1.5; text-wrap: pretty;
+}
+.specimen__quote::before { content: "\201C"; }
+.specimen__quote::after { content: "\201D"; }
+.specimen__acc {
+  margin: 0; font-family: var(--mono); font-size: 0.7rem; color: var(--ink-3);
+  display: flex; flex-wrap: wrap; gap: 0 0.4rem;
+}
+.specimen__acc a { color: var(--ink-2); }
+.specimen__sep { color: var(--rule-2); }
+
+/* where the phrase turned up: the one small chart on the page */
+.bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.3rem; }
+.bars__row {
+  display: grid; align-items: center; gap: 0.5rem 0.8rem;
+  grid-template-columns: minmax(0, 1fr) 2.2rem;
+}
+@media (min-width: 40rem) {
+  .bars__row { grid-template-columns: minmax(9rem, 17rem) minmax(0, 1fr) 2.2rem; }
+}
+.bars__label { font-family: var(--sans); font-size: 0.78rem; color: var(--ink-2); }
+.bars__note { color: var(--ink-3); font-size: 0.92em; }
+.bars__track {
+  grid-column: 1 / -1; height: 0.62rem; background: var(--paper-3); display: block;
+}
+@media (min-width: 40rem) { .bars__track { grid-column: auto; } }
+.bars__fill { display: block; height: 100%; background: var(--ink); }
+.bars__n {
+  font-family: var(--mono); font-size: 0.82rem; font-variant-numeric: tabular-nums;
+  text-align: right; grid-column: 2; grid-row: 1;
+}
+@media (min-width: 40rem) { .bars__n { grid-column: 3; } }
+
+/* ------------------------------------------------------ the four stages ---- */
+
+.stages {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: 1.5rem 1.8rem; grid-template-columns: 1fr;
+}
+@media (min-width: 40rem) { .stages { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 66rem) { .stages { grid-template-columns: repeat(4, 1fr); } }
+
+.stage { padding-top: 0.65rem; }
+.stage.is-done { border-top: 2px solid var(--ink); }
+.stage.is-open { border-top: 2px dashed var(--rule-2); }
+
+.stage__state {
+  font-family: var(--sans); font-size: 0.62rem; letter-spacing: 0.13em;
+  text-transform: uppercase; margin: 0 0 0.4rem;
+}
+.stage.is-done .stage__state { color: var(--ink-3); }
+.stage.is-open .stage__state { color: var(--ink); }
+
+.stage__h { font-size: 1rem; margin-bottom: 0.45rem; }
+.stage__figure {
+  margin: 0 0 0.5rem; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.35rem;
+}
+.stage__v {
+  font-family: var(--mono); font-size: 1.5rem; font-weight: 500;
+  font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
+}
+.stage.is-open .stage__v { color: var(--ink-3); }
+.stage__of, .stage__unit {
+  font-family: var(--sans); font-size: 0.72rem; color: var(--ink-3);
+}
+.stage__track { display: block; height: 3px; background: var(--paper-3); margin: 0 0 0.6rem; }
+.stage__fill { display: block; height: 100%; background: var(--ink); min-width: 0; }
+.stage__detail {
+  margin: 0 0 0.5rem; font-size: 0.84rem; color: var(--ink-2); line-height: 1.5;
+}
+.stage__by {
+  margin: 0; font-family: var(--sans); font-size: 0.68rem; letter-spacing: 0.04em;
+  color: var(--ink-3);
+}
+.stage.is-open .stage__by { color: var(--ink-2); }
+
+/* An absence a reader can act on: what it is, what it waits on, where it comes
+   from. The old form led with a bracketed marker and a bare file path, which
+   reads as a broken page rather than as a study that has not got there yet. */
+.absent { background: var(--paper); }
+.absent__mark {
+  font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.13em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 0.5rem;
+}
+.absent__what { color: var(--ink); font-size: 1rem; margin-bottom: 0.5rem; }
+.absent__next {
+  font-family: var(--sans); font-size: 0.8rem; color: var(--ink-2);
+  margin: 0 0 0.6rem; padding-left: 0.7rem; border-left: 2px solid var(--rule-2);
+}
+.absent__path {
+  font-family: var(--sans); font-size: 0.74rem; color: var(--ink-3);
+  margin: 0; line-height: 1.5;
+}
+.absent__path code { font-family: var(--mono); font-size: 0.92em; }
+
+/* A notice that leads a page rather than annotating a figure. Used where a
+   reader would otherwise scroll past three empty sections before reaching the
+   part of the page that has something in it. */
+.notice--lead {
+  max-width: 44rem; margin-top: var(--step);
+  font-size: 0.94rem; color: var(--ink-2);
+}
+.notice--lead .notice__mark { display: block; }
