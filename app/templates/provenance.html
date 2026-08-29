@@ -153,6 +153,15 @@
     </header>
 
     {% if documents %}
+    {# No silent caps. The page states what it is showing and points at the file
+       that carries the rest, which is committed and public. #}
+    <p class="band__note">Showing the first {{ documents_shown|num }} of
+      {{ documents_total|num }} recorded documents. The table is capped because rendering
+      every row produced a page a browser struggled to lay out, not because the rest is
+      unpublished: the complete manifest is the committed JSON under
+      <code>data/manifest/</code>, it is what this page reads, and it is in the public
+      repository. Every row below carries the hash recorded at the moment the document was
+      fetched.</p>
     <div class="scroller">
       <table class="table table--manifest">
         <thead>

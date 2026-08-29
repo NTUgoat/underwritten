@@ -417,6 +417,15 @@ def register(app, templates) -> None:
             "documents_failed": payload.get("documents_failed", 0),
         }
 
+    #: The manifest runs to tens of thousands of rows. Rendering all of them
+    #: produced a ten-megabyte page that a browser has to lay out in full, which
+    #: is a poor way to demonstrate a provenance claim to somebody standing over
+    #: your shoulder. The table is capped and the cap is stated: METHOD.md §11
+    #: promises a published manifest a reader can verify, and the committed JSON
+    #: under data/manifest/ is that manifest. This page is a window onto it, and
+    #: says which part of it you are looking at.
+    MANIFEST_ROWS = 250
+
     @app.get("/provenance", response_class=HTMLResponse)
     def provenance(request: Request) -> HTMLResponse:
         dataset = data.manifest()
@@ -431,7 +440,11 @@ def register(app, templates) -> None:
                 manifest_available=dataset.available,
                 as_at_value=payload.get("as_at"),
                 n_documents=_int_or_none(payload.get("n_documents")),
-                documents=documents if isinstance(documents, list) else [],
+                documents=(documents[:MANIFEST_ROWS] if isinstance(documents, list) else []),
+                documents_total=len(documents) if isinstance(documents, list) else 0,
+                documents_shown=min(MANIFEST_ROWS, len(documents))
+                if isinstance(documents, list)
+                else 0,
                 # Each manifest declares which pipeline stage produced it, so
                 # the page can name the stages present instead of publishing one
                 # stage's count as though it covered everything read.
