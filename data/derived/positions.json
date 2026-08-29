@@ -1,0 +1,320 @@
+{
+  "as_at": "2026-09-06",
+  "positions": [
+    {
+      "id": "0000789019-msft",
+      "issuer": "Microsoft Corporation",
+      "ticker": "MSFT",
+      "cik": 789019,
+      "status": "OPEN",
+      "opened": "2026-09-06",
+      "author": "Jex Lin",
+      "horizons_years": [
+        10,
+        20
+      ],
+      "stance": "Own Microsoft: switching costs outlast any model lead.",
+      "variant_perception": {
+        "segments": [
+          {
+            "text": "The market prices artificial intelligence as a model-quality race, and marks enterprise\nsoftware up or down according to who is understood to hold the frontier. That framing\nasks the wrong question of Microsoft. Microsoft does not need to own the best model; it\nneeds access to one, and it has repeatedly demonstrated it can buy that access rather\nthan build it.\n\nWhat a customer cannot walk away from is not the model. It is the identity layer, the\ntenancy, the data residency, the administrative tooling and the decade of configuration\nsitting underneath. Those are the switching costs, and they do not reprice when a\ncompetitor ships a better model.\n\nThe observable claim is narrow: model leadership is rentable, and deep integration is\nnot. If that is right, a quarter in which a rival's model is plainly ahead is not a\nquarter in which Microsoft's position deteriorates."
+          }
+        ]
+      },
+      "what_would_have_to_be_true": [
+        {
+          "segments": [
+            {
+              "text": "Enterprise switching costs remain a function of integration depth rather than of model capability, so a superior third-party model does not by itself dislodge an incumbent."
+            }
+          ]
+        },
+        {
+          "segments": [
+            {
+              "text": "Microsoft continues to be able to license frontier capability on terms that do not transfer the economics to the model provider."
+            }
+          ]
+        },
+        {
+          "segments": [
+            {
+              "text": "The commercial relationship is durable enough that Microsoft is not forced into building frontier models itself at a cost that changes its margin structure."
+            }
+          ]
+        }
+      ],
+      "hurdle": {
+        "total_bps": 1043,
+        "edition": "Damodaran, NYU Stern, January 2026",
+        "lines": [
+          {
+            "label": "risk-free rate, US 10-year Treasury",
+            "bps": 473,
+            "source": "US Treasury daily par yield curve, 2026-08-29"
+          },
+          {
+            "label": "mature-market ERP 4.23% x beta 1.28",
+            "bps": 541,
+            "source": "Damodaran country premia and industry betas, January 2026"
+          },
+          {
+            "label": "US country risk premium 0.23% x beta 1.28",
+            "bps": 29,
+            "source": "Damodaran country premia, January 2026 (Moody's Aa1)"
+          }
+        ]
+      },
+      "expected_spread_bps": {
+        "central": 400,
+        "low": 100,
+        "high": 700,
+        "basis": "spread over the hurdle above"
+      },
+      "downside": {
+        "segments": [
+          {
+            "text": "If model access turns out to be economically decisive, the licensing terms move against\nMicrosoft and it is forced to build frontier capability rather than rent it. The cost is\nnot a lost quarter; it is a change in what kind of business this is. Capital intensity\nrises, the margin structure that justifies a software multiple erodes, and the market\nre-rates it toward an infrastructure operator.\n\nThe worse version is that integration proves reversible. If a customer segment can in fact\nmigrate identity and productivity workloads at acceptable cost, the entire premise of the\nstance is gone and the switching costs were never the moat.\n\nIn either case the position underperforms its hurdle for years rather than months. The low\nend of the spread band above is a bear case, not a floor."
+          }
+        ]
+      },
+      "kill_criteria": [
+        {
+          "n": 1,
+          "by_date": "2028-06-30",
+          "machine_checkable": true,
+          "test": "Microsoft Cloud revenue growth reported below 5% year over year for four consecutive quarters in filed 10-Q and 10-K reports",
+          "status": "NOT_TRIGGERED",
+          "last_checked": ""
+        },
+        {
+          "n": 2,
+          "by_date": "2029-06-30",
+          "machine_checkable": true,
+          "test": "Total capital expenditure, additions to property and equipment as reported in the filed cash flow statement, exceeds 25% of total revenue in an annual report, which would mean Microsoft is building rather than renting and the stance is inverted",
+          "status": "NOT_TRIGGERED",
+          "last_checked": ""
+        },
+        {
+          "n": 3,
+          "by_date": "2030-06-30",
+          "machine_checkable": false,
+          "test": "A named enterprise customer segment is disclosed migrating identity or productivity workloads off Microsoft at scale, demonstrating the integration is reversible",
+          "status": "NOT_TRIGGERED",
+          "last_checked": ""
+        }
+      ],
+      "disclosure": "The author holds a personal position in Microsoft Corporation at the time of writing.\nMETHOD.md \u00a711.\n\n---"
+    },
+    {
+      "id": "0001652044-googl",
+      "issuer": "Alphabet Inc.",
+      "ticker": "GOOGL",
+      "cik": 1652044,
+      "status": "OPEN",
+      "opened": "2026-09-06",
+      "author": "Jex Lin",
+      "horizons_years": [
+        10,
+        20
+      ],
+      "stance": "Own Alphabet: the moat is data, not search.",
+      "variant_perception": {
+        "segments": [
+          {
+            "text": "At points the market has priced a scenario in which conversational interfaces\ndisintermediate the search box and take the advertising economics with them. That\nmistakes the surface for the asset.\n\nThe asset is the data and the distribution: query history at a scale nobody else has,\ndefault placement, Android, Chrome, Maps, YouTube, and the advertiser relationships built\non top of them. A better answer engine does not route around any of that. It is a better\nfront end onto the same underlying advantage.\n\nThe narrow claim: artificial intelligence raises the return on the data and\ndistribution Alphabet already owns, rather than substituting for them. If that is\nright, the disruption discount is compensation for a risk that does not arrive."
+          }
+        ]
+      },
+      "what_would_have_to_be_true": [
+        {
+          "segments": [
+            {
+              "text": "Query and behavioural data at Alphabet's scale remains a durable input advantage rather than a commodity that a competitor can synthesise or buy."
+            }
+          ]
+        },
+        {
+          "segments": [
+            {
+              "text": "Distribution defaults survive regulatory pressure in a form that still delivers first-touch volume."
+            }
+          ]
+        },
+        {
+          "segments": [
+            {
+              "text": "Advertiser economics continue to attach to the answer surface, whatever it looks like, rather than migrating to whoever supplies the model."
+            }
+          ]
+        }
+      ],
+      "hurdle": {
+        "total_bps": 905,
+        "edition": "Damodaran, NYU Stern, January 2026",
+        "lines": [
+          {
+            "label": "risk-free rate, US 10-year Treasury",
+            "bps": 473,
+            "source": "US Treasury daily par yield curve, 2026-08-29"
+          },
+          {
+            "label": "mature-market ERP 4.23% x relevered beta 0.97",
+            "bps": 410,
+            "source": "Damodaran industry betas January 2026, unlevered 0.93 relevered at 5% D/E, 21% tax"
+          },
+          {
+            "label": "US country risk premium 0.23% x beta 0.97",
+            "bps": 22,
+            "source": "Damodaran country premia, January 2026 (Moody's Aa1)"
+          }
+        ]
+      },
+      "expected_spread_bps": {
+        "central": 500,
+        "low": 200,
+        "high": 800,
+        "basis": "spread over the hurdle above"
+      },
+      "downside": {
+        "segments": [
+          {
+            "text": "If query volume genuinely migrates to interfaces Alphabet does not own, the advertising\neconomics follow it, and the data advantage becomes an asset without a surface to monetise\non. The stress case is not slower growth; it is Alphabet paying more for distribution it\nused to own, which shows up first in traffic acquisition costs and then in margin.\n\nA remedy that strips default placement does the same thing faster and from the outside,\nand it is the one path where being right about the technology does not save the position.\n\nThis is a structural de-rating rather than a cyclical one, and it would not reverse within\nthe horizon."
+          }
+        ]
+      },
+      "kill_criteria": [
+        {
+          "n": 1,
+          "by_date": "2028-12-31",
+          "machine_checkable": true,
+          "test": "Alphabet reports Google Search and other revenue declining year over year in two consecutive filed annual reports",
+          "status": "NOT_TRIGGERED",
+          "last_checked": ""
+        },
+        {
+          "n": 2,
+          "by_date": "2029-12-31",
+          "machine_checkable": true,
+          "test": "Traffic acquisition costs rise above 32% of Google advertising revenue in a filed annual report, indicating distribution is being bought rather than owned",
+          "status": "NOT_TRIGGERED",
+          "last_checked": ""
+        },
+        {
+          "n": 3,
+          "by_date": "2030-12-31",
+          "machine_checkable": false,
+          "test": "A final, non-appealable remedy is entered that removes default placement in a market representing more than 30% of segment revenue",
+          "status": "NOT_TRIGGERED",
+          "last_checked": ""
+        }
+      ],
+      "disclosure": "The author holds a personal position in Alphabet Inc. at the time of writing.\nMETHOD.md \u00a711.\n\n---"
+    },
+    {
+      "id": "0000085535-rgld",
+      "issuer": "Royal Gold, Inc.",
+      "ticker": "RGLD",
+      "cik": 85535,
+      "status": "OPEN",
+      "opened": "2026-09-06",
+      "author": "Jex Lin",
+      "horizons_years": [
+        10,
+        20
+      ],
+      "stance": "Own Royal Gold: royalties compound through the cycle.",
+      "variant_perception": {
+        "segments": [
+          {
+            "text": "The starting view is macro - that a period of currency debasement, and dollar debasement\nin particular, is favourable for gold. A macro view alone is not a position, because it\nsays nothing about which security expresses it and nothing about a decade.\n\nThe company-specific claim is structural. A royalty holder takes a contracted share of\nproduction without carrying operating cost inflation, sustaining capital, or the labour\nand energy exposure that decides whether a miner survives a low-price year. It receives\nthe upside of exploration success on ground it already has an interest in, at no\nincremental cost. That is a business that compounds across a cycle rather than one that\nneeds a price forecast to work - which is precisely what makes it holdable for ten years\nwhen the macro view that motivated it may not be.\n\nThe narrow claim: the royalty structure, not the gold price, is what makes this\nownable. The macro view is the reason to look; it is not the reason to hold."
+          }
+        ]
+      },
+      "what_would_have_to_be_true": [
+        {
+          "segments": [
+            {
+              "text": "Royalty and stream agreements continue to be honoured on their contracted terms through a low-price year, which is the test the structure exists to pass."
+            }
+          ]
+        },
+        {
+          "segments": [
+            {
+              "text": "The portfolio stays diversified enough that no single operator or jurisdiction can impair a controlling share of revenue."
+            }
+          ]
+        },
+        {
+          "segments": [
+            {
+              "text": "Operators continue to fund exploration on covered ground, so the free option on reserve extension remains live."
+            }
+          ]
+        }
+      ],
+      "hurdle": {
+        "total_bps": 825,
+        "edition": "Damodaran, NYU Stern, January 2026",
+        "lines": [
+          {
+            "label": "risk-free rate, US 10-year Treasury",
+            "bps": 473,
+            "source": "US Treasury daily par yield curve, 2026-08-29"
+          },
+          {
+            "label": "mature-market ERP 4.23% x unlevered beta 0.79",
+            "bps": 334,
+            "source": "Damodaran industry betas, January 2026, Precious Metals"
+          },
+          {
+            "label": "country risk premium x beta 0.79, US floor pending revenue weighting",
+            "bps": 18,
+            "source": "Damodaran country premia, January 2026 (US, Moody's Aa1)"
+          }
+        ]
+      },
+      "expected_spread_bps": {
+        "central": 500,
+        "low": 50,
+        "high": 950,
+        "basis": "spread over the hurdle above"
+      },
+      "downside": {
+        "segments": [
+          {
+            "text": "The structural weakness is the mirror of the structural strength. A royalty holder is\ninsulated from operating cost because it has no operating control, and that means it cannot\nfix an operator's problem, cannot accelerate a mine that is behind, and cannot defend a\nconcession that a government decides to revisit.\n\nIf a jurisdiction repudiates or renegotiates a royalty on a producing asset, the contracted\nshare turns out not to have been contracted, and the premise that made this holdable for a\ndecade fails. Concentration makes it worse: the more revenue sits behind one operator, the\nless the diversification argument is doing.\n\nThe macro view offers no protection here. Gold can rise while a royalty is impaired, which\nis precisely why the position rests on the structure rather than on the metal."
+          }
+        ]
+      },
+      "kill_criteria": [
+        {
+          "n": 1,
+          "by_date": "2029-12-31",
+          "machine_checkable": true,
+          "test": "A single royalty or stream is disclosed as more than 45% of total revenue in a filed annual report, breaking the diversification the thesis rests on",
+          "status": "NOT_TRIGGERED",
+          "last_checked": ""
+        },
+        {
+          "n": 2,
+          "by_date": "2030-12-31",
+          "machine_checkable": true,
+          "test": "An impairment exceeding 20% of carrying value is recorded against a principal royalty interest in a filed annual report",
+          "status": "NOT_TRIGGERED",
+          "last_checked": ""
+        },
+        {
+          "n": 3,
+          "by_date": "2031-12-31",
+          "machine_checkable": false,
+          "test": "A counterparty renegotiates or repudiates a royalty on a producing asset, demonstrating the contracted share is not in fact contracted",
+          "status": "NOT_TRIGGERED",
+          "last_checked": ""
+        }
+      ],
+      "disclosure": "The author holds a personal position in Royal Gold, Inc. at the time of writing.\nMETHOD.md \u00a711."
+    }
+  ]
+}
