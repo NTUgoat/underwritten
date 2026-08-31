@@ -3,8 +3,41 @@
   "baseline_established": false,
   "issuers_checked": 50,
   "errors": [],
-  "new_filings": [],
+  "new_filings": [
+    {
+      "cik": "1676238",
+      "issuer": "Braze, Inc.",
+      "form": "4",
+      "filed": "2026-08-28",
+      "accession": "0001888935-26-000025",
+      "url": "https://www.sec.gov/Archives/edgar/data/1676238/000188893526000025/0001888935-26-000025-index.htm"
+    },
+    {
+      "cik": "1709048",
+      "issuer": "GLOBALFOUNDRIES Inc.",
+      "form": "4",
+      "filed": "2026-08-28",
+      "accession": "0001709048-26-000227",
+      "url": "https://www.sec.gov/Archives/edgar/data/1709048/000170904826000227/0001709048-26-000227-index.htm"
+    },
+    {
+      "cik": "1718405",
+      "issuer": "HYCROFT MINING HOLDING CORP",
+      "form": "8-K",
+      "filed": "2026-08-28",
+      "accession": "0001493152-26-040592",
+      "url": "https://www.sec.gov/Archives/edgar/data/1718405/000149315226040592/0001493152-26-040592-index.htm"
+    },
+    {
+      "cik": "1753539",
+      "issuer": "BlackSky Technology Inc.",
+      "form": "144",
+      "filed": "2026-08-28",
+      "accession": "0001968582-26-000896",
+      "url": "https://www.sec.gov/Archives/edgar/data/1753539/000196858226000896/0001968582-26-000896-index.htm"
+    }
+  ],
   "new_adverse_events": [],
   "kill_criteria_due": [],
-  "open_positions": 0
+  "open_positions": 3
 }
