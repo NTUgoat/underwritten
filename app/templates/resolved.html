@@ -10,13 +10,12 @@
       <span>outcome already on the public record</span>
     </p>
     <h1 class="page-title">Cases the record has already settled</h1>
-    <p class="page-lede">This is the only place an adverse conclusion appears, and it
-    appears only where the outcome is already public — a restatement filed, a delisting
-    effected, an enforcement action concluded, a take-private completed. Every sentence
-    below is an observation that can be checked against a filing.
-    <em>This metric appears in no document filed after a given date</em> is a fact.
-    <em>Management hid it</em> is an allegation, and is not published here or anywhere
-    else on this site.</p>
+    <p class="page-lede">The only place an adverse conclusion appears, and only where the
+    outcome is already public: a restatement filed, a delisting effected, an enforcement
+    action concluded, a take-private completed. Every sentence is checkable against a
+    filing. <em>This metric appears in no document filed after a given date</em> is a
+    fact; <em>management hid it</em> is an allegation, and is published nowhere on this
+    site.</p>
   </div>
 </section>
 
@@ -24,33 +23,39 @@
 {% for case in cases %}
 <article class="band case" id="{{ case.id|default(loop.index, true) }}">
   <div class="wrap wrap--reading">
-    <p class="kicker">
-      <span class="badge badge--outcome">{{ case.outcome|state_label }}</span>
-      <span class="kicker__sep">/</span>
-      <span>resolved {{ case.resolved_on|plain }}</span>
-    </p>
-    <h2 class="case__title">{{ case.issuer }}{% if case.ticker %} <span class="case__ticker">{{ case.ticker }}</span>{% endif %}</h2>
+    <header class="bleed">
+      <p class="kicker">
+        <span class="badge badge--outcome">{{ case.outcome|state_label }}</span>
+        <span class="kicker__sep">/</span>
+        <span>resolved {{ case.resolved_on|plain }}</span>
+      </p>
+      <h2 class="case__title">{{ case.issuer }}{% if case.ticker %} <span class="case__ticker">{{ case.ticker }}</span>{% endif %}</h2>
+    </header>
 
-    <section class="case__section">
-      <h3 class="case__h">What happened</h3>
-      <p>{{ m.prose(case.summary.segments) }}</p>
-    </section>
+    <div class="col">
+      <section class="case__section">
+        <h3 class="case__h">What happened</h3>
+        <p>{{ m.prose(case.summary.segments) }}</p>
+      </section>
 
-    <section class="case__section">
-      <h3 class="case__h">What the scoreboard showed first</h3>
-      <p>{{ m.prose(case.what_the_metrics_showed.segments) }}</p>
-    </section>
+      <section class="case__section">
+        <h3 class="case__h">What the scoreboard showed first</h3>
+        <p>{{ m.prose(case.what_the_metrics_showed.segments) }}</p>
+      </section>
+    </div>
 
-    <section class="case__section">
-      <h3 class="case__h">The record</h3>
-      {% if case.record %}
-      {% for entry in case.record %}
-      {{ m.citation_block(entry, entry.form|default('filing', true) ~ (' item ' ~ entry.item if entry.item else '')) }}
-      {% endfor %}
-      {% else %}
-      <p>{{ m.pending() }}</p>
-      {% endif %}
-    </section>
+    <aside class="rail">
+      <div class="rail__block">
+        <h3 class="rail__h">The record</h3>
+        {% if case.record %}
+        {% for entry in case.record %}
+        {{ m.citation_block(entry, entry.form|default('filing', true) ~ (' item ' ~ entry.item if entry.item else '')) }}
+        {% endfor %}
+        {% else %}
+        <p>{{ m.pending() }}</p>
+        {% endif %}
+      </div>
+    </aside>
   </div>
 </article>
 {% endfor %}
@@ -63,24 +68,37 @@
 
 <section class="band">
   <div class="wrap wrap--reading">
-    <div class="notice">
-      <p class="notice__mark">{{ PENDING }}</p>
-      <p>No resolved case is published. A case enters this page only when its outcome is
-      already a matter of public record, and it will carry the filing that settles it.</p>
+    <div class="col">
+      <div class="notice">
+        <p class="notice__mark">No case yet</p>
+        <p>A case enters this page only when its outcome is already a matter of public
+        record, and it carries the filing that settles it. None of the fifty issuers has
+        reached that bar since the corpus was read.</p>
+      </div>
+
+      <h2 class="band__h">Why the page is empty rather than absent</h2>
+      <p>The four qualifying outcomes are listed beside this, and each is a filing type
+      rather than a judgement. An issuer joins this page when one of them appears in the
+      filed record — not when the study forms a view about it. That order is the point:
+      the adverse conclusion follows the document, never the other way round.</p>
+      {{ m.provenance_strip(sources) }}
     </div>
 
-    <h2 class="band__h">What qualifies a case</h2>
-    <ul class="qualify">
-      <li><span class="qualify__k">Restatement filed</span>
-        <span class="qualify__d">8-K Item 4.02, non-reliance on previously issued financial statements — excluding the April 2021 SPAC warrant wave, which is evidence about one SEC staff statement and not about an issuer.</span></li>
-      <li><span class="qualify__k">Delisting effected</span>
-        <span class="qualify__d">Form 25 or 25-NSE — excluding the mechanical predecessor delisting filed within thirty days of a de-SPAC completion 8-K.</span></li>
-      <li><span class="qualify__k">Enforcement concluded</span>
-        <span class="qualify__d">A concluded action on the public docket, not an open investigation and not a press report of one.</span></li>
-      <li><span class="qualify__k">Take-private completed</span>
-        <span class="qualify__d">Completed, not announced.</span></li>
-    </ul>
-    {{ m.provenance_strip(sources) }}
+    <aside class="rail">
+      <div class="rail__block">
+        <h2 class="rail__h">What qualifies a case</h2>
+        <ul class="qualify">
+          <li><span class="qualify__k">Restatement filed</span>
+            <span class="qualify__d">8-K Item 4.02, non-reliance on previously issued financial statements — excluding the April 2021 SPAC warrant wave, which is evidence about one SEC staff statement and not about an issuer.</span></li>
+          <li><span class="qualify__k">Delisting effected</span>
+            <span class="qualify__d">Form 25 or 25-NSE — excluding the mechanical predecessor delisting filed within thirty days of a de-SPAC completion 8-K.</span></li>
+          <li><span class="qualify__k">Enforcement concluded</span>
+            <span class="qualify__d">A concluded action on the public docket, not an open investigation and not a press report of one.</span></li>
+          <li><span class="qualify__k">Take-private completed</span>
+            <span class="qualify__d">Completed, not announced.</span></li>
+        </ul>
+      </div>
+    </aside>
   </div>
 </section>
 {% endif %}

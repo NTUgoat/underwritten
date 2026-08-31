@@ -253,6 +253,10 @@ def register(app, templates) -> None:
     def note(request: Request) -> HTMLResponse:
         note_dataset = data.note()
         payload = note_dataset.payload if isinstance(note_dataset.payload, dict) else {}
+        # While the note is unwritten its margin says what it is waiting on, in
+        # counts rather than in a pending marker, so the page states the gap
+        # once and quantifies it instead of stamping every heading.
+        status = data.study_status()
         return render(
             "note.html",
             _context(
@@ -262,7 +266,8 @@ def register(app, templates) -> None:
                 note=payload,
                 sections=payload.get("sections") or [],
                 revisions=payload.get("revisions") or [],
-                sources=_sources(note_dataset),
+                status=status,
+                sources=_sources(note_dataset, *status["sources"]),
             ),
         )
 

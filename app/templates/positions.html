@@ -12,22 +12,36 @@
       <span>horizons 10 and 20 years</span>
     </p>
     <h1 class="page-title">Three live positions</h1>
-    <p class="page-lede">Constructive only. An adverse conclusion is published on a
-    company only where the outcome is already on the public record, so nothing here is a
-    forward-looking negative view on a live name — those live on
-    <a href="/resolved">Resolved</a>. Return is expressed as a spread over a hurdle built
-    line by line from published risk premia, in basis points. There is no target price
-    anywhere on this site, and no IRR, MOIC, Sharpe ratio or benchmark-relative alpha:
-    they describe a different kind of investor.</p>
+    <p class="page-lede">Constructive only. Return is stated as a spread over a hurdle
+    built line by line from published risk premia, in basis points — never as a target
+    price, an IRR or a benchmark-relative number. Adverse conclusions appear only where
+    the outcome is already on the public record, on <a href="/resolved">Resolved</a>.</p>
+
+    {% if positions %}
+    {#- An index, so a reader sees all three names and their spreads before
+        committing to scrolling through any one memo. -#}
+    <ol class="pindex">
+      {% for p in positions %}
+      <li class="pindex__item">
+        <a class="pindex__link" href="#{{ p.id|default(loop.index, true) }}">
+          <span class="pindex__issuer">{{ p.issuer }}</span>
+          {% if p.ticker %}<span class="pindex__ticker">{{ p.ticker }}</span>{% endif %}
+        </a>
+        <span class="pindex__stance">{{ p.stance|plain }}</span>
+        <span class="pindex__spread">{{ p.expected_spread_bps.central|bps }}<span class="pindex__over">over hurdle</span></span>
+      </li>
+      {% endfor %}
+    </ol>
+    {% endif %}
   </div>
 </section>
 
 {% if positions %}
 {% for p in positions %}
-<article class="band memo" id="{{ p.id|default(loop.index, true) }}">
+<article class="band memo{{ ' band--alt' if loop.index is even }}" id="{{ p.id|default(loop.index, true) }}">
   <div class="wrap wrap--reading">
 
-    <header class="memo__head">
+    <header class="memo__head bleed">
       <p class="memo__meta">
         <span class="badge badge--{{ p.status|default('open', true)|lower }}">{{ p.status|default('OPEN', true) }}</span>
         <span class="memo__issuer">{{ p.issuer }}</span>
@@ -40,152 +54,156 @@
       <h2 class="memo__stance">{{ p.stance|plain }}</h2>
     </header>
 
-    <section class="memo__section">
-      <h3 class="memo__h">Variant perception</h3>
-      <p class="memo__lede">What is believed here that the price does not appear to reflect.</p>
-      <p>{{ m.prose(p.variant_perception.segments) }}</p>
-    </section>
+    {#- The argument. -#}
+    <div class="col">
+      <section class="memo__section">
+        <h3 class="memo__h">Variant perception</h3>
+        <p class="memo__lede">What is believed here that the price does not appear to reflect.</p>
+        <p>{{ m.prose(p.variant_perception.segments) }}</p>
+      </section>
 
-    <section class="memo__section">
-      <h3 class="memo__h">What would have to be true</h3>
-      {% if p.what_would_have_to_be_true %}
-      <ol class="conditions">
-        {% for condition in p.what_would_have_to_be_true %}
-        <li>{{ m.prose(condition.segments) }}</li>
-        {% endfor %}
-      </ol>
-      {% else %}
-      <p>{{ m.pending() }}</p>
+      <section class="memo__section">
+        <h3 class="memo__h">What would have to be true</h3>
+        {% if p.what_would_have_to_be_true %}
+        <ol class="conditions">
+          {% for condition in p.what_would_have_to_be_true %}
+          <li>{{ m.prose(condition.segments) }}</li>
+          {% endfor %}
+        </ol>
+        {% else %}
+        <p>{{ m.pending() }}</p>
+        {% endif %}
+      </section>
+
+      <section class="memo__section">
+        <h3 class="memo__h">Downside stress case</h3>
+        <p>{{ m.prose(p.downside.segments) }}</p>
+      </section>
+
+      {% if p.disclosure %}
+      <p class="disclosure">{{ p.disclosure }}</p>
       {% endif %}
-    </section>
 
-    <section class="memo__section">
-      <h3 class="memo__h">The hurdle, built bottom-up</h3>
-      <p class="memo__lede">Every line cites its source.
-        {% if p.hurdle.edition %}Risk premia from {{ p.hurdle.edition }}.{% endif %}</p>
-      {% if p.hurdle.lines %}
-      <div class="scroller">
+      <p class="signature">
+        <span class="signature__name">{{ p.author|default(site.author, true) }}</span>
+        <span class="signature__date">{{ p.opened|plain }}</span>
+      </p>
+    </div>
+
+    {#- The apparatus: what the argument is priced against, and what would kill
+        it. It sits in the margin because a reader checks these against the
+        prose rather than reading them in sequence. -#}
+    <aside class="rail">
+
+      <div class="rail__block rail__block--return">
+        <h3 class="rail__h">Expected return</h3>
+        <p class="spread">
+          <span class="spread__value">{{ p.expected_spread_bps.central|bps }}</span>
+          <span class="spread__basis">{{ p.expected_spread_bps.basis|default('spread over the hurdle below', true) }}</span>
+        </p>
+        <p class="spread__range">
+          range {{ p.expected_spread_bps.low|bps }} to {{ p.expected_spread_bps.high|bps }}
+          {% if p.horizons_years %}<span class="memo__dot">·</span>over {{ p.horizons_years|join(' and ') }} years{% endif %}
+        </p>
+        <p class="spread__never">Not a target price. Not an IRR.</p>
+      </div>
+
+      <div class="rail__block">
+        <h3 class="rail__h">The hurdle, bottom-up</h3>
+        {% if p.hurdle.lines %}
         <table class="table table--hurdle">
-          <thead><tr><th scope="col">component</th><th scope="col" class="n">bps</th><th scope="col">source</th></tr></thead>
           <tbody>
             {% for line in p.hurdle.lines %}
             <tr>
-              <th scope="row">{{ line.label }}</th>
+              <th scope="row">{{ line.label }}
+                <span class="hurdle__src">{% if line.citation %}{{ m.cite(line.citation) }} {% endif %}{{ line.source }}</span></th>
               <td class="n">{{ line.bps|num }}</td>
-              <td class="src">{% if line.citation %}{{ m.cite(line.citation) }} {% endif %}{{ line.source }}</td>
             </tr>
             {% endfor %}
           </tbody>
-          <tfoot><tr><th scope="row">cost of capital</th><td class="n">{{ p.hurdle.total_bps|bps }}</td><td></td></tr></tfoot>
+          <tfoot><tr><th scope="row">cost of capital</th><td class="n">{{ p.hurdle.total_bps|bps }}</td></tr></tfoot>
         </table>
+        {% if p.hurdle.edition %}<p class="rail__note">Risk premia from {{ p.hurdle.edition }}. Every line cites its source.</p>{% endif %}
+        {% else %}
+        <p>{{ m.pending() }}</p>
+        {% endif %}
       </div>
-      {% else %}
-      <p>{{ m.pending() }}</p>
-      {% endif %}
-    </section>
 
-    <section class="memo__section memo__section--return">
-      <h3 class="memo__h">Expected return</h3>
-      <p class="spread">
-        <span class="spread__value">{{ p.expected_spread_bps.central|bps }}</span>
-        <span class="spread__basis">{{ p.expected_spread_bps.basis|default('spread over the hurdle above', true) }}</span>
-      </p>
-      <p class="spread__range">
-        range {{ p.expected_spread_bps.low|bps }} to {{ p.expected_spread_bps.high|bps }}
-        {% if p.horizons_years %}<span class="memo__dot">·</span>over {{ p.horizons_years|join(' and ') }} years{% endif %}
-      </p>
-      <p class="spread__never">Not a target price. Not an IRR.</p>
-    </section>
+      <div class="rail__block">
+        <h3 class="rail__h">Kill criteria</h3>
+        {% if p.kill_criteria %}
+        <ol class="kills">
+          {% for kill in p.kill_criteria %}
+          <li class="kill kill--{{ kill.status|default('not_triggered', true)|lower }}">
+            <p class="kill__test">{{ kill.test }}</p>
+            <p class="kill__meta">
+              <span class="kill__by">by {{ kill.by_date|plain }}</span>
+              <span class="memo__dot">·</span>
+              <span class="kill__status">{{ kill.status|state_label }}</span>
+              {% if kill.machine_checkable is defined and not kill.machine_checkable %}
+              <span class="memo__dot">·</span><span class="kill__manual">not machine-checkable</span>
+              {% endif %}
+            </p>
+          </li>
+          {% endfor %}
+        </ol>
+        <p class="rail__note">Evaluated by a scheduled job against incoming filings, without
+        the author's involvement.</p>
+        {% else %}
+        <p>{{ m.pending() }}</p>
+        {% endif %}
+      </div>
 
-    <section class="memo__section">
-      <h3 class="memo__h">Downside stress case</h3>
-      <p>{{ m.prose(p.downside.segments) }}</p>
-    </section>
-
-    <section class="memo__section">
-      <h3 class="memo__h">Kill criteria</h3>
-      <p class="memo__lede">Dated and machine-checkable, evaluated by a scheduled job
-      against incoming filings without the author's involvement.</p>
-      {% if p.kill_criteria %}
-      <ol class="kills">
-        {% for kill in p.kill_criteria %}
-        <li class="kill kill--{{ kill.status|default('not_triggered', true)|lower }}">
-          <p class="kill__test">{{ kill.test }}</p>
-          <p class="kill__meta">
-            <span class="kill__by">by {{ kill.by_date|plain }}</span>
-            <span class="memo__dot">·</span>
-            <span class="kill__status">{{ kill.status|state_label }}</span>
-            {% if kill.last_checked %}<span class="memo__dot">·</span><span>last checked {{ kill.last_checked }}</span>{% endif %}
-            {% if kill.machine_checkable is defined and not kill.machine_checkable %}
-            <span class="memo__dot">·</span><span class="kill__manual">not machine-checkable</span>
-            {% endif %}
-          </p>
-        </li>
-        {% endfor %}
-      </ol>
-      {% else %}
-      <p>{{ m.pending() }}</p>
-      {% endif %}
-    </section>
-
-    {% if p.disclosure %}
-    <p class="disclosure">{{ p.disclosure }}</p>
-    {% endif %}
-
-    <p class="signature">
-      <span class="signature__name">{{ p.author|default(site.author, true) }}</span>
-      <span class="signature__date">{{ p.opened|plain }}</span>
-    </p>
+    </aside>
   </div>
 </article>
 {% endfor %}
+
+<section class="band">
+  <div class="wrap">{{ m.provenance_strip(sources) }}</div>
+</section>
 
 {% else %}
 
 <section class="band">
   <div class="wrap wrap--reading">
-    <div class="notice">
-      <p class="notice__mark">{{ PENDING }}</p>
-      <p>No position is published. A position is opened only after the ledger it rests on
-      is complete, and it is signed and dated when it is. Publishing a stance now, ahead
-      of the evidence, would invert the order this method is built on.</p>
+    <div class="col">
+      <div class="notice">
+        <p class="notice__mark">{{ PENDING }}</p>
+        <p>No position is published. A position is opened only after the ledger it rests on
+        is complete, and it is signed and dated when it is.</p>
+      </div>
+
+      <h2 class="band__h">The shape every memo takes</h2>
+      <ol class="skeleton">
+        <li class="skeleton__item">
+          <h3 class="skeleton__h">Stance, in the first eight words</h3>
+          <p class="skeleton__d">If it cannot be said in eight words it is not yet a position.</p>
+        </li>
+        <li class="skeleton__item">
+          <h3 class="skeleton__h">Variant perception</h3>
+          <p class="skeleton__d">What is believed here that the price does not appear to reflect. Written as an observation about the filed record, never as an allegation.</p>
+        </li>
+        <li class="skeleton__item">
+          <h3 class="skeleton__h">What would have to be true</h3>
+          <p class="skeleton__d">The conditions the position depends on, listed so a reader can price them separately.</p>
+        </li>
+        <li class="skeleton__item">
+          <h3 class="skeleton__h">Expected return as a spread, in basis points</h3>
+          <p class="skeleton__d">Over a cost of capital built line by line from published country and industry risk premia, each line citing its edition. Never a target price.</p>
+        </li>
+        <li class="skeleton__item">
+          <h3 class="skeleton__h">Downside stress case</h3>
+          <p class="skeleton__d">What the position costs when the thesis is wrong, stated before it is.</p>
+        </li>
+        <li class="skeleton__item">
+          <h3 class="skeleton__h">Three dated kill criteria</h3>
+          <p class="skeleton__d">Machine-checkable against incoming filings, evaluated by a scheduled job without the author's involvement. A killed position stays visible, with the filing that killed it.</p>
+        </li>
+      </ol>
+      {{ m.provenance_strip(sources) }}
     </div>
-
-    <h2 class="band__h">The shape every memo takes</h2>
-    <ol class="skeleton">
-      <li class="skeleton__item">
-        <h3 class="skeleton__h">Stance, in the first eight words</h3>
-        <p class="skeleton__d">If it cannot be said in eight words it is not yet a position.</p>
-      </li>
-      <li class="skeleton__item">
-        <h3 class="skeleton__h">Variant perception</h3>
-        <p class="skeleton__d">What is believed here that the price does not appear to reflect. Written as an observation about the filed record, never as an allegation.</p>
-      </li>
-      <li class="skeleton__item">
-        <h3 class="skeleton__h">What would have to be true</h3>
-        <p class="skeleton__d">The conditions the position depends on, listed so a reader can price them separately.</p>
-      </li>
-      <li class="skeleton__item">
-        <h3 class="skeleton__h">Expected return as a spread, in basis points</h3>
-        <p class="skeleton__d">Over a cost of capital built line by line from published country and industry risk premia, each line citing its edition, plus a capital-structure adjustment. Never a target price.</p>
-      </li>
-      <li class="skeleton__item">
-        <h3 class="skeleton__h">Downside stress case</h3>
-        <p class="skeleton__d">What the position costs when the thesis is wrong, stated before it is.</p>
-      </li>
-      <li class="skeleton__item">
-        <h3 class="skeleton__h">Three dated kill criteria</h3>
-        <p class="skeleton__d">Machine-checkable against incoming filings, evaluated by a scheduled job without the author's involvement. A killed position stays visible, with the filing that killed it.</p>
-      </li>
-    </ol>
-    {{ m.provenance_strip(sources) }}
   </div>
-</section>
-{% endif %}
-
-{% if positions %}
-<section class="band band--alt">
-  <div class="wrap">{{ m.provenance_strip(sources) }}</div>
 </section>
 {% endif %}
 {% endblock %}

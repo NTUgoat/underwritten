@@ -31,7 +31,7 @@
             <th scope="row">
               {{ row.name }}
               {% if row.ticker %}<span class="muted">{{ row.ticker }}</span>
-              {% else %}<span class="muted">no ticker on file</span>{% endif %}
+              {% else %}<span class="muted muted--none" title="No ticker on file">—</span>{% endif %}
             </th>
             <td>{{ row.arm|lower }}</td>
             <td>{{ row.sic_description }} <span class="muted">{{ row.sic }}</span></td>
@@ -57,27 +57,43 @@
 
 {% block content %}
 <section class="band band--head">
-  <div class="wrap">
-    <p class="kicker">
-      <span>The ledger</span>
-      <span class="kicker__sep">/</span>
-      <span>as at {{ board.as_at|default(as_at, true) }}</span>
-    </p>
-    <h1 class="page-title">Every metric, and what became of it</h1>
-    <p class="page-lede">Candidate metrics are located by pattern search. Pattern search
-    decides nothing. Every candidate is ruled on by hand, and every ruling carries
-    the reviewer's initials, the date, the verbatim defining sentence, the accession
-    number and a one-line rationale. This ledger is the study; disagree with it row by
-    row.</p>
-    {% if not ledger_available %}
-    <p class="notice notice--lead">
-      <span class="notice__mark">No ruling has been written yet</span>
-      The ledger is the one part of this study a machine is not allowed to produce, so it
-      is empty until a human fills it. What is on this page today is the
-      <a href="#cohort">frozen cohort</a>: the fifty companies the study will grade, each
-      linked to the listing document it will be graded against.
-    </p>
-    {% endif %}
+  <div class="wrap wrap--reading">
+    <header class="bleed">
+      <p class="kicker">
+        <span>The ledger</span>
+        <span class="kicker__sep">/</span>
+        <span>as at {{ board.as_at|default(as_at, true) }}</span>
+      </p>
+      <h1 class="page-title">Every metric, and what became of it</h1>
+    </header>
+    <div class="col">
+      <p class="page-lede">Candidate metrics are located by pattern search. Pattern search
+      decides nothing. Every candidate is ruled on by hand, and every ruling carries the
+      reviewer's initials, the date, the verbatim defining sentence, the accession number
+      and a one-line rationale. This ledger is the study; disagree with it row by row.</p>
+      {% if not ledger_available %}
+      <p class="notice notice--lead">
+        <span class="notice__mark">No ruling has been written yet</span>
+        The ledger is the one part of this study a machine is not allowed to produce, so
+        it is empty until a human fills it. What is on this page today is the
+        <a href="#cohort">frozen cohort</a>: the fifty companies the study will grade,
+        each linked to the listing document it will be graded against.
+      </p>
+      {% endif %}
+    </div>
+    <aside class="rail">
+      <div class="rail__block">
+        <h2 class="rail__h">Where the reading stands</h2>
+        <dl class="rail__facts">
+          <div><dt>Issuers</dt><dd>{{ total_cohort_rows|num }}</dd></div>
+          <div><dt>Ruled</dt><dd>{{ total_rows|num if ledger_available else 0 }}</dd></div>
+        </dl>
+        <p>Every candidate carries its own defining sentence out of the filing it was
+        promised in, so a ruling can be disagreed with on the evidence rather than on
+        the summary.</p>
+        <p><a href="/method">The inclusion rules, in full →</a></p>
+      </div>
+    </aside>
   </div>
 </section>
 
@@ -140,9 +156,8 @@
       {% if ledger_available %}
       Showing <strong>{{ rows|length|num }}</strong> of {{ total_rows|num }} adjudicated metrics,
       {% else %}
-      <span class="pending">{{ PENDING }}</span> — no metric has been adjudicated, so the
-      filters currently narrow the frozen cohort only. They will narrow the metric ledger
-      unchanged once <code>data/derived/metrics.json</code> is written. Showing
+      No metric has been adjudicated yet, so these filters narrow the frozen cohort only.
+      They will narrow the metric ledger unchanged once the rulings are written. Showing
       {% endif %}
       <strong>{{ cohort_rows|length|num }}</strong> of {{ total_cohort_rows|num }} issuers.
     </p>

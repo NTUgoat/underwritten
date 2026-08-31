@@ -84,17 +84,61 @@ hr { border: 0; }
 /* ---------------------------------------------------------------- layout -- */
 
 .wrap { width: 100%; max-width: 72rem; margin: 0 auto; padding: 0 var(--gutter); }
-/* A reading measure that still starts on the page margin.
-   Previously this narrowed the whole container and centred it, so prose on
-   /note, /positions and /resolved began a hundred pixels right of the page
-   title above it and read as a misalignment. The container now matches every
-   other .wrap exactly; the measure is imposed on the prose inside it. */
-.wrap--reading { max-width: 72rem; margin: 0 auto; }
-.wrap--reading > * { max-width: var(--measure); }
+
+/* The editorial grid: a reading column and an apparatus rail beside it.
+
+   The measure was previously imposed as a flat cap on every child of
+   .wrap--reading. That kept prose readable but left the right 50-58% of a
+   laptop screen empty on /positions, /note, /watch and /resolved, which reads
+   as a page that failed to lay out rather than as a publication. A research
+   note does not solve this by widening the prose - 34rem is the right measure
+   and stays - it solves it by putting the apparatus in the margin: the
+   quantities, the sources, the definitions, the things a reader checks against
+   while reading.
+
+   Below 64rem the rail simply falls under the column, in source order. */
+.wrap--reading { display: grid; grid-template-columns: minmax(0, 1fr); }
+.wrap--reading > .col { min-width: 0; max-width: var(--measure); }
+.wrap--reading > .col > .scroller,
+.wrap--reading > .col > .table { max-width: none; }
+.wrap--reading > .rail { min-width: 0; }
 /* Anything that carries its own width - a wide table, the grid - keeps it. */
 .wrap--reading > .scroller,
 .wrap--reading > .table,
-.wrap--reading > .strip { max-width: none; }
+.wrap--reading > .strip,
+.wrap--reading > .bleed { max-width: none; }
+
+@media (min-width: 64rem) {
+  .wrap--reading {
+    grid-template-columns: minmax(0, var(--measure)) minmax(15rem, 21rem);
+    column-gap: clamp(2.5rem, 4.5vw, 4.5rem);
+    align-items: start;
+  }
+  .wrap--reading > .col { grid-column: 1; }
+  .wrap--reading > .rail { grid-column: 2; }
+  .wrap--reading > .bleed { grid-column: 1 / -1; }
+}
+
+/* The rail itself. Quieter than the column by a step: smaller type, the sans
+   face, hairline-ruled. It is apparatus, and it never competes with the
+   argument beside it. */
+.rail { font-family: var(--sans); font-size: 0.82rem; color: var(--ink-2); line-height: 1.55; }
+.rail__block { border-top: 1px solid var(--ink); padding-top: 0.6rem; margin-bottom: calc(var(--step) * 1.1); }
+.rail__block--quiet { border-top: 1px solid var(--rule-2); }
+.rail__h {
+  font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.13em;
+  text-transform: uppercase; color: var(--ink-3); margin: 0 0 0.55rem; font-weight: 600;
+}
+.rail p { font-size: 0.82rem; margin-bottom: 0.6rem; }
+.rail p:last-child { margin-bottom: 0; }
+.rail .table { font-size: 0.78rem; }
+.rail .table th, .rail .table td { padding: 0.4rem 0.6rem 0.4rem 0; }
+.rail--sticky { position: sticky; top: 1.5rem; }
+@media (max-width: 63.99rem) {
+  .rail--sticky { position: static; }
+  .rail { margin-top: calc(var(--step) * 1.4); }
+}
+
 .wrap--doc { max-width: 62rem; }
 
 .band { padding: calc(var(--step) * 2.2) 0; border-top: 1px solid var(--rule); }
@@ -1162,3 +1206,264 @@ hr { border: 0; }
   margin-bottom: 0.35rem;
 }
 .why__sign { font-family: var(--sans); font-size: 0.74rem; color: var(--ink-3); }
+
+/* ==========================================================================
+   POSITIONS — the memo as a research note
+
+   The argument runs in the reading column; the quantities it is priced against
+   run in the rail beside it. That is the shape of the document this is
+   imitating, and it is also what fills the right half of a laptop screen with
+   something worth reading rather than with margin.
+   ========================================================================== */
+
+/* The index above the memos: all three names, stances and spreads at once, so
+   a reader chooses which memo to open instead of scrolling to find out. */
+.pindex { list-style: none; margin: calc(var(--step) * 1.2) 0 0; padding: 0; border-top: 1px solid var(--ink); }
+.pindex__item {
+  display: grid; gap: 0.15rem 1.4rem; align-items: baseline;
+  grid-template-columns: 1fr auto;
+  padding: 0.75rem 0; border-bottom: 1px solid var(--rule);
+}
+@media (min-width: 52rem) {
+  .pindex__item { grid-template-columns: minmax(11rem, 15rem) minmax(0, 1fr) auto; }
+}
+.pindex__link { text-decoration: none; display: flex; align-items: baseline; gap: 0.45rem; }
+.pindex__issuer { font-weight: 600; font-size: 0.98rem; }
+.pindex__link:hover .pindex__issuer { text-decoration: underline; text-underline-offset: 0.16em; }
+.pindex__ticker { font-family: var(--mono); font-size: 0.7rem; color: var(--ink-3); }
+.pindex__stance { color: var(--ink-2); font-size: 0.92rem; grid-column: 1 / -1; }
+@media (min-width: 52rem) { .pindex__stance { grid-column: 2; } }
+.pindex__spread {
+  font-family: var(--mono); font-size: 1rem; font-variant-numeric: tabular-nums;
+  white-space: nowrap; text-align: right;
+  display: flex; flex-direction: column; align-items: flex-end;
+}
+.pindex__over {
+  font-family: var(--sans); font-size: 0.62rem; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--ink-3);
+}
+
+/* The stance sits in the full-width header, so it is allowed a longer line
+   than the 22ch it was set to when it lived inside the reading column. */
+.memo__head { padding-bottom: 0.4rem; }
+.memo__stance { max-width: 30ch; }
+@media (min-width: 64rem) { .memo__stance { max-width: 34ch; } }
+
+/* Return, in the rail. Smaller than the old full-width figure because it is
+   now read against the prose rather than announced across the page. */
+.rail .spread { display: block; margin-bottom: 0.25rem; }
+.rail .spread__value { font-size: 1.85rem; display: block; line-height: 1.05; }
+.rail .spread__basis { font-size: 0.76rem; color: var(--ink-3); display: block; margin-top: 0.15rem; }
+.rail .spread__range { font-size: 0.74rem; margin-bottom: 0.2rem; }
+.rail .spread__never { font-size: 0.7rem; }
+.rail__block--return { border-top-width: 2px; }
+
+/* The hurdle table, two columns in the rail: the component (with its source
+   beneath it) and the basis points. The three-column form wrapped every cell
+   onto two lines once the page stopped being 900px wide. */
+.rail .table--hurdle th[scope="row"] { font-weight: 400; padding-right: 0.7rem; }
+.hurdle__src {
+  display: block; font-family: var(--sans); font-size: 0.68rem;
+  color: var(--ink-3); line-height: 1.4; margin-top: 0.12rem;
+}
+.rail .table--hurdle tfoot th, .rail .table--hurdle tfoot td { font-weight: 600; }
+.rail .table--hurdle tfoot th { padding-top: 0.5rem; }
+
+/* Kill criteria in the rail: tighter leading, and the counter tucked in. */
+.rail .kill { padding: 0.6rem 0 0.6rem 1.9rem; }
+.rail .kill::before { top: 0.65rem; font-size: 0.68rem; }
+.rail .kill__test { font-size: 0.82rem; line-height: 1.45; margin-bottom: 0.2rem; }
+.rail .kill__meta { font-size: 0.68rem; }
+.rail__note {
+  font-size: 0.72rem; color: var(--ink-3); line-height: 1.45;
+  margin: 0.6rem 0 0;
+}
+
+/* The contents list and fact pairs when they sit in the rail. */
+.rail__toc { list-style: none; margin: 0; padding: 0; counter-reset: toc; }
+.rail__toc li {
+  counter-increment: toc; padding: 0.32rem 0 0.32rem 1.6rem;
+  border-top: 1px solid var(--rule); position: relative; font-size: 0.8rem;
+}
+.rail__toc li:first-child { border-top: 0; }
+.rail__toc li::before {
+  content: counter(toc, decimal-leading-zero); position: absolute; left: 0;
+  font-family: var(--mono); font-size: 0.68rem; color: var(--rule-2);
+}
+.rail__toc a { text-decoration: none; color: var(--ink-2); }
+.rail__toc a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 0.16em; }
+
+.rail__facts { display: flex; gap: 1.6rem; margin: 0.7rem 0; }
+.rail__facts div { display: flex; flex-direction: column; gap: 0.1rem; }
+.rail__facts dt {
+  font-family: var(--sans); font-size: 0.62rem; letter-spacing: 0.11em;
+  text-transform: uppercase; color: var(--ink-3);
+}
+.rail__facts dd {
+  margin: 0; font-family: var(--mono); font-size: 1.15rem;
+  font-variant-numeric: tabular-nums; color: var(--ink);
+}
+.rail .strip { font-size: 0.62rem; border-top-color: var(--rule); }
+
+/* A notice that opens a page rather than annotating a figure. It is a
+   statement, so it is set as one: no bracketed marker, no dashed box. */
+.notice__mark {
+  font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.13em;
+  text-transform: uppercase; color: var(--ink); font-weight: 600;
+}
+
+/* The skeleton no longer carries a pending stamp per item, so the rules can
+   close up and the headings can carry the page. */
+.skeleton__item { padding: 0.8rem 0 0.8rem 2.4rem; }
+.skeleton__d { margin-bottom: 0; }
+
+/* ==========================================================================
+   READINGS — a nil result set as a result
+
+   Three sections that each held one "nothing found" box now sit in one list.
+   A zero is printed at figure weight like any other reading, because the
+   claim being made is that the job ran and found nothing, not that the page
+   is missing something.
+   ========================================================================== */
+
+.readings { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
+.reading {
+  display: grid; gap: 0.15rem 1.3rem; align-items: baseline;
+  grid-template-columns: 1fr auto;
+  padding: 0.85rem 0; border-bottom: 1px solid var(--rule);
+}
+@media (min-width: 34rem) {
+  .reading { grid-template-columns: minmax(9rem, 12rem) 4rem minmax(0, 1fr); }
+}
+.reading__k {
+  margin: 0; font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink);
+}
+.reading__v {
+  margin: 0; font-family: var(--mono); font-size: 1.4rem; font-weight: 500;
+  font-variant-numeric: tabular-nums; line-height: 1; text-align: right;
+}
+@media (min-width: 34rem) { .reading__v { text-align: left; } }
+.reading__d {
+  margin: 0; grid-column: 1 / -1; font-size: 0.86rem; color: var(--ink-2); line-height: 1.5;
+}
+@media (min-width: 34rem) { .reading__d { grid-column: 3; } }
+/* A nil reading is quieter in the figure but not in the sentence: the sentence
+   is what makes it a reading rather than an absence. */
+.reading--nil .reading__v { color: var(--ink-3); }
+
+/* The operating rules, in the rail. */
+.rail__rules { margin: 0; }
+.rail__rules dt {
+  font-family: var(--sans); font-size: 0.62rem; letter-spacing: 0.11em;
+  text-transform: uppercase; color: var(--ink-3); margin-top: 0.7rem;
+}
+.rail__rules dt:first-child { margin-top: 0; }
+.rail__rules dd { margin: 0.15rem 0 0; font-size: 0.78rem; line-height: 1.45; }
+.rail__rules code { font-size: 0.72rem; color: var(--ink-3); }
+
+/* The three specified-but-not-yet-computed results, listed once. */
+.willpub { list-style: none; margin: 0 0 var(--step); padding: 0; border-top: 1px solid var(--ink); }
+.willpub__item {
+  padding: 0.9rem 0 0.9rem 2.6rem; border-bottom: 1px solid var(--rule); position: relative;
+}
+.willpub__ref {
+  position: absolute; left: 0; top: 1.05rem; margin: 0;
+  font-family: var(--mono); font-size: 0.72rem; color: var(--rule-2);
+}
+.willpub__h { font-size: 1.04rem; margin-bottom: 0.3rem; }
+.willpub__d { margin: 0; font-size: 0.9rem; color: var(--ink-2); line-height: 1.55; }
+.willpub__d code { font-size: 0.82em; }
+
+/* The page lede runs a little past the reading measure: it sits under a large
+   title in a full-width band, where 34rem left an obvious hole to its right. */
+.page-lede { max-width: 44rem; }
+
+/* A check that has not been computed says so in words, at label weight. The
+   bracketed marker was doing this job in the two most prominent slots above
+   the fold, where it read as a rendering failure rather than as a status. */
+.check__mark {
+  display: block; font-family: var(--sans); font-size: 0.64rem;
+  letter-spacing: 0.13em; text-transform: uppercase; color: var(--ink);
+  font-weight: 600; margin-bottom: 0.3rem;
+}
+
+/* ==========================================================================
+   THE COHORT TABLE — row rhythm
+
+   Two cells were setting the height of every row: "no ticker on file" wrapped
+   onto a second line for half the cohort, and the accession number broke
+   mid-token because the cell was narrower than the number. Rows of four
+   different heights read as a table nobody had looked at.
+   ========================================================================== */
+
+.table--cohort th[scope="row"] { min-width: 13rem; }
+.muted--none { color: var(--rule-2); }
+/* An accession number is one token and is never broken across lines. The cell
+   is given the width the number actually needs. */
+.table--cohort .muted, .table--cohort .hash { white-space: nowrap; }
+.table--cohort td:nth-child(4) { min-width: 14.5rem; }
+.table--cohort tbody tr:hover { background: var(--paper-2); }
+.band--alt .table--cohort tbody tr:hover { background: var(--paper-3); }
+/* Scroll affordance: below the breakpoint the table scrolls sideways, and a
+   reader has to be told so. */
+.scroller { position: relative; }
+@media (max-width: 60rem) {
+  .scroller::after {
+    content: "scroll →"; position: sticky; right: 0; bottom: 0;
+    float: right; font-family: var(--sans); font-size: 0.62rem;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3);
+    background: var(--paper); padding: 0.2rem 0 0.2rem 0.6rem;
+  }
+  .band--alt .scroller::after { background: var(--paper-2); }
+  .scroller--grid::after { content: none; }
+}
+
+/* ==========================================================================
+   DENSITY
+
+   The bands were set at 2.2 rhythm units top and bottom, which on a page of
+   eight bands put roughly a screen and a half of pure padding between the
+   first section and the last. A printed factsheet is denser than that, and so
+   is every research publication this is imitating.
+   ========================================================================== */
+
+.band { padding: calc(var(--step) * 1.55) 0; }
+.band--head { padding-top: calc(var(--step) * 1.2); padding-bottom: calc(var(--step) * 1.1); }
+.fold { padding: calc(var(--step) * 1.4) 0 calc(var(--step) * 1.5); }
+.band__head { margin-bottom: calc(var(--step) * 0.85); }
+.page-title { margin: 0.35rem 0 0.85rem; }
+.footer { padding: calc(var(--step) * 1.3) 0 calc(var(--step) * 1.1); }
+.footer__grid { margin-bottom: calc(var(--step) * 0.9); }
+.memo__section { margin-bottom: calc(var(--step) * 1.05); }
+.note__section { margin-bottom: calc(var(--step) * 1.25); }
+
+/* ------------------------------------------------ orientation, in the fold - */
+
+/* The fold's rail is the first thing on the site with somewhere to send a
+   reader. It sits beside the question rather than under it, because the
+   question is short and the right half of the first screen was empty. */
+.rail--fold { padding-top: 0.2rem; }
+@media (min-width: 64rem) { .rail--fold { padding-top: 2.6rem; } }
+
+.rail__path { list-style: none; margin: 0; padding: 0; counter-reset: path; }
+.rail__path li {
+  counter-increment: path; position: relative;
+  padding: 0.55rem 0 0.55rem 1.7rem; border-top: 1px solid var(--rule);
+}
+.rail__path li:first-child { border-top: 0; padding-top: 0.2rem; }
+.rail__path li::before {
+  content: counter(path); position: absolute; left: 0; top: 0.62rem;
+  font-family: var(--mono); font-size: 0.7rem; color: var(--rule-2);
+}
+.rail__path li:first-child::before { top: 0.27rem; }
+.rail__path a {
+  display: block; font-family: var(--sans); font-size: 0.82rem;
+  color: var(--ink); text-decoration: none; letter-spacing: 0.01em;
+}
+.rail__path a:hover { text-decoration: underline; text-underline-offset: 0.16em; text-decoration-color: var(--flag); }
+.rail__path span { display: block; font-size: 0.74rem; color: var(--ink-3); line-height: 1.45; margin-top: 0.1rem; }
+
+/* The fold's own children sit in the grid now, so the strip below the question
+   spans both columns and keeps the full measure of the page. */
+.fold .bleed > .figures { margin-top: calc(var(--step) * 0.9); }

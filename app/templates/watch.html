@@ -2,9 +2,11 @@
 {% import "macros.html" as m %}
 
 {# The live surface. Everything else on this site is a claim about documents
-   filed in the past; this page is the one that changes on its own, and it is
-   the evidence for a claim the study makes about itself — that the record
-   accrues whether or not the author is paying attention. #}
+   filed in the past; this page is the one that changes on its own.
+
+   The three readings below used to be three separate bands, each holding a
+   single "nothing found" box. Three empty boxes in a row read as a broken
+   page. They are one band now, and a nil reading is set as a reading. #}
 
 {% block content %}
 <section class="band band--head">
@@ -17,11 +19,10 @@
       <span>{{ watch.schedule.human|lower }}</span>
     </p>
     <h1 class="page-title">Still reading, every Monday</h1>
-    <p class="page-lede">The fifty companies in this study go on filing whether or not
-    anyone is watching them. A scheduled job re-reads every one of their EDGAR filing
-    indexes each week, flags anything that counts as an adverse event under the
-    pre-registered definition, and commits what it found. It runs without the author, and
-    a week in which it finds nothing is published as a result rather than left blank.</p>
+    <p class="page-lede">A scheduled job re-reads all fifty issuers' EDGAR filing indexes
+    each week, flags anything adverse under the pre-registered definition, and commits what
+    it found. It runs without the author. A week that finds nothing is published as a
+    result, not left blank.</p>
   </div>
 </section>
 
@@ -57,16 +58,14 @@
       <span class="notice__mark">This is the baseline run</span>
       The first run records what every issuer had already filed and reports none of it as
       new, because fifty complete filing histories arriving at once would be true and
-      useless. Everything from the next run onward is a genuine difference against this
-      mark.
+      useless. Everything from the next run onward is a genuine difference against this mark.
     </p>
     {% endif %}
 
     {% if watch.errors %}
     <p class="band__sub band__sub--warn">{{ watch.errors|length }} issuer(s) could not be
-      reached on the last run. The previous high-water mark was carried forward for each,
-      so next week's diff is against the last good read rather than against nothing —
-      dropping it would manufacture a false burst of "new" filings.</p>
+      reached on the last run. The previous high-water mark was carried forward for each, so
+      next week's diff is against the last good read rather than against nothing.</p>
     {% endif %}
     {% else %}
     {{ m.absent('The watch reports what the cohort has filed since the last check, and whether any of it is adverse under the pre-registered definition.', 'data/derived/watch_report.json', 'Waiting on: the first scheduled run to commit a report.') }}
@@ -74,17 +73,99 @@
   </div>
 </section>
 
-{# ---------------------------------------------------------- new filings --- #}
+{# -------------------------------------------- what the last run found ----- #}
 <section class="band band--alt">
-  <div class="wrap">
-    <header class="band__head">
-      <h2 class="band__h">Filed since the last check</h2>
-      <p class="band__sub">Every document any cohort issuer has filed or furnished since the
-        previous run, in the order EDGAR reports them. This is the raw difference, before
-        anything is decided about it.</p>
-    </header>
+  <div class="wrap wrap--reading">
+    <div class="col">
+      <header class="band__head">
+        <h2 class="band__h">What the last run found</h2>
+        <p class="band__sub">Three readings, taken in order: everything filed since the
+          previous run, which of it is adverse, and which kill criteria have reached their
+          date.</p>
+      </header>
 
-    {% if watch.new_filings %}
+      <ol class="readings">
+        {#- 1. new filings -#}
+        <li class="reading{{ ' reading--nil' if not watch.new_filings }}">
+          <p class="reading__k">Filed since the last check</p>
+          <p class="reading__v">{{ watch.new_filings|length|num }}</p>
+          <p class="reading__d">
+            {% if watch.new_filings %}
+            Documents filed or furnished by cohort issuers since
+            {{ watch.checked_on|longdate }}, in the order EDGAR reports them. Listed below.
+            {% else %}
+            No cohort issuer has filed anything since {{ watch.checked_on|longdate }}.
+            {{ watch.issuers_tracked|num }} issuers were checked and
+            {{ watch.accessions_tracked|num }} accessions were already on the mark — a
+            reading, not an outage.
+            {% endif %}
+          </p>
+        </li>
+
+        {#- 2. adverse events -#}
+        <li class="reading{{ ' reading--nil' if not watch.adverse }}">
+          <p class="reading__k">Adverse events</p>
+          <p class="reading__v">{{ watch.adverse|length|num }}</p>
+          <p class="reading__d">
+            {% if watch.adverse %}
+            Filings meeting one of the four pre-registered signals. Listed below.
+            {% else %}
+            No filing since the last check met any of the four pre-registered signals:
+            non-reliance (8-K Item 4.02), auditor change (Item 4.01), late periodic filing
+            (NT 10-K or NT 10-Q), delisting (Form 25 or 25-NSE).
+            {% endif %}
+          </p>
+        </li>
+
+        {#- 3. kill criteria -#}
+        <li class="reading{{ ' reading--nil' if not watch.kill_criteria_due }}">
+          <p class="reading__k">Kill criteria due</p>
+          <p class="reading__v">{{ watch.kill_criteria_due|length|num }}</p>
+          <p class="reading__d">
+            {% if watch.kill_criteria_due %}
+            Criteria whose date has passed and which are now answered in public. Listed below.
+            {% elif watch.open_positions %}
+            {{ watch.open_positions }} open position(s), and no criterion has reached its
+            date. The job evaluates the dates; it never decides the substance.
+            {% else %}
+            No open position for this job to grade yet — see <a href="/positions">Positions</a>.
+            {% endif %}
+          </p>
+        </li>
+      </ol>
+
+      {% if watch.adverse %}
+      <p class="band__note">An adverse event here is an observation about a filing and
+        nothing more. Under METHOD.md §8.1 no adverse forward-looking conclusion is
+        published about a live name anywhere on this site.</p>
+      {% endif %}
+    </div>
+
+    <aside class="rail">
+      <div class="rail__block">
+        <h2 class="rail__h">How this runs</h2>
+        <dl class="rail__rules">
+          <dt>Schedule</dt>
+          <dd>{{ watch.schedule.human }}, plus manual dispatch.
+            <code>{{ watch.schedule.workflow }}</code></dd>
+          <dt>What it writes</dt>
+          <dd>The new high-water mark and this report, committed to the repository, so each
+            week's diff is itself the evidence.</dd>
+          <dt>What it may never touch</dt>
+          <dd><code>METHOD.md</code>, the frozen cohort, and the adjudication ledger. Those
+            are the study.</dd>
+        </dl>
+      </div>
+      {{ m.provenance_strip(sources) }}
+    </aside>
+  </div>
+</section>
+
+{# --------------------------------- the tables, only when there is data ---- #}
+{% if watch.new_filings %}
+<section class="band">
+  <div class="wrap">
+    <h2 class="band__h">Filed since the last check</h2>
     <div class="scroller">
       <table class="table">
         <thead>
@@ -103,31 +184,14 @@
         </tbody>
       </table>
     </div>
-    {% else %}
-    <p class="quiet">
-      <span class="quiet__mark">Nothing new</span>
-      No cohort issuer has filed anything since {{ watch.checked_on|longdate }}. That is a
-      reading, not an outage: {{ watch.issuers_tracked|num }} issuers were checked and
-      {{ watch.accessions_tracked|num }} accessions were already on the mark.
-    </p>
-    {% endif %}
   </div>
 </section>
+{% endif %}
 
-{# ------------------------------------------------------- adverse events --- #}
+{% if watch.adverse %}
 <section class="band">
   <div class="wrap">
-    <header class="band__head">
-      <h2 class="band__h">Adverse events</h2>
-      <p class="band__sub">The same four signals the study's confirmatory test uses, applied
-        to filings that arrived after it: non-reliance on previously issued financials
-        (8-K Item 4.02), an auditor change (Item 4.01), a late periodic filing (NT 10-K or
-        NT 10-Q), and a delisting (Form 25 or 25-NSE). Amendment 1's two exclusions apply
-        here as well, so neither the April 2021 SPAC warrant wave nor a mechanical de-SPAC
-        delisting raises an alarm on this page.</p>
-    </header>
-
-    {% if watch.adverse %}
+    <h2 class="band__h">Adverse events</h2>
     <div class="scroller">
       <table class="table">
         <thead>
@@ -147,30 +211,14 @@
         </tbody>
       </table>
     </div>
-    <p class="band__note">An adverse event here is an observation about a filing and
-      nothing more. It is not a view on the company, and under METHOD.md §8.1 no adverse
-      forward-looking conclusion is published about a live name anywhere on this site.</p>
-    {% else %}
-    <p class="quiet">
-      <span class="quiet__mark">None recorded</span>
-      No filing since the last check met any of the four definitions above.
-    </p>
-    {% endif %}
   </div>
 </section>
+{% endif %}
 
-{# -------------------------------------------------------- kill criteria --- #}
-<section class="band band--alt">
+{% if watch.kill_criteria_due %}
+<section class="band">
   <div class="wrap">
-    <header class="band__head">
-      <h2 class="band__h">Kill criteria falling due</h2>
-      <p class="band__sub">Every position carries three dated, machine-checkable kill
-        criteria. This job evaluates the dates; it never decides the substance. A criterion
-        whose date has passed is reported here as due and answered in public — the machine
-        says what needs answering, and the author answers it where it can be read back.</p>
-    </header>
-
-    {% if watch.kill_criteria_due %}
+    <h2 class="band__h">Kill criteria falling due</h2>
     <div class="scroller">
       <table class="table">
         <thead>
@@ -189,52 +237,7 @@
         </tbody>
       </table>
     </div>
-    {% else %}
-    <p class="quiet">
-      <span class="quiet__mark">{% if watch.open_positions %}None due{% else %}No open position{% endif %}</span>
-      {% if watch.open_positions %}
-      {{ watch.open_positions }} open position(s), and no criterion has reached its date.
-      {% else %}
-      There is no open position for this job to grade yet. A position is opened only after
-      the ledger it rests on is complete, so this section stays empty until then — see
-      <a href="/positions">Positions</a>.
-      {% endif %}
-    </p>
-    {% endif %}
   </div>
 </section>
-
-{# ------------------------------------------------------------- how it runs #}
-<section class="band">
-  <div class="wrap">
-    <header class="band__head">
-      <h2 class="band__h">How this runs, and what it may not touch</h2>
-    </header>
-    <ul class="rules">
-      <li class="rules__item">
-        <span class="rules__k">Schedule</span>
-        <span class="rules__v">{{ watch.schedule.human }}, plus manual dispatch.
-          <code>{{ watch.schedule.workflow }}</code></span>
-      </li>
-      <li class="rules__item">
-        <span class="rules__k">What it writes</span>
-        <span class="rules__v">The new high-water mark and this report, committed to the
-          repository, so each week's diff is itself the evidence.</span>
-      </li>
-      <li class="rules__item">
-        <span class="rules__k">What it must never touch</span>
-        <span class="rules__v"><code>METHOD.md</code>, the frozen cohort, and the
-          adjudication ledger. Those are the study, and a scheduled job has no business
-          editing them.</span>
-      </li>
-      <li class="rules__item">
-        <span class="rules__k">Why it exists</span>
-        <span class="rules__v">A changelog that keeps moving is evidence the work was not
-          theatre. One that stops the day something was submitted is evidence that it
-          was.</span>
-      </li>
-    </ul>
-    {{ m.provenance_strip(sources) }}
-  </div>
-</section>
+{% endif %}
 {% endblock %}

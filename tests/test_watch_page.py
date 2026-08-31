@@ -77,7 +77,10 @@ def test_a_quiet_week_says_it_checked(client: TestClient, report: dict) -> None:
     if report["new_filings"]:
         pytest.skip("the last run found new filings; the quiet path is not exercised")
     body = client.get("/watch").text
-    assert "Nothing new" in body
+    # The nil result is carried by the reading row: a figure and a sentence
+    # saying what was looked at. It must not degrade to an empty section.
+    assert "Filed since the last check" in body
+    assert "not an outage" in body
     status = data.watch_status()
     # The reader is told how much was looked at, so silence is legible.
     assert f"{status['accessions_tracked']:,}" in body

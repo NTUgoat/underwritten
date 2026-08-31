@@ -61,19 +61,25 @@ SITE: dict[str, Any] = {
 #: study found; the second is why anyone should believe it. Flattening them into
 #: one row of eight nouns is what made the site unreadable to a first-time
 #: visitor: every destination looked equally likely to be the place to start.
+#:
+#: Within the first tier the order is the order a reader should take them in,
+#: not the order the pages were built. Positions and the ledger carry content
+#: today; the note and the resolved page do not until the rulings are written,
+#: so they sit last rather than second and fifth, where a first-time visitor
+#: was reliably landing on the two emptiest pages on the site.
 NAV: tuple[dict[str, str], ...] = (
     {"href": "/", "label": "Finding", "id": "finding", "tier": "study",
      "blurb": "The base rate and the one confirmatory test"},
-    {"href": "/note", "label": "Note", "id": "note", "tier": "study",
-     "blurb": "The written argument, signed and dated"},
-    {"href": "/cohort", "label": "Ledger", "id": "cohort", "tier": "study",
-     "blurb": "Every metric and the ruling made on it"},
     {"href": "/positions", "label": "Positions", "id": "positions", "tier": "study",
      "blurb": "Three live names, priced as a spread over a hurdle"},
-    {"href": "/resolved", "label": "Resolved", "id": "resolved", "tier": "study",
-     "blurb": "Cases the public record has already settled"},
+    {"href": "/cohort", "label": "Ledger", "id": "cohort", "tier": "study",
+     "blurb": "Every metric and the ruling made on it"},
     {"href": "/watch", "label": "Watch", "id": "watch", "tier": "study",
      "blurb": "What the cohort has filed since, checked every Monday"},
+    {"href": "/note", "label": "Note", "id": "note", "tier": "study",
+     "blurb": "The written argument, signed and dated"},
+    {"href": "/resolved", "label": "Resolved", "id": "resolved", "tier": "study",
+     "blurb": "Cases the public record has already settled"},
     {"href": "/method", "label": "Method", "id": "method", "tier": "receipts",
      "blurb": "The pre-registration in full"},
     {"href": "/provenance", "label": "Provenance", "id": "provenance", "tier": "receipts",

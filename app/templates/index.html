@@ -15,7 +15,8 @@
    there is a finding to lead with, and the finding takes the slot the moment
    the pipeline writes one. #}
 <section class="fold">
-  <div class="wrap">
+  <div class="wrap wrap--reading">
+    <div class="col">
     {% if finding.finding and finding.finding.segments %}
     <p class="fold__eyebrow">The finding</p>
     <h1 class="finding">{{ m.prose(finding.finding.segments) }}</h1>
@@ -40,6 +41,33 @@
       {{ site.why }}
       <span class="why__sign">— {{ site.author }}</span>
     </p>
+    </div>
+
+    {#- Orientation, in the margin beside the question. An interviewer arrives
+        cold and unattended, and the single most useful thing the first screen
+        can do is say where to go next. -#}
+    <aside class="rail rail--fold">
+      <div class="rail__block">
+        <h2 class="rail__h">How to read this</h2>
+        <ol class="rail__path">
+          <li><a href="#how-it-works">One measure, carried through the instrument</a>
+            <span>What the machine does, and where it stops.</span></li>
+          <li><a href="/positions">Three live positions</a>
+            <span>Named securities, each priced as a spread over a hurdle built line by line.</span></li>
+          <li><a href="/cohort">The ledger</a>
+            <span>All fifty issuers, each linked to the listing document it will be graded against.</span></li>
+          <li><a href="/method">The pre-registration</a>
+            <span>Written and version-tagged before any filing was retrieved.</span></li>
+        </ol>
+      </div>
+      <div class="rail__block rail__block--quiet">
+        <h2 class="rail__h">The state of it</h2>
+        <p>The instrument is complete and the reading has not started. Nothing on this
+        site claims a finding, and the counters below say exactly how far along it is.</p>
+      </div>
+    </aside>
+
+    <div class="bleed">
 
     {# The realised n is a count of the committed frozen cohort, so it is
        publishable before any analysis has run. The metric count is not. #}
@@ -113,9 +141,10 @@
         <p class="check__badge v-{{ counter.verdict|lower|replace('_','-') }}">{{ counter.verdict|state_label }}</p>
         {% endif %}
         {% else %}
-        <p class="check__empty">{{ m.pending() }} — if metrics vanish at similar rates
-          whether improving or deteriorating, the headline above is substantially
-          weakened, and that result is published here with the same prominence.</p>
+        <p class="check__empty"><span class="check__mark">Not computed yet</span>
+          If metrics vanish at similar rates whether improving or deteriorating, the
+          headline above is substantially weakened — and that result is published here
+          with the same prominence.</p>
         {% endif %}
       </article>
 
@@ -136,12 +165,13 @@
           {% for label in sens.benign_labels %}<span class="term">{{ label }}</span>{% if not loop.last %}, {% endif %}{% endfor %}.</p>
         {% endif %}
         {% else %}
-        <p class="check__empty">{{ m.pending() }} — segment reclassification under
-          ASC 280, supersession by an accounting standard, a comment-letter-driven
-          non-GAAP change, and disposal of the measured business are labelled by hand
-          and the primary is published both with and without them.</p>
+        <p class="check__empty"><span class="check__mark">Not computed yet</span>
+          Segment reclassification under ASC 280, supersession by an accounting standard,
+          a comment-letter-driven non-GAAP change and disposal of the measured business
+          are labelled by hand, and the primary is published both with and without them.</p>
         {% endif %}
       </article>
+    </div>
     </div>
   </div>
 </section>
@@ -162,6 +192,79 @@
   </div>
 </section>
 
+{# ------------------------------------------------- the three results, 7.1-7.3
+
+   All three are computed from the same ledger, so they arrive together or not
+   at all. While they are absent the page says so once, in one block, instead of
+   printing three bands each holding its own dashed box - which is what made the
+   front page read as a site that had failed to load rather than as a study
+   whose reading has not started. #}
+{% set has_results = base_rate.states or primary.keepers or primary.movers or board.issuers %}
+{% if not has_results %}
+<section class="band">
+  <div class="wrap wrap--reading">
+    <div class="col">
+      <header class="band__head">
+        <h2 class="band__h">What will be published here</h2>
+        <p class="band__sub">Three results, specified in the pre-registration before any
+          filing was retrieved. They are computed from one ledger, so they arrive together.
+          Nothing stands in for them in the meantime.</p>
+      </header>
+
+      <ol class="willpub">
+        <li class="willpub__item">
+          <p class="willpub__ref">7.1</p>
+          <h3 class="willpub__h">The base rate</h3>
+          <p class="willpub__d">The share of adjudicated metrics in each terminal state, with
+          an exact binomial 95% interval — and, because <code>NEVER_REPORTED</code> was added
+          by amendment after the data existed, counted a second way without it. This is the
+          headline; everything else is a smaller claim.</p>
+        </li>
+        <li class="willpub__item">
+          <p class="willpub__ref">7.2</p>
+          <h3 class="willpub__h">The signal</h3>
+          <p class="willpub__d">The one confirmatory test. Issuers that kept their own
+          measures against issuers that did not, compared on later restatements, auditor
+          changes, late filings and delistings — with a bootstrap interval, Fisher exact and
+          Mann-Whitney U. At n = 50 it is underpowered for anything but a large effect, and
+          it will say so.</p>
+        </li>
+        <li class="willpub__item">
+          <p class="willpub__ref">7.3</p>
+          <h3 class="willpub__h">The scoreboard</h3>
+          <p class="willpub__d">One row per issuer, one column per fiscal year, one mark for
+          what happened to that issuer's own metrics that year. Keepers above movers. The
+          whole study in one grid — drawn in the vocabulary below, which is the part of this
+          section that is already fixed.</p>
+        </li>
+      </ol>
+
+      {{ m.legend() }}
+    </div>
+
+    <aside class="rail">
+      <div class="rail__block">
+        <h2 class="rail__h">What they wait on</h2>
+        <p>Every candidate metric located in the corpus has to be ruled on by hand.
+        METHOD.md §4 reserves that decision for a human: a machine ruling on its own
+        pattern search would be grading its own homework.</p>
+        <dl class="rail__facts">
+          <div><dt>Ruled</dt><dd>{{ status.written|num }}</dd></div>
+          <div><dt>To rule</dt><dd>{{ status.groups|num }}</dd></div>
+        </dl>
+        <p><a href="/cohort">Follow the ledger →</a></p>
+      </div>
+      <div class="rail__block rail__block--quiet">
+        <h2 class="rail__h">Committed in advance</h2>
+        <p>All three specifications, and the two checks above, were written down and
+        version-tagged <code>{{ site.preregistration_tag }}</code> on
+        {{ site.preregistered }} — before any filing was retrieved.</p>
+        <p><a href="/method">Read the pre-registration →</a></p>
+      </div>
+    </aside>
+  </div>
+</section>
+{% else %}
 {# ------------------------------------------------------- the base rate, 7.1 #}
 <section class="band">
   <div class="wrap">
@@ -309,6 +412,7 @@
   </div>
 </section>
 
+{% endif %}
 {# ------------------------------------------------------------------- links #}
 <section class="band band--alt">
   <div class="wrap">
