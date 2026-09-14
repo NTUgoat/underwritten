@@ -5,292 +5,300 @@
   "errors": [],
   "new_filings": [
     {
-      "cik": "775215",
-      "issuer": "HBT Financial, Inc.",
-      "form": "S-4",
-      "filed": "2026-08-31",
-      "accession": "0001104659-26-103890",
-      "url": "https://www.sec.gov/Archives/edgar/data/775215/000110465926103890/0001104659-26-103890-index.htm"
+      "cik": "1654126",
+      "issuer": "ZIM Integrated Shipping Services Ltd.",
+      "form": "4",
+      "filed": "2026-09-08",
+      "accession": "0001976408-26-000802",
+      "url": "https://www.sec.gov/Archives/edgar/data/1654126/000197640826000802/0001976408-26-000802-index.htm"
     },
     {
-      "cik": "1691421",
-      "issuer": "Lemonade, Inc.",
+      "cik": "1654126",
+      "issuer": "ZIM Integrated Shipping Services Ltd.",
       "form": "144",
-      "filed": "2026-09-03",
-      "accession": "0001959173-26-006705",
-      "url": "https://www.sec.gov/Archives/edgar/data/1691421/000195917326006705/0001959173-26-006705-index.htm"
+      "filed": "2026-09-09",
+      "accession": "0001976408-26-000809",
+      "url": "https://www.sec.gov/Archives/edgar/data/1654126/000197640826000809/0001976408-26-000809-index.htm"
     },
     {
-      "cik": "1691421",
-      "issuer": "Lemonade, Inc.",
+      "cik": "1654126",
+      "issuer": "ZIM Integrated Shipping Services Ltd.",
       "form": "144",
-      "filed": "2026-09-03",
-      "accession": "0001959173-26-006707",
-      "url": "https://www.sec.gov/Archives/edgar/data/1691421/000195917326006707/0001959173-26-006707-index.htm"
+      "filed": "2026-09-09",
+      "accession": "0001976408-26-000812",
+      "url": "https://www.sec.gov/Archives/edgar/data/1654126/000197640826000812/0001976408-26-000812-index.htm"
     },
     {
-      "cik": "1691421",
-      "issuer": "Lemonade, Inc.",
+      "cik": "1654126",
+      "issuer": "ZIM Integrated Shipping Services Ltd.",
+      "form": "4",
+      "filed": "2026-09-09",
+      "accession": "0001976408-26-000814",
+      "url": "https://www.sec.gov/Archives/edgar/data/1654126/000197640826000814/0001976408-26-000814-index.htm"
+    },
+    {
+      "cik": "1654126",
+      "issuer": "ZIM Integrated Shipping Services Ltd.",
+      "form": "4",
+      "filed": "2026-09-09",
+      "accession": "0001976408-26-000815",
+      "url": "https://www.sec.gov/Archives/edgar/data/1654126/000197640826000815/0001976408-26-000815-index.htm"
+    },
+    {
+      "cik": "1654126",
+      "issuer": "ZIM Integrated Shipping Services Ltd.",
+      "form": "4",
+      "filed": "2026-09-09",
+      "accession": "0001976408-26-000816",
+      "url": "https://www.sec.gov/Archives/edgar/data/1654126/000197640826000816/0001976408-26-000816-index.htm"
+    },
+    {
+      "cik": "1654126",
+      "issuer": "ZIM Integrated Shipping Services Ltd.",
+      "form": "4",
+      "filed": "2026-09-10",
+      "accession": "0001976408-26-000833",
+      "url": "https://www.sec.gov/Archives/edgar/data/1654126/000197640826000833/0001976408-26-000833-index.htm"
+    },
+    {
+      "cik": "1654126",
+      "issuer": "ZIM Integrated Shipping Services Ltd.",
       "form": "144",
-      "filed": "2026-09-03",
-      "accession": "0001959173-26-006712",
-      "url": "https://www.sec.gov/Archives/edgar/data/1691421/000195917326006712/0001959173-26-006712-index.htm"
+      "filed": "2026-09-10",
+      "accession": "0001976408-26-000834",
+      "url": "https://www.sec.gov/Archives/edgar/data/1654126/000197640826000834/0001976408-26-000834-index.htm"
+    },
+    {
+      "cik": "1676238",
+      "issuer": "Braze, Inc.",
+      "form": "8-K",
+      "filed": "2026-09-08",
+      "accession": "0001676238-26-000039",
+      "url": "https://www.sec.gov/Archives/edgar/data/1676238/000167623826000039/0001676238-26-000039-index.htm"
+    },
+    {
+      "cik": "1676238",
+      "issuer": "Braze, Inc.",
+      "form": "10-Q",
+      "filed": "2026-09-09",
+      "accession": "0001676238-26-000040",
+      "url": "https://www.sec.gov/Archives/edgar/data/1676238/000167623826000040/0001676238-26-000040-index.htm"
     },
     {
       "cik": "1691421",
       "issuer": "Lemonade, Inc.",
       "form": "4",
-      "filed": "2026-09-04",
-      "accession": "0001803365-26-000004",
-      "url": "https://www.sec.gov/Archives/edgar/data/1691421/000180336526000004/0001803365-26-000004-index.htm"
+      "filed": "2026-09-08",
+      "accession": "0001232142-26-000008",
+      "url": "https://www.sec.gov/Archives/edgar/data/1691421/000123214226000008/0001232142-26-000008-index.htm"
     },
     {
       "cik": "1691421",
       "issuer": "Lemonade, Inc.",
-      "form": "144",
-      "filed": "2026-09-04",
-      "accession": "0001959173-26-006739",
-      "url": "https://www.sec.gov/Archives/edgar/data/1691421/000195917326006739/0001959173-26-006739-index.htm"
+      "form": "4",
+      "filed": "2026-09-08",
+      "accession": "0001816299-26-000023",
+      "url": "https://www.sec.gov/Archives/edgar/data/1691421/000181629926000023/0001816299-26-000023-index.htm"
+    },
+    {
+      "cik": "1691421",
+      "issuer": "Lemonade, Inc.",
+      "form": "4",
+      "filed": "2026-09-08",
+      "accession": "0002011118-26-000008",
+      "url": "https://www.sec.gov/Archives/edgar/data/1691421/000201111826000008/0002011118-26-000008-index.htm"
     },
     {
       "cik": "1691493",
       "issuer": "Nu Holdings Ltd.",
       "form": "6-K",
-      "filed": "2026-09-02",
-      "accession": "0001292814-26-004456",
-      "url": "https://www.sec.gov/Archives/edgar/data/1691493/000129281426004456/0001292814-26-004456-index.htm"
+      "filed": "2026-09-10",
+      "accession": "0001292814-26-004518",
+      "url": "https://www.sec.gov/Archives/edgar/data/1691493/000129281426004518/0001292814-26-004518-index.htm"
     },
     {
-      "cik": "1703956",
-      "issuer": "Concrete Pumping Holdings, Inc.",
-      "form": "8-K",
-      "filed": "2026-09-03",
-      "accession": "0001437749-26-029609",
-      "url": "https://www.sec.gov/Archives/edgar/data/1703956/000143774926029609/0001437749-26-029609-index.htm"
+      "cik": "1698991",
+      "issuer": "Accel Entertainment, Inc.",
+      "form": "144",
+      "filed": "2026-09-11",
+      "accession": "0001628280-26-061487",
+      "url": "https://www.sec.gov/Archives/edgar/data/1698991/000162828026061487/0001628280-26-061487-index.htm"
     },
     {
-      "cik": "1703956",
-      "issuer": "Concrete Pumping Holdings, Inc.",
-      "form": "10-Q",
-      "filed": "2026-09-03",
-      "accession": "0001437749-26-029623",
-      "url": "https://www.sec.gov/Archives/edgar/data/1703956/000143774926029623/0001437749-26-029623-index.htm"
+      "cik": "1698991",
+      "issuer": "Accel Entertainment, Inc.",
+      "form": "144/A",
+      "filed": "2026-09-11",
+      "accession": "0001628280-26-061492",
+      "url": "https://www.sec.gov/Archives/edgar/data/1698991/000162828026061492/0001628280-26-061492-index.htm"
+    },
+    {
+      "cik": "1709048",
+      "issuer": "GLOBALFOUNDRIES Inc.",
+      "form": "6-K",
+      "filed": "2026-09-08",
+      "accession": "0001709048-26-000234",
+      "url": "https://www.sec.gov/Archives/edgar/data/1709048/000170904826000234/0001709048-26-000234-index.htm"
     },
     {
       "cik": "1709048",
       "issuer": "GLOBALFOUNDRIES Inc.",
       "form": "4",
-      "filed": "2026-09-04",
-      "accession": "0001709048-26-000230",
-      "url": "https://www.sec.gov/Archives/edgar/data/1709048/000170904826000230/0001709048-26-000230-index.htm"
+      "filed": "2026-09-10",
+      "accession": "0001628280-26-061371",
+      "url": "https://www.sec.gov/Archives/edgar/data/1709048/000162828026061371/0001628280-26-061371-index.htm"
+    },
+    {
+      "cik": "1709048",
+      "issuer": "GLOBALFOUNDRIES Inc.",
+      "form": "4",
+      "filed": "2026-09-11",
+      "accession": "0001709048-26-000236",
+      "url": "https://www.sec.gov/Archives/edgar/data/1709048/000170904826000236/0001709048-26-000236-index.htm"
+    },
+    {
+      "cik": "1712189",
+      "issuer": "Target Hospitality Corp.",
+      "form": "424B7",
+      "filed": "2026-09-08",
+      "accession": "0001104659-26-105963",
+      "url": "https://www.sec.gov/Archives/edgar/data/1712189/000110465926105963/0001104659-26-105963-index.htm"
+    },
+    {
+      "cik": "1712189",
+      "issuer": "Target Hospitality Corp.",
+      "form": "424B7",
+      "filed": "2026-09-09",
+      "accession": "0001104659-26-106339",
+      "url": "https://www.sec.gov/Archives/edgar/data/1712189/000110465926106339/0001104659-26-106339-index.htm"
     },
     {
       "cik": "1712189",
       "issuer": "Target Hospitality Corp.",
       "form": "8-K",
-      "filed": "2026-09-01",
-      "accession": "0001104659-26-104096",
-      "url": "https://www.sec.gov/Archives/edgar/data/1712189/000110465926104096/0001104659-26-104096-index.htm"
+      "filed": "2026-09-09",
+      "accession": "0001104659-26-106345",
+      "url": "https://www.sec.gov/Archives/edgar/data/1712189/000110465926106345/0001104659-26-106345-index.htm"
     },
     {
       "cik": "1716166",
       "issuer": "Vivos Therapeutics, Inc.",
-      "form": "SCHEDULE 13G/A",
-      "filed": "2026-09-03",
-      "accession": "0001851416-26-000030",
-      "url": "https://www.sec.gov/Archives/edgar/data/1716166/000185141626000030/0001851416-26-000030-index.htm"
+      "form": "8-K",
+      "filed": "2026-09-08",
+      "accession": "0001493152-26-041616",
+      "url": "https://www.sec.gov/Archives/edgar/data/1716166/000149315226041616/0001493152-26-041616-index.htm"
     },
     {
-      "cik": "1718405",
-      "issuer": "HYCROFT MINING HOLDING CORP",
-      "form": "4",
-      "filed": "2026-08-31",
-      "accession": "0001493152-26-040898",
-      "url": "https://www.sec.gov/Archives/edgar/data/1718405/000149315226040898/0001493152-26-040898-index.htm"
+      "cik": "1716166",
+      "issuer": "Vivos Therapeutics, Inc.",
+      "form": "8-K/A",
+      "filed": "2026-09-08",
+      "accession": "0001493152-26-041807",
+      "url": "https://www.sec.gov/Archives/edgar/data/1716166/000149315226041807/0001493152-26-041807-index.htm"
     },
     {
       "cik": "1718405",
       "issuer": "HYCROFT MINING HOLDING CORP",
       "form": "8-K",
-      "filed": "2026-09-01",
-      "accession": "0001493152-26-041026",
-      "url": "https://www.sec.gov/Archives/edgar/data/1718405/000149315226041026/0001493152-26-041026-index.htm"
+      "filed": "2026-09-09",
+      "accession": "0001493152-26-041967",
+      "url": "https://www.sec.gov/Archives/edgar/data/1718405/000149315226041967/0001493152-26-041967-index.htm"
     },
     {
-      "cik": "1718405",
-      "issuer": "HYCROFT MINING HOLDING CORP",
-      "form": "3",
-      "filed": "2026-09-03",
-      "accession": "0001493152-26-041407",
-      "url": "https://www.sec.gov/Archives/edgar/data/1718405/000149315226041407/0001493152-26-041407-index.htm"
-    },
-    {
-      "cik": "1718405",
-      "issuer": "HYCROFT MINING HOLDING CORP",
-      "form": "3",
-      "filed": "2026-09-03",
-      "accession": "0001493152-26-041408",
-      "url": "https://www.sec.gov/Archives/edgar/data/1718405/000149315226041408/0001493152-26-041408-index.htm"
-    },
-    {
-      "cik": "1718405",
-      "issuer": "HYCROFT MINING HOLDING CORP",
-      "form": "3",
-      "filed": "2026-09-03",
-      "accession": "0001493152-26-041409",
-      "url": "https://www.sec.gov/Archives/edgar/data/1718405/000149315226041409/0001493152-26-041409-index.htm"
-    },
-    {
-      "cik": "1718405",
-      "issuer": "HYCROFT MINING HOLDING CORP",
-      "form": "3",
-      "filed": "2026-09-03",
-      "accession": "0001493152-26-041410",
-      "url": "https://www.sec.gov/Archives/edgar/data/1718405/000149315226041410/0001493152-26-041410-index.htm"
-    },
-    {
-      "cik": "1718405",
-      "issuer": "HYCROFT MINING HOLDING CORP",
-      "form": "4",
-      "filed": "2026-09-03",
-      "accession": "0001493152-26-041412",
-      "url": "https://www.sec.gov/Archives/edgar/data/1718405/000149315226041412/0001493152-26-041412-index.htm"
-    },
-    {
-      "cik": "1718405",
-      "issuer": "HYCROFT MINING HOLDING CORP",
-      "form": "4",
-      "filed": "2026-09-03",
-      "accession": "0001493152-26-041414",
-      "url": "https://www.sec.gov/Archives/edgar/data/1718405/000149315226041414/0001493152-26-041414-index.htm"
-    },
-    {
-      "cik": "1718405",
-      "issuer": "HYCROFT MINING HOLDING CORP",
-      "form": "4",
-      "filed": "2026-09-03",
-      "accession": "0001493152-26-041416",
-      "url": "https://www.sec.gov/Archives/edgar/data/1718405/000149315226041416/0001493152-26-041416-index.htm"
-    },
-    {
-      "cik": "1718405",
-      "issuer": "HYCROFT MINING HOLDING CORP",
-      "form": "4",
-      "filed": "2026-09-03",
-      "accession": "0001493152-26-041418",
-      "url": "https://www.sec.gov/Archives/edgar/data/1718405/000149315226041418/0001493152-26-041418-index.htm"
-    },
-    {
-      "cik": "1734722",
-      "issuer": "UiPath, Inc.",
-      "form": "4",
-      "filed": "2026-09-03",
-      "accession": "0001543401-26-000006",
-      "url": "https://www.sec.gov/Archives/edgar/data/1734722/000154340126000006/0001543401-26-000006-index.htm"
-    },
-    {
-      "cik": "1734722",
-      "issuer": "UiPath, Inc.",
+      "cik": "1719406",
+      "issuer": "NRX Pharmaceuticals, Inc.",
       "form": "8-K",
-      "filed": "2026-09-03",
-      "accession": "0001734722-26-000047",
-      "url": "https://www.sec.gov/Archives/edgar/data/1734722/000173472226000047/0001734722-26-000047-index.htm"
+      "filed": "2026-09-14",
+      "accession": "0001437749-26-030228",
+      "url": "https://www.sec.gov/Archives/edgar/data/1719406/000143774926030228/0001437749-26-030228-index.htm"
+    },
+    {
+      "cik": "1720592",
+      "issuer": "Repay Holdings Corp",
+      "form": "4",
+      "filed": "2026-09-10",
+      "accession": "0001193125-26-387863",
+      "url": "https://www.sec.gov/Archives/edgar/data/1720592/000119312526387863/0001193125-26-387863-index.htm"
+    },
+    {
+      "cik": "1734722",
+      "issuer": "UiPath, Inc.",
+      "form": "10-Q",
+      "filed": "2026-09-08",
+      "accession": "0001734722-26-000050",
+      "url": "https://www.sec.gov/Archives/edgar/data/1734722/000173472226000050/0001734722-26-000050-index.htm"
     },
     {
       "cik": "1734722",
       "issuer": "UiPath, Inc.",
       "form": "4",
-      "filed": "2026-09-03",
-      "accession": "0001855764-26-000010",
-      "url": "https://www.sec.gov/Archives/edgar/data/1734722/000185576426000010/0001855764-26-000010-index.htm"
+      "filed": "2026-09-09",
+      "accession": "0001855767-26-000018",
+      "url": "https://www.sec.gov/Archives/edgar/data/1734722/000185576726000018/0001855767-26-000018-index.htm"
     },
     {
       "cik": "1734722",
       "issuer": "UiPath, Inc.",
-      "form": "4",
-      "filed": "2026-09-03",
-      "accession": "0001855778-26-000006",
-      "url": "https://www.sec.gov/Archives/edgar/data/1734722/000185577826000006/0001855778-26-000006-index.htm"
-    },
-    {
-      "cik": "1734722",
-      "issuer": "UiPath, Inc.",
-      "form": "4",
-      "filed": "2026-09-03",
-      "accession": "0002127293-26-000006",
-      "url": "https://www.sec.gov/Archives/edgar/data/1734722/000212729326000006/0002127293-26-000006-index.htm"
-    },
-    {
-      "cik": "1734722",
-      "issuer": "UiPath, Inc.",
-      "form": "3",
-      "filed": "2026-09-03",
-      "accession": "0002143377-26-000002",
-      "url": "https://www.sec.gov/Archives/edgar/data/1734722/000214337726000002/0002143377-26-000002-index.htm"
-    },
-    {
-      "cik": "1734722",
-      "issuer": "UiPath, Inc.",
-      "form": "4",
-      "filed": "2026-09-03",
-      "accession": "0002143377-26-000003",
-      "url": "https://www.sec.gov/Archives/edgar/data/1734722/000214337726000003/0002143377-26-000003-index.htm"
-    },
-    {
-      "cik": "1737806",
-      "issuer": "PDD Holdings Inc.",
-      "form": "4",
-      "filed": "2026-09-02",
-      "accession": "0001104659-26-104422",
-      "url": "https://www.sec.gov/Archives/edgar/data/1737806/000110465926104422/0001104659-26-104422-index.htm"
-    },
-    {
-      "cik": "1737806",
-      "issuer": "PDD Holdings Inc.",
       "form": "144",
-      "filed": "2026-09-03",
-      "accession": "0001973379-26-000333",
-      "url": "https://www.sec.gov/Archives/edgar/data/1737806/000197337926000333/0001973379-26-000333-index.htm"
-    },
-    {
-      "cik": "1737806",
-      "issuer": "PDD Holdings Inc.",
-      "form": "4",
-      "filed": "2026-09-04",
-      "accession": "0001104659-26-105483",
-      "url": "https://www.sec.gov/Archives/edgar/data/1737806/000110465926105483/0001104659-26-105483-index.htm"
+      "filed": "2026-09-11",
+      "accession": "0001950047-26-009351",
+      "url": "https://www.sec.gov/Archives/edgar/data/1734722/000195004726009351/0001950047-26-009351-index.htm"
     },
     {
       "cik": "1743102",
       "issuer": "Jiayin Group Inc.",
-      "form": "144",
-      "filed": "2026-09-02",
-      "accession": "0001193125-26-379276",
-      "url": "https://www.sec.gov/Archives/edgar/data/1743102/000119312526379276/0001193125-26-379276-index.htm"
+      "form": "144/A",
+      "filed": "2026-09-08",
+      "accession": "0001193125-26-384294",
+      "url": "https://www.sec.gov/Archives/edgar/data/1743102/000119312526384294/0001193125-26-384294-index.htm"
     },
     {
       "cik": "1743102",
       "issuer": "Jiayin Group Inc.",
+      "form": "144/A",
+      "filed": "2026-09-08",
+      "accession": "0001193125-26-384296",
+      "url": "https://www.sec.gov/Archives/edgar/data/1743102/000119312526384296/0001193125-26-384296-index.htm"
+    },
+    {
+      "cik": "1753539",
+      "issuer": "BlackSky Technology Inc.",
       "form": "144",
-      "filed": "2026-09-02",
-      "accession": "0001193125-26-379277",
-      "url": "https://www.sec.gov/Archives/edgar/data/1743102/000119312526379277/0001193125-26-379277-index.htm"
+      "filed": "2026-09-09",
+      "accession": "0001949846-26-000574",
+      "url": "https://www.sec.gov/Archives/edgar/data/1753539/000194984626000574/0001949846-26-000574-index.htm"
+    },
+    {
+      "cik": "1753539",
+      "issuer": "BlackSky Technology Inc.",
+      "form": "144",
+      "filed": "2026-09-10",
+      "accession": "0001349983-26-000007",
+      "url": "https://www.sec.gov/Archives/edgar/data/1753539/000134998326000007/0001349983-26-000007-index.htm"
+    },
+    {
+      "cik": "1753539",
+      "issuer": "BlackSky Technology Inc.",
+      "form": "144",
+      "filed": "2026-09-10",
+      "accession": "0001400954-26-000007",
+      "url": "https://www.sec.gov/Archives/edgar/data/1753539/000140095426000007/0001400954-26-000007-index.htm"
     },
     {
       "cik": "1753539",
       "issuer": "BlackSky Technology Inc.",
       "form": "4",
-      "filed": "2026-08-31",
-      "accession": "0001349983-26-000005",
-      "url": "https://www.sec.gov/Archives/edgar/data/1753539/000134998326000005/0001349983-26-000005-index.htm"
+      "filed": "2026-09-10",
+      "accession": "0001753539-26-000137",
+      "url": "https://www.sec.gov/Archives/edgar/data/1753539/000175353926000137/0001753539-26-000137-index.htm"
     },
     {
       "cik": "1753539",
       "issuer": "BlackSky Technology Inc.",
-      "form": "DEFA14A",
-      "filed": "2026-09-04",
-      "accession": "0001753539-26-000134",
-      "url": "https://www.sec.gov/Archives/edgar/data/1753539/000175353926000134/0001753539-26-000134-index.htm"
+      "form": "144",
+      "filed": "2026-09-10",
+      "accession": "0001753539-26-000140",
+      "url": "https://www.sec.gov/Archives/edgar/data/1753539/000175353926000140/0001753539-26-000140-index.htm"
     }
   ],
   "new_adverse_events": [],
