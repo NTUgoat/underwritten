@@ -7,303 +7,229 @@
     {
       "cik": "1621672",
       "issuer": "Super League Enterprise, Inc.",
-      "form": "424B5",
-      "filed": "2026-09-29",
-      "accession": "0001437749-26-031476",
-      "url": "https://www.sec.gov/Archives/edgar/data/1621672/000143774926031476/0001437749-26-031476-index.htm"
-    },
-    {
-      "cik": "1621672",
-      "issuer": "Super League Enterprise, Inc.",
-      "form": "8-K",
-      "filed": "2026-09-29",
-      "accession": "0001437749-26-031478",
-      "url": "https://www.sec.gov/Archives/edgar/data/1621672/000143774926031478/0001437749-26-031478-index.htm"
-    },
-    {
-      "cik": "1621672",
-      "issuer": "Super League Enterprise, Inc.",
-      "form": "SCHEDULE 13D/A",
-      "filed": "2026-09-30",
-      "accession": "0001437749-26-031611",
-      "url": "https://www.sec.gov/Archives/edgar/data/1621672/000143774926031611/0001437749-26-031611-index.htm"
+      "form": "DEFA14A",
+      "filed": "2026-10-06",
+      "accession": "0001437749-26-032109",
+      "url": "https://www.sec.gov/Archives/edgar/data/1621672/000143774926032109/0001437749-26-032109-index.htm"
     },
     {
       "cik": "1653558",
       "issuer": "Priority Technology Holdings, Inc.",
-      "form": "3",
-      "filed": "2026-09-28",
-      "accession": "0001104659-26-111451",
-      "url": "https://www.sec.gov/Archives/edgar/data/1653558/000110465926111451/0001104659-26-111451-index.htm"
+      "form": "4",
+      "filed": "2026-10-05",
+      "accession": "0001653558-26-000144",
+      "url": "https://www.sec.gov/Archives/edgar/data/1653558/000165355826000144/0001653558-26-000144-index.htm"
+    },
+    {
+      "cik": "1653558",
+      "issuer": "Priority Technology Holdings, Inc.",
+      "form": "4",
+      "filed": "2026-10-05",
+      "accession": "0001653558-26-000146",
+      "url": "https://www.sec.gov/Archives/edgar/data/1653558/000165355826000146/0001653558-26-000146-index.htm"
+    },
+    {
+      "cik": "1653558",
+      "issuer": "Priority Technology Holdings, Inc.",
+      "form": "4",
+      "filed": "2026-10-05",
+      "accession": "0001653558-26-000148",
+      "url": "https://www.sec.gov/Archives/edgar/data/1653558/000165355826000148/0001653558-26-000148-index.htm"
+    },
+    {
+      "cik": "1653558",
+      "issuer": "Priority Technology Holdings, Inc.",
+      "form": "4",
+      "filed": "2026-10-05",
+      "accession": "0001653558-26-000150",
+      "url": "https://www.sec.gov/Archives/edgar/data/1653558/000165355826000150/0001653558-26-000150-index.htm"
+    },
+    {
+      "cik": "1653558",
+      "issuer": "Priority Technology Holdings, Inc.",
+      "form": "4",
+      "filed": "2026-10-05",
+      "accession": "0001653558-26-000152",
+      "url": "https://www.sec.gov/Archives/edgar/data/1653558/000165355826000152/0001653558-26-000152-index.htm"
     },
     {
       "cik": "1654126",
       "issuer": "ZIM Integrated Shipping Services Ltd.",
       "form": "6-K",
-      "filed": "2026-09-30",
-      "accession": "0001178913-26-004656",
-      "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326004656/0001178913-26-004656-index.htm"
-    },
-    {
-      "cik": "1690080",
-      "issuer": "FORUM MARKETS Inc",
-      "form": "8-K",
-      "filed": "2026-10-05",
-      "accession": "0001213900-26-106655",
-      "url": "https://www.sec.gov/Archives/edgar/data/1690080/000121390026106655/0001213900-26-106655-index.htm"
+      "filed": "2026-10-06",
+      "accession": "0001178913-26-004724",
+      "url": "https://www.sec.gov/Archives/edgar/data/1654126/000117891326004724/0001178913-26-004724-index.htm"
     },
     {
       "cik": "1691493",
       "issuer": "Nu Holdings Ltd.",
-      "form": "3",
-      "filed": "2026-09-30",
-      "accession": "0000950103-26-014869",
-      "url": "https://www.sec.gov/Archives/edgar/data/1691493/000095010326014869/0000950103-26-014869-index.htm"
+      "form": "144",
+      "filed": "2026-10-05",
+      "accession": "0001950047-26-010032",
+      "url": "https://www.sec.gov/Archives/edgar/data/1691493/000195004726010032/0001950047-26-010032-index.htm"
     },
     {
       "cik": "1691493",
       "issuer": "Nu Holdings Ltd.",
       "form": "4",
-      "filed": "2026-09-30",
-      "accession": "0000950103-26-014871",
-      "url": "https://www.sec.gov/Archives/edgar/data/1691493/000095010326014871/0000950103-26-014871-index.htm"
+      "filed": "2026-10-07",
+      "accession": "0000950103-26-015323",
+      "url": "https://www.sec.gov/Archives/edgar/data/1691493/000095010326015323/0000950103-26-015323-index.htm"
     },
     {
-      "cik": "1691493",
-      "issuer": "Nu Holdings Ltd.",
-      "form": "6-K",
-      "filed": "2026-09-30",
-      "accession": "0001292814-26-004752",
-      "url": "https://www.sec.gov/Archives/edgar/data/1691493/000129281426004752/0001292814-26-004752-index.htm"
+      "cik": "1698991",
+      "issuer": "Accel Entertainment, Inc.",
+      "form": "3",
+      "filed": "2026-10-06",
+      "accession": "0002158810-26-000002",
+      "url": "https://www.sec.gov/Archives/edgar/data/1698991/000215881026000002/0002158810-26-000002-index.htm"
     },
     {
       "cik": "1706946",
       "issuer": "Virgin Galactic Holdings, Inc",
       "form": "4",
-      "filed": "2026-09-28",
-      "accession": "0001955335-26-000012",
-      "url": "https://www.sec.gov/Archives/edgar/data/1706946/000195533526000012/0001955335-26-000012-index.htm"
+      "filed": "2026-10-06",
+      "accession": "0001589800-26-000012",
+      "url": "https://www.sec.gov/Archives/edgar/data/1706946/000158980026000012/0001589800-26-000012-index.htm"
+    },
+    {
+      "cik": "1706946",
+      "issuer": "Virgin Galactic Holdings, Inc",
+      "form": "4",
+      "filed": "2026-10-06",
+      "accession": "0001817756-26-000010",
+      "url": "https://www.sec.gov/Archives/edgar/data/1706946/000181775626000010/0001817756-26-000010-index.htm"
+    },
+    {
+      "cik": "1706946",
+      "issuer": "Virgin Galactic Holdings, Inc",
+      "form": "4",
+      "filed": "2026-10-06",
+      "accession": "0001916877-26-000011",
+      "url": "https://www.sec.gov/Archives/edgar/data/1706946/000191687726000011/0001916877-26-000011-index.htm"
     },
     {
       "cik": "1709048",
       "issuer": "GLOBALFOUNDRIES Inc.",
       "form": "4",
-      "filed": "2026-09-29",
-      "accession": "0001628280-26-063835",
-      "url": "https://www.sec.gov/Archives/edgar/data/1709048/000162828026063835/0001628280-26-063835-index.htm"
+      "filed": "2026-10-06",
+      "accession": "0001709048-26-000245",
+      "url": "https://www.sec.gov/Archives/edgar/data/1709048/000170904826000245/0001709048-26-000245-index.htm"
     },
     {
       "cik": "1709048",
       "issuer": "GLOBALFOUNDRIES Inc.",
       "form": "4",
-      "filed": "2026-10-02",
-      "accession": "0001628280-26-064531",
-      "url": "https://www.sec.gov/Archives/edgar/data/1709048/000162828026064531/0001628280-26-064531-index.htm"
+      "filed": "2026-10-09",
+      "accession": "0001628280-26-065555",
+      "url": "https://www.sec.gov/Archives/edgar/data/1709048/000162828026065555/0001628280-26-065555-index.htm"
     },
     {
       "cik": "1712189",
       "issuer": "Target Hospitality Corp.",
       "form": "SCHEDULE 13D/A",
-      "filed": "2026-09-28",
-      "accession": "0000950142-26-002613",
-      "url": "https://www.sec.gov/Archives/edgar/data/1712189/000095014226002613/0000950142-26-002613-index.htm"
+      "filed": "2026-10-05",
+      "accession": "0000950142-26-002684",
+      "url": "https://www.sec.gov/Archives/edgar/data/1712189/000095014226002684/0000950142-26-002684-index.htm"
     },
     {
       "cik": "1712189",
       "issuer": "Target Hospitality Corp.",
       "form": "4",
-      "filed": "2026-09-28",
-      "accession": "0000950142-26-002614",
-      "url": "https://www.sec.gov/Archives/edgar/data/1712189/000095014226002614/0000950142-26-002614-index.htm"
+      "filed": "2026-10-05",
+      "accession": "0000950142-26-002685",
+      "url": "https://www.sec.gov/Archives/edgar/data/1712189/000095014226002685/0000950142-26-002685-index.htm"
     },
     {
-      "cik": "1712189",
-      "issuer": "Target Hospitality Corp.",
-      "form": "4/A",
-      "filed": "2026-09-29",
-      "accession": "0001104659-26-111944",
-      "url": "https://www.sec.gov/Archives/edgar/data/1712189/000110465926111944/0001104659-26-111944-index.htm"
-    },
-    {
-      "cik": "1712189",
-      "issuer": "Target Hospitality Corp.",
-      "form": "4/A",
-      "filed": "2026-09-29",
-      "accession": "0001104659-26-111946",
-      "url": "https://www.sec.gov/Archives/edgar/data/1712189/000110465926111946/0001104659-26-111946-index.htm"
-    },
-    {
-      "cik": "1712189",
-      "issuer": "Target Hospitality Corp.",
+      "cik": "1712463",
+      "issuer": "Ranpak Holdings Corp.",
       "form": "4",
-      "filed": "2026-09-29",
-      "accession": "0001104659-26-111947",
-      "url": "https://www.sec.gov/Archives/edgar/data/1712189/000110465926111947/0001104659-26-111947-index.htm"
+      "filed": "2026-10-05",
+      "accession": "0000950103-26-015227",
+      "url": "https://www.sec.gov/Archives/edgar/data/1712463/000095010326015227/0000950103-26-015227-index.htm"
     },
     {
-      "cik": "1712189",
-      "issuer": "Target Hospitality Corp.",
-      "form": "144",
-      "filed": "2026-10-01",
-      "accession": "0000950142-26-002664",
-      "url": "https://www.sec.gov/Archives/edgar/data/1712189/000095014226002664/0000950142-26-002664-index.htm"
+      "cik": "1712463",
+      "issuer": "Ranpak Holdings Corp.",
+      "form": "4",
+      "filed": "2026-10-05",
+      "accession": "0000950103-26-015228",
+      "url": "https://www.sec.gov/Archives/edgar/data/1712463/000095010326015228/0000950103-26-015228-index.htm"
     },
     {
-      "cik": "1712189",
-      "issuer": "Target Hospitality Corp.",
-      "form": "144",
-      "filed": "2026-10-01",
-      "accession": "0000950142-26-002665",
-      "url": "https://www.sec.gov/Archives/edgar/data/1712189/000095014226002665/0000950142-26-002665-index.htm"
+      "cik": "1712463",
+      "issuer": "Ranpak Holdings Corp.",
+      "form": "4",
+      "filed": "2026-10-05",
+      "accession": "0000950103-26-015229",
+      "url": "https://www.sec.gov/Archives/edgar/data/1712463/000095010326015229/0000950103-26-015229-index.htm"
     },
     {
-      "cik": "1716166",
-      "issuer": "Vivos Therapeutics, Inc.",
+      "cik": "1719406",
+      "issuer": "NRX Pharmaceuticals, Inc.",
       "form": "8-K",
-      "filed": "2026-10-01",
-      "accession": "0001493152-26-045193",
-      "url": "https://www.sec.gov/Archives/edgar/data/1716166/000149315226045193/0001493152-26-045193-index.htm"
+      "filed": "2026-10-05",
+      "accession": "0001437749-26-032042",
+      "url": "https://www.sec.gov/Archives/edgar/data/1719406/000143774926032042/0001437749-26-032042-index.htm"
     },
     {
-      "cik": "1716947",
-      "issuer": "Ensysce Biosciences, Inc.",
-      "form": "8-K",
-      "filed": "2026-09-29",
-      "accession": "0001493152-26-044802",
-      "url": "https://www.sec.gov/Archives/edgar/data/1716947/000149315226044802/0001493152-26-044802-index.htm"
+      "cik": "1726445",
+      "issuer": "Seer, Inc.",
+      "form": "3",
+      "filed": "2026-10-08",
+      "accession": "0002157949-26-000002",
+      "url": "https://www.sec.gov/Archives/edgar/data/1726445/000215794926000002/0002157949-26-000002-index.htm"
     },
     {
-      "cik": "1728190",
-      "issuer": "HUYA Inc.",
+      "cik": "1734722",
+      "issuer": "UiPath, Inc.",
       "form": "4",
-      "filed": "2026-09-30",
-      "accession": "0000950103-26-014867",
-      "url": "https://www.sec.gov/Archives/edgar/data/1728190/000095010326014867/0000950103-26-014867-index.htm"
+      "filed": "2026-10-05",
+      "accession": "0001543401-26-000007",
+      "url": "https://www.sec.gov/Archives/edgar/data/1734722/000154340126000007/0001543401-26-000007-index.htm"
     },
     {
-      "cik": "1728190",
-      "issuer": "HUYA Inc.",
+      "cik": "1734722",
+      "issuer": "UiPath, Inc.",
       "form": "4",
-      "filed": "2026-09-30",
-      "accession": "0000950103-26-014868",
-      "url": "https://www.sec.gov/Archives/edgar/data/1728190/000095010326014868/0000950103-26-014868-index.htm"
+      "filed": "2026-10-05",
+      "accession": "0001855764-26-000011",
+      "url": "https://www.sec.gov/Archives/edgar/data/1734722/000185576426000011/0001855764-26-000011-index.htm"
+    },
+    {
+      "cik": "1734722",
+      "issuer": "UiPath, Inc.",
+      "form": "4",
+      "filed": "2026-10-05",
+      "accession": "0001855778-26-000008",
+      "url": "https://www.sec.gov/Archives/edgar/data/1734722/000185577826000008/0001855778-26-000008-index.htm"
+    },
+    {
+      "cik": "1734722",
+      "issuer": "UiPath, Inc.",
+      "form": "4",
+      "filed": "2026-10-05",
+      "accession": "0002127293-26-000011",
+      "url": "https://www.sec.gov/Archives/edgar/data/1734722/000212729326000011/0002127293-26-000011-index.htm"
     },
     {
       "cik": "1734722",
       "issuer": "UiPath, Inc.",
       "form": "144",
-      "filed": "2026-10-02",
-      "accession": "0001950047-26-010014",
-      "url": "https://www.sec.gov/Archives/edgar/data/1734722/000195004726010014/0001950047-26-010014-index.htm"
+      "filed": "2026-10-09",
+      "accession": "0001950047-26-010141",
+      "url": "https://www.sec.gov/Archives/edgar/data/1734722/000195004726010141/0001950047-26-010141-index.htm"
     },
     {
       "cik": "1739566",
       "issuer": "Utz Brands, Inc.",
-      "form": "CT ORDER",
-      "filed": "2026-10-01",
-      "accession": "9999999997-26-001570",
-      "url": "https://www.sec.gov/Archives/edgar/data/1739566/999999999726001570/9999999997-26-001570-index.htm"
-    },
-    {
-      "cik": "1739566",
-      "issuer": "Utz Brands, Inc.",
-      "form": "CT ORDER",
-      "filed": "2026-10-01",
-      "accession": "9999999997-26-001571",
-      "url": "https://www.sec.gov/Archives/edgar/data/1739566/999999999726001571/9999999997-26-001571-index.htm"
-    },
-    {
-      "cik": "1739566",
-      "issuer": "Utz Brands, Inc.",
-      "form": "DEFM14A",
-      "filed": "2026-10-02",
-      "accession": "0001193125-26-411198",
-      "url": "https://www.sec.gov/Archives/edgar/data/1739566/000119312526411198/0001193125-26-411198-index.htm"
-    },
-    {
-      "cik": "1739566",
-      "issuer": "Utz Brands, Inc.",
-      "form": "SC 13E3/A",
-      "filed": "2026-10-02",
-      "accession": "0001193125-26-411268",
-      "url": "https://www.sec.gov/Archives/edgar/data/1739566/000119312526411268/0001193125-26-411268-index.htm"
-    },
-    {
-      "cik": "1750593",
-      "issuer": "Fangdd Network Group Ltd.",
-      "form": "6-K",
-      "filed": "2026-09-29",
-      "accession": "0001213900-26-104338",
-      "url": "https://www.sec.gov/Archives/edgar/data/1750593/000121390026104338/0001213900-26-104338-index.htm"
-    },
-    {
-      "cik": "1752828",
-      "issuer": "Celularity Inc",
-      "form": "SCHEDULE 13D/A",
-      "filed": "2026-09-28",
-      "accession": "0001104659-26-111279",
-      "url": "https://www.sec.gov/Archives/edgar/data/1752828/000110465926111279/0001104659-26-111279-index.htm"
-    },
-    {
-      "cik": "1752828",
-      "issuer": "Celularity Inc",
-      "form": "10-Q",
-      "filed": "2026-09-29",
-      "accession": "0001493152-26-044892",
-      "url": "https://www.sec.gov/Archives/edgar/data/1752828/000149315226044892/0001493152-26-044892-index.htm"
-    },
-    {
-      "cik": "1752828",
-      "issuer": "Celularity Inc",
-      "form": "8-K",
-      "filed": "2026-09-29",
-      "accession": "0001493152-26-044917",
-      "url": "https://www.sec.gov/Archives/edgar/data/1752828/000149315226044917/0001493152-26-044917-index.htm"
-    },
-    {
-      "cik": "1753539",
-      "issuer": "BlackSky Technology Inc.",
-      "form": "4",
-      "filed": "2026-10-01",
-      "accession": "0001217124-26-000011",
-      "url": "https://www.sec.gov/Archives/edgar/data/1753539/000121712426000011/0001217124-26-000011-index.htm"
-    },
-    {
-      "cik": "1753539",
-      "issuer": "BlackSky Technology Inc.",
-      "form": "4",
-      "filed": "2026-10-01",
-      "accession": "0001400956-26-000013",
-      "url": "https://www.sec.gov/Archives/edgar/data/1753539/000140095626000013/0001400956-26-000013-index.htm"
-    },
-    {
-      "cik": "1753539",
-      "issuer": "BlackSky Technology Inc.",
-      "form": "4",
-      "filed": "2026-10-01",
-      "accession": "0001809523-26-000014",
-      "url": "https://www.sec.gov/Archives/edgar/data/1753539/000180952326000014/0001809523-26-000014-index.htm"
-    },
-    {
-      "cik": "1753539",
-      "issuer": "BlackSky Technology Inc.",
-      "form": "4",
-      "filed": "2026-10-01",
-      "accession": "0001865965-26-000010",
-      "url": "https://www.sec.gov/Archives/edgar/data/1753539/000186596526000010/0001865965-26-000010-index.htm"
+      "form": "SCHEDULE 13G",
+      "filed": "2026-10-09",
+      "accession": "0001076809-26-000119",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739566/000107680926000119/0001076809-26-000119-index.htm"
     }
   ],
-  "new_adverse_events": [
-    {
-      "cik": "1716166",
-      "issuer": "Vivos Therapeutics, Inc.",
-      "reason": "Change in registrant's certifying accountant",
-      "form": "8-K",
-      "filed": "2026-10-01",
-      "accession": "0001493152-26-045193",
-      "url": "https://www.sec.gov/Archives/edgar/data/1716166/000149315226045193/0001493152-26-045193-index.htm"
-    }
-  ],
+  "new_adverse_events": [],
   "kill_criteria_due": [],
   "open_positions": 3
 }
